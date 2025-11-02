@@ -101,39 +101,41 @@ export async function onRequest(context: {
     path = url.pathname.slice(1); // Remove leading /
   }
 
-  // Skip API routes - let other Functions handle them
-  if (path.startsWith("api/")) {
+  // Skip API routes and static assets - let other Functions handle them
+  if (path.startsWith("api/") || path.startsWith("_assets/") || path.includes(".")) {
     return new Response("Not found", { status: 404 });
   }
 
-  // IMPORTANT: Check ASSETS first for static files before handling as alias
-  // This ensures static files (index.html, admin/index.html, etc.) are served correctly
-  if (env.ASSETS) {
-    try {
-      // Try to fetch the static asset
-      const assetResponse = await env.ASSETS.fetch(request);
-      // If asset exists (status is not 404), return it
-      if (assetResponse && assetResponse.status !== 404) {
-        return assetResponse;
-      }
-    } catch (e: any) {
-      // If ASSETS fetch fails, continue to alias resolution
-      console.error("ASSETS fetch error:", e?.message || e);
-    }
-  }
-
-  // Skip static asset files (should have been handled by ASSETS above)
-  if (path.startsWith("_assets/") || path.includes(".")) {
-    return new Response("Not found", { status: 404 });
-  }
-
-  // For root/admin routes, if ASSETS didn't find them, return 404
-  // This should not happen if static files are properly deployed
+  // Handle root route - check ASSETS for index.html
   if (!path || path.length === 0 || path === "/" || path === "index.html") {
+    if (env.ASSETS) {
+      try {
+        const indexRequest = new Request(new URL("/index.html", url.origin).toString(), request);
+        const assetResponse = await env.ASSETS.fetch(indexRequest);
+        if (assetResponse && assetResponse.status !== 404) {
+          return assetResponse;
+        }
+      } catch (e: any) {
+        console.error("ASSETS fetch error for index:", e?.message || e);
+      }
+    }
     return new Response("Not found", { status: 404 });
   }
 
+  // Handle admin routes - check ASSETS for admin pages
   if (path === "admin" || path.startsWith("admin/")) {
+    if (env.ASSETS) {
+      try {
+        const adminPath = path === "admin" ? "/admin/index.html" : `/${path}/index.html`;
+        const adminRequest = new Request(new URL(adminPath, url.origin).toString(), request);
+        const assetResponse = await env.ASSETS.fetch(adminRequest);
+        if (assetResponse && assetResponse.status !== 404) {
+          return assetResponse;
+        }
+      } catch (e: any) {
+        console.error("ASSETS fetch error for admin:", e?.message || e);
+      }
+    }
     return new Response("Not found", { status: 404 });
   }
 
