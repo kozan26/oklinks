@@ -1,5 +1,4 @@
 ---
-import { Fragment } from "astro/jsx-runtime";
 import { inlineCSS } from "../styles/inline.css.ts";
 import Toast from "../components/Toast.astro";
 ---
@@ -20,7 +19,7 @@ import Toast from "../components/Toast.astro";
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <Fragment set:html={`<style is:global>${inlineCSS}</style>`} />
+    <style set:html={inlineCSS} is:global></style>
   </head>
   <body>
     <div class="page">
@@ -168,9 +167,16 @@ import Toast from "../components/Toast.astro";
 
     <Toast />
 
-    <script>
+    <script is:inline>
       console.log('Script loading...');
-      document.addEventListener('DOMContentLoaded', function() {
+      (function() {
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', init);
+        } else {
+          init();
+        }
+        
+        function init() {
         console.log('DOM loaded');
         const form = document.getElementById('create-form');
         if (!form) {
@@ -368,7 +374,7 @@ import Toast from "../components/Toast.astro";
             );
           }
         }
-      });
+      })();
       console.log('Script setup complete');
     </script>
   </body>
