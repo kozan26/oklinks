@@ -63,7 +63,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem 2rem;
   width: 100%;
@@ -106,34 +106,24 @@ a:hover {
   transform: translateY(-1px);
 }
 
-/* Main Container */
-.main-container {
+/* Main Content */
+.main-content {
   flex: 1;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
-  position: relative;
-  z-index: 1;
-  overflow-x: hidden;
-}
-
-/* Hero Container */
-.hero-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: start;
-  min-height: calc(100vh - 200px);
-  max-height: calc(100vh - 120px);
-}
-
-/* Hero Left */
-.hero-left {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding-right: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero Section */
+.hero-section {
+  text-align: center;
+  padding: 1rem 0 2.5rem;
+  margin-bottom: 0;
 }
 
 .hero-badge {
@@ -148,11 +138,10 @@ a:hover {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-bottom: 1.5rem;
-  width: fit-content;
 }
 
 .hero-title {
-  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
   font-weight: 700;
   line-height: 1.1;
   margin-bottom: 1rem;
@@ -163,44 +152,26 @@ a:hover {
 }
 
 .hero-subtitle {
-  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
   color: var(--text-secondary);
   font-weight: 400;
-  line-height: 1.5;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-/* Hero Right */
-.hero-right {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  max-height: calc(100vh - 160px);
-  overflow-y: auto;
-  overflow-x: hidden;
+/* Content Grid */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
 }
 
-.hero-right::-webkit-scrollbar {
-  width: 6px;
-}
-
-.hero-right::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.hero-right::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
-}
-
-.hero-right::-webkit-scrollbar-thumb:hover {
-  background: var(--border-strong);
-}
-
-/* Link Form */
-.link-form {
+/* Form Card */
+.form-card {
   background: var(--surface-elevated);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 2rem;
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
@@ -208,7 +179,7 @@ a:hover {
   transition: all 0.3s ease;
 }
 
-.link-form:hover {
+.form-card:hover {
   border-color: var(--border-strong);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
@@ -248,6 +219,7 @@ a:hover {
   font-weight: 400;
   text-transform: none;
   letter-spacing: 0;
+  margin-left: 0.25rem;
 }
 
 .field-input {
@@ -346,25 +318,28 @@ a:hover {
   color: #ff6b6b;
 }
 
-/* Result Box */
-.result-box {
+/* Result Card */
+.result-card {
   background: var(--surface-elevated);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 2rem;
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
-  min-height: 200px;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
 }
 
-.result-box:hover {
+.result-card:hover {
   border-color: var(--border-strong);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .result-placeholder {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -372,7 +347,6 @@ a:hover {
   text-align: center;
   padding: 2rem;
   color: var(--text-tertiary);
-  min-height: 150px;
 }
 
 .placeholder-icon {
@@ -572,28 +546,14 @@ a:hover {
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
-  .hero-container {
+@media (max-width: 968px) {
+  .content-grid {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1.5rem;
+  }
+  
+  .result-card {
     min-height: auto;
-    max-height: none;
-  }
-  
-  .hero-left {
-    padding-right: 0;
-    text-align: center;
-    align-items: center;
-  }
-  
-  .hero-badge {
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  .hero-right {
-    max-height: none;
-    overflow-y: visible;
   }
 }
 
@@ -602,20 +562,16 @@ a:hover {
     padding: 1rem 1.5rem;
   }
   
-  .main-container {
+  .main-content {
     padding: 1rem;
   }
   
-  .hero-container {
-    gap: 1.5rem;
+  .hero-section {
+    padding: 0.5rem 0 2rem;
   }
   
-  .hero-title {
-    font-size: 2rem;
-  }
-  
-  .link-form,
-  .result-box {
+  .form-card,
+  .result-card {
     padding: 1.5rem;
   }
   
