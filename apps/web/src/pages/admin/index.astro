@@ -59,37 +59,49 @@ import { inlineCSS } from "../../styles/inline.css.ts";
 
   async function load() {
     setStatus('Loading...');
-    body.innerHTML = '';
+    if (body) body.innerHTML = '';
     try {
       const response = await fetch('/api/links', { headers: { accept: 'application/json' } });
       if (!response.ok) {
-        throw new Error('Request failed');
+        const errorText = await response.text();
+        console.error('API error:', response.status, errorText);
+        throw new Error('Request failed: ' + response.status);
       }
       const payload = await response.json();
+      console.log('API response:', payload);
       const items = Array.isArray(payload?.links) ? payload.links : [];
+      console.log('Links found:', items.length);
       if (items.length === 0) {
         setStatus('No links yet.');
+        if (body) body.innerHTML = '<tr><td colspan="5" class="px-4 py-3 text-center text-accent/60">No links created yet.</td></tr>';
         return;
       }
       for (const link of items) {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td class="px-4 py-3 font-mono text-accent">${link.alias}</td>
-          <td class="px-4 py-3 max-w-xs truncate">${link.target}</td>
+          <td class="px-4 py-3 font-mono text-accent">${escapeHtml(link.alias || '')}</td>
+          <td class="px-4 py-3 max-w-xs truncate">${escapeHtml(link.target || '')}</td>
           <td class="px-4 py-3 text-right">${link.clicks_total ?? 0}</td>
           <td class="px-4 py-3 text-right">${formatExpiry(link.expires_at)}</td>
           <td class="px-4 py-3 text-right">
-            <button data-id="${link.id}" class="delete rounded-md border border-accent/40 px-3 py-1 text-xs uppercase tracking-[0.2em] text-accent">
+            <button data-id="${escapeHtml(link.id || '')}" class="delete rounded-md border border-accent/40 px-3 py-1 text-xs uppercase tracking-[0.2em] text-accent">
               Delete
             </button>
           </td>`;
-        body.appendChild(row);
+        if (body) body.appendChild(row);
       }
-      setStatus('Loaded.');
+      setStatus('Loaded ' + items.length + ' link(s).');
     } catch (error) {
-      console.error(error);
-      setStatus('Failed to load links.');
+      console.error('Load error:', error);
+      setStatus('Failed to load links: ' + (error.message || 'Unknown error'));
+      if (body) body.innerHTML = '<tr><td colspan="5" class="px-4 py-3 text-center text-red-400">Error loading links. Check console for details.</td></tr>';
     }
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   function formatExpiry(expires) {
