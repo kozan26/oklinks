@@ -120,14 +120,24 @@ a:hover {
 
 /* Hero Section */
 .hero-section {
-  text-align: center;
   padding: 2rem 0 2rem;
   margin-bottom: 2rem;
 }
 
-.hero-content {
-  max-width: 700px;
+.hero-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+  max-width: 1200px;
   margin: 0 auto;
+}
+
+.hero-content {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .hero-badge {
@@ -163,8 +173,6 @@ a:hover {
 
 /* Form Wrapper */
 .form-wrapper {
-  max-width: 700px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -567,6 +575,17 @@ a:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+@media (max-width: 968px) {
+  .hero-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .hero-content {
+    text-align: center;
+  }
 }
 
 @media (max-width: 640px) {

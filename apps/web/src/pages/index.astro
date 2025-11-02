@@ -36,14 +36,14 @@ import Toast from "../components/Toast.astro";
 
       <main class="main-content">
         <div class="hero-section">
-          <div class="hero-content">
-            <span class="hero-badge">short. smart. yours.</span>
-            <h1 class="hero-title">Create short links instantly</h1>
-            <p class="hero-subtitle">Turn any URL into a clean, shareable link in seconds</p>
-          </div>
-        </div>
+          <div class="hero-layout">
+            <div class="hero-content">
+              <span class="hero-badge">short. smart. yours.</span>
+              <h1 class="hero-title">Create short links instantly</h1>
+              <p class="hero-subtitle">Turn any URL into a clean, shareable link in seconds</p>
+            </div>
 
-        <div class="form-wrapper">
+            <div class="form-wrapper">
           <form id="create-form" class="form-simple" method="post" action="/api/links" onsubmit="return false;">
             <div class="input-group">
               <label for="target" class="input-label">
@@ -153,6 +153,7 @@ import Toast from "../components/Toast.astro";
                   <span id="result-expires" class="info-value"></span>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>
