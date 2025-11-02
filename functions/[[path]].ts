@@ -12,52 +12,77 @@ async function resolveAlias(
   alias: string,
   env: CloudflarePagesEnv
 ): Promise<string | null> {
-  // Try KV first (if available)
-  const kvKey = `a:${alias}`;
-  if (env.CACHE) {
-    const cached = await env.CACHE.get(kvKey);
-    if (cached) {
-      return cached;
+  try {
+    // Try KV first (if available)
+    const kvKey = `a:${alias}`;
+    if (env.CACHE) {
+      try {
+        const cached = await env.CACHE.get(kvKey);
+        if (cached) {
+          return cached;
+        }
+      } catch (kvError) {
+        console.error("KV cache read error:", kvError);
+        // Continue to D1 lookup
+      }
     }
-  }
 
-  // Check D1 (required)
-  if (!env.DB) {
-    return null;
-  }
-  const result = await env.DB.prepare(
-    `SELECT target, is_active, expires_at FROM links WHERE alias = ? LIMIT 1`
-  )
-    .bind(alias)
-    .first<{
-      target: string;
-      is_active: number;
-      expires_at: number | null;
-    }>();
-
-  if (!result) {
-    return null;
-  }
-
-  // Check if active
-  if (result.is_active === 0) {
-    return null;
-  }
-
-  // Check expiry
-  if (result.expires_at) {
-    const now = Math.floor(Date.now() / 1000);
-    if (now > result.expires_at) {
+    // Check D1 (required)
+    if (!env.DB) {
       return null;
     }
-  }
 
-  // Cache in KV with 3600s TTL (if available)
-  if (env.CACHE) {
-    await env.CACHE.put(kvKey, result.target, { expirationTtl: 3600 });
-  }
+    let result;
+    try {
+      result = await env.DB.prepare(
+        `SELECT target, is_active, expires_at FROM links WHERE alias = ? LIMIT 1`
+      )
+        .bind(alias)
+        .first<{
+          target: string;
+          is_active: number;
+          expires_at: number | null;
+        }>();
+    } catch (dbError) {
+      console.error("Database query error:", dbError);
+      return null;
+    }
 
-  return result.target;
+    if (!result) {
+      return null;
+    }
+
+    // Check if active
+    if (result.is_active === 0) {
+      return null;
+    }
+
+    // Check expiry
+    if (result.expires_at) {
+      const now = Math.floor(Date.now() / 1000);
+      if (now > result.expires_at) {
+        return null;
+      }
+    }
+
+    // Validate target exists
+    if (!result.target || typeof result.target !== "string") {
+      console.error("Invalid target in database for alias:", alias);
+      return null;
+    }
+
+    // Cache in KV with 3600s TTL (if available) - don't block on cache write
+    if (env.CACHE && result.target) {
+      env.CACHE.put(kvKey, result.target, { expirationTtl: 3600 }).catch((error) => {
+        console.error("KV cache write error:", error);
+      });
+    }
+
+    return result.target;
+  } catch (error: any) {
+    console.error("Error in resolveAlias:", error?.message || error);
+    return null;
+  }
 }
 
 export async function onRequest(context: {
@@ -127,23 +152,31 @@ export async function onRequest(context: {
 
   // Handle QR code generation
   if (path.startsWith("qr/")) {
-    const alias = path.slice(3);
-    const target = await resolveAlias(alias, env);
+    try {
+      const alias = path.slice(3);
+      if (!alias || alias.length === 0) {
+        return new Response("Alias not found", { status: 404 });
+      }
 
-    if (!target) {
-      return new Response("Alias not found", { status: 404 });
+      const target = await resolveAlias(alias, env);
+      if (!target) {
+        return new Response("Alias not found", { status: 404 });
+      }
+
+      const qrSvg = generateQRSVG(target);
+      return new Response(qrSvg, {
+        headers: {
+          "Content-Type": "image/svg+xml",
+          "Cache-Control": "public, max-age=3600",
+        },
+      });
+    } catch (error: any) {
+      console.error("Error generating QR code:", error?.message || error);
+      return new Response("Error generating QR code", { status: 500 });
     }
-
-    const qrSvg = generateQRSVG(target);
-    return new Response(qrSvg, {
-      headers: {
-        "Content-Type": "image/svg+xml",
-        "Cache-Control": "public, max-age=3600",
-      },
-    });
   }
 
-  // Treat first segment as alias
+  // Treat first segment as alias (short link redirect)
   const alias = path.split("/")[0];
   if (!alias || alias.length === 0) {
     return new Response("Not found", { status: 404 });
@@ -161,7 +194,21 @@ export async function onRequest(context: {
       return new Response("Link not found", { status: 404 });
     }
 
-    // Enqueue click event (if queue is available)
+    // Validate target URL before redirecting
+    if (!target || typeof target !== "string" || target.length === 0) {
+      console.error("Invalid target URL for alias:", alias);
+      return new Response("Invalid link configuration", { status: 500 });
+    }
+
+    // Ensure target is a valid URL
+    try {
+      new URL(target);
+    } catch (urlError) {
+      console.error("Invalid URL format for alias:", alias, "target:", target);
+      return new Response("Invalid link URL", { status: 500 });
+    }
+
+    // Enqueue click event (if queue is available) - don't block redirect
     if (env.CLICK_QUEUE) {
       const clickEvent: ClickEvent = {
         alias,
@@ -170,18 +217,18 @@ export async function onRequest(context: {
         ref: request.headers.get("referer") || null,
       };
 
-      try {
-        await env.CLICK_QUEUE.send(clickEvent);
-      } catch (error) {
-        // Log but don't fail the redirect
+      // Fire and forget - don't wait for queue
+      env.CLICK_QUEUE.send(clickEvent).catch((error) => {
         console.error("Failed to enqueue click event:", error);
-      }
+      });
     }
 
     // Redirect
     return Response.redirect(target, 302);
-  } catch (error) {
-    console.error("Error resolving alias:", error);
+  } catch (error: any) {
+    console.error("Error resolving alias:", error?.message || error);
+    console.error("Alias that failed:", alias);
+    console.error("Error stack:", error?.stack);
     return new Response("Error processing request", { status: 500 });
   }
 }
