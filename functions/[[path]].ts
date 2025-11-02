@@ -81,35 +81,28 @@ export async function onRequest(context: {
     return new Response("Not found", { status: 404 });
   }
 
-  // Handle empty path (root) - fetch and return the static index.html
+  // Handle root and admin routes using ASSETS binding
   if (!path || path.length === 0 || path === "/") {
-    // For root, fetch the static index.html file
-    try {
-      const indexResponse = await fetch(new URL("/index.html", url.origin));
-      if (indexResponse.ok) {
-        return indexResponse;
-      }
-    } catch (e) {
-      // Fall through to 404
+    // Serve index.html for root
+    if (env.ASSETS) {
+      return env.ASSETS.fetch(new Request(new URL("/index.html", url.origin)));
     }
     return new Response("Not found", { status: 404 });
   }
 
-  // Handle admin routes - fetch and return the static admin page
   if (path === "admin" || path.startsWith("admin/")) {
-    try {
+    // Serve admin page
+    if (env.ASSETS) {
       const adminPath = path === "admin" ? "/admin/index.html" : `/${path}/index.html`;
-      const adminResponse = await fetch(new URL(adminPath, url.origin));
+      const adminResponse = await env.ASSETS.fetch(new Request(new URL(adminPath, url.origin)));
       if (adminResponse.ok) {
         return adminResponse;
       }
-      // Try without trailing slash
-      const adminResponse2 = await fetch(new URL(`/${path}.html`, url.origin));
+      // Try without index.html
+      const adminResponse2 = await env.ASSETS.fetch(new Request(new URL(`/${path}.html`, url.origin)));
       if (adminResponse2.ok) {
         return adminResponse2;
       }
-    } catch (e) {
-      // Fall through to 404
     }
     return new Response("Not found", { status: 404 });
   }

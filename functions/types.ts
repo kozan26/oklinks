@@ -4,5 +4,6 @@ export interface CloudflarePagesEnv {
   CLICK_QUEUE?: Queue;
   TURNSTILE_SECRET?: string;
   ACCESS_AUD?: string;
+  ASSETS?: Fetcher; // For serving static files in Pages Functions
 }
 
