@@ -659,11 +659,21 @@ import { inlineCSS } from "../../styles/inline.css.ts";
               
               console.log('Delete response status:', response.status);
               
-              const result = await response.json().catch(async () => {
-                const text = await response.text();
-                console.error('Failed to parse response:', text);
-                return { error: 'invalid_response', message: text };
-              });
+              let result;
+              const contentType = response.headers.get('content-type');
+              
+              try {
+                if (contentType && contentType.includes('application/json')) {
+                  result = await response.json();
+                } else {
+                  const text = await response.text();
+                  console.error('Non-JSON response:', text);
+                  result = { error: 'invalid_response', message: text };
+                }
+              } catch (parseError) {
+                console.error('Failed to parse response:', parseError);
+                result = { error: 'parse_error', message: 'Failed to parse server response' };
+              }
               
               console.log('Delete response:', result);
               
@@ -673,7 +683,7 @@ import { inlineCSS } from "../../styles/inline.css.ts";
                   showLogin();
                   return;
                 }
-                throw new Error(result.error || result.message || 'Delete failed');
+                throw new Error(result.error || result.message || `Delete failed (${response.status})`);
               }
               
               if (result.deleted === true) {
@@ -681,7 +691,7 @@ import { inlineCSS } from "../../styles/inline.css.ts";
                 setTimeout(() => setStatus(''), 3000);
                 await loadLinks();
               } else {
-                throw new Error(result.error || 'Delete was not successful');
+                throw new Error(result.error || result.message || 'Delete was not successful');
               }
             } catch (error) {
               console.error('Delete error:', error);
