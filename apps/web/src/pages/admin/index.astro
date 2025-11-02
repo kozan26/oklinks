@@ -21,23 +21,49 @@ import { inlineCSS } from "../../styles/inline.css.ts";
     <style set:html={inlineCSS} is:global></style>
     <style is:global>
       :root {
-        --admin-background: hsl(222.2 84% 4.9%);
-        --admin-card: hsl(222.2 47.4% 11.2%);
-        --admin-card-border: hsl(217.2 32.6% 17.5%);
+        --admin-background: hsl(230 58% 6%);
+        --admin-background-alt: hsl(236 43% 9%);
+        --admin-card: hsl(235 46% 13%);
+        --admin-card-border: hsl(231 38% 22%);
         --admin-primary: hsl(210 40% 98%);
-        --admin-secondary: hsl(217.2 32.6% 17.5%);
-        --admin-accent: hsl(217.2 32.6% 17.5%);
+        --admin-muted-foreground: hsl(215 20% 70%);
+        --admin-secondary: hsl(235 45% 18%);
+        --admin-accent: hsl(202 100% 53%);
+        --admin-accent-soft: hsl(202 70% 25%);
         --admin-destructive: hsl(0 84.2% 60.2%);
-        --admin-muted: hsl(217.2 32.6% 17.5%);
-        --admin-border: hsl(217.2 32.6% 17.5%);
-        --admin-input: hsl(217.2 32.6% 17.5%);
-        --admin-ring: hsl(212.7 26.8% 83.9%);
+        --admin-muted: hsl(235 46% 16%);
+        --admin-border: hsl(231 38% 22%);
+        --admin-input: hsl(235 40% 20%);
+        --admin-ring: hsl(202 100% 60% / 0.65);
+        --admin-success: hsl(146 51% 46%);
+        --admin-warning: hsl(45 97% 63%);
       }
 
       .admin-page {
         min-height: 100vh;
-        background: var(--admin-background);
+        background: radial-gradient(120% 160% at 10% 10%, hsl(253 60% 18% / 0.6), transparent),
+          radial-gradient(120% 160% at 90% 10%, hsl(202 84% 35% / 0.35), transparent),
+          linear-gradient(160deg, var(--admin-background) 0%, hsl(234 60% 7%) 50%, var(--admin-background-alt) 100%);
         color: var(--admin-primary);
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      .admin-page::before,
+      .admin-page::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .admin-page::before {
+        background: radial-gradient(45% 60% at 20% 20%, hsl(202 98% 60% / 0.15), transparent 70%);
+      }
+
+      .admin-page::after {
+        background: radial-gradient(35% 55% at 85% 15%, hsl(280 90% 60% / 0.12), transparent 60%);
       }
 
       /* Login Screen */
@@ -47,36 +73,93 @@ import { inlineCSS } from "../../styles/inline.css.ts";
         align-items: center;
         justify-content: center;
         padding: 2rem;
+        position: relative;
+        z-index: 1;
       }
 
       .login-card {
+        position: relative;
         width: 100%;
-        max-width: 400px;
-        background: var(--admin-card);
-        border: 1px solid var(--admin-card-border);
-        border-radius: 0.5rem;
-        padding: 2rem;
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        max-width: 420px;
+        background: color-mix(in srgb, var(--admin-card) 92%, transparent);
+        border: 1px solid color-mix(in srgb, var(--admin-ring) 18%, transparent);
+        border-radius: 1rem;
+        padding: 2.5rem;
+        box-shadow: 0 18px 45px hsl(230 60% 6% / 0.45);
+        backdrop-filter: blur(18px);
+        overflow: hidden;
+      }
+
+      .login-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(120% 120% at 15% 0%, hsl(202 92% 53% / 0.15), transparent 55%);
+        opacity: 0.8;
+        pointer-events: none;
+      }
+
+      .login-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.75rem;
+      }
+
+      .login-logo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.8rem;
+        background: linear-gradient(135deg, var(--admin-accent) 0%, hsl(212 100% 65%) 100%);
+        color: hsl(210 40% 98%);
+        font-family: var(--font-mono);
+        font-size: 1rem;
+        font-weight: 600;
+        box-shadow: 0 10px 20px hsl(202 98% 50% / 0.35);
+      }
+
+      .login-badge {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--admin-muted-foreground);
+        display: inline-block;
+      }
+
+      .login-brand-name {
+        font-weight: 600;
+        font-size: 1rem;
+        color: hsl(210 25% 90%);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        margin-top: 0.25rem;
       }
 
       .login-header {
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
       }
 
       .login-title {
-        font-size: 1.875rem;
+        font-size: clamp(1.9rem, 2vw + 1rem, 2.3rem);
         font-weight: 700;
         color: var(--admin-primary);
         margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
       }
 
       .login-description {
-        color: hsl(215 20.2% 65.1%);
-        font-size: 0.875rem;
+        color: var(--admin-muted-foreground);
+        font-size: 0.95rem;
+        line-height: 1.5;
       }
 
       .login-form-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.75rem;
       }
 
       .login-label {
@@ -90,40 +173,55 @@ import { inlineCSS } from "../../styles/inline.css.ts";
       .login-input {
         width: 100%;
         padding: 0.5rem 0.75rem;
-        background: var(--admin-background);
-        border: 1px solid var(--admin-border);
-        border-radius: 0.375rem;
+        background: color-mix(in srgb, var(--admin-background) 70%, transparent);
+        border: 1px solid color-mix(in srgb, var(--admin-border) 60%, transparent);
+        border-radius: 0.5rem;
         color: var(--admin-primary);
-        font-size: 0.875rem;
-        transition: all 0.2s;
+        font-size: 0.95rem;
+        transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
       }
 
       .login-input:focus {
         outline: none;
         border-color: var(--admin-ring);
-        box-shadow: 0 0 0 2px hsl(212.7 26.8% 83.9% / 0.2);
+        box-shadow: 0 0 0 4px hsl(202 100% 60% / 0.12);
+        transform: translateY(-1px);
+      }
+
+      .login-input::placeholder {
+        color: hsl(215 20% 55%);
       }
 
       .login-button {
         width: 100%;
-        padding: 0.625rem 1rem;
-        background: var(--admin-primary);
+        padding: 0.85rem 1rem;
+        background: linear-gradient(135deg, var(--admin-accent) 0%, hsl(214 100% 74%) 100%);
         color: var(--admin-background);
         border: none;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
+        border-radius: 0.65rem;
+        font-size: 0.95rem;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+        box-shadow: 0 14px 30px hsl(202 98% 50% / 0.35);
       }
 
       .login-button:hover:not(:disabled) {
-        background: hsl(210 40% 96%);
+        transform: translateY(-1px);
+        filter: brightness(1.05);
       }
 
       .login-button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      .login-hint {
+        margin-top: 1rem;
+        font-size: 0.8rem;
+        color: var(--admin-muted-foreground);
+        text-align: center;
       }
 
       .login-error {
@@ -139,55 +237,194 @@ import { inlineCSS } from "../../styles/inline.css.ts";
       /* Admin Content */
       .admin-wrapper {
         min-height: 100vh;
-        padding: 2rem;
+        padding: 3rem 2rem 4rem;
+        position: relative;
+        z-index: 1;
       }
 
       .admin-container {
         max-width: 1200px;
         margin: 0 auto;
+        position: relative;
       }
 
       .admin-header {
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
       }
 
-      .admin-header-top {
+      .admin-hero {
+        background: color-mix(in srgb, var(--admin-card) 85%, transparent);
+        border: 1px solid color-mix(in srgb, var(--admin-ring) 20%, transparent);
+        border-radius: 1rem;
+        padding: clamp(1.75rem, 2vw + 1rem, 2.25rem);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 24px 60px hsl(230 70% 5% / 0.35);
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 0.5rem;
+        gap: 1.5rem;
+      }
+
+      .admin-hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(75% 80% at 95% 15%, hsl(202 98% 60% / 0.22), transparent 55%);
+        opacity: 0.9;
+        pointer-events: none;
+      }
+
+      .admin-hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 580px;
+      }
+
+      .admin-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.75rem;
+        background: color-mix(in srgb, var(--admin-accent) 18%, transparent);
+        border: 1px solid color-mix(in srgb, var(--admin-accent) 30%, transparent);
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--admin-accent);
+        margin-bottom: 1.25rem;
       }
 
       .admin-title {
-        font-size: 2rem;
+        font-size: clamp(2.2rem, 3vw + 1rem, 2.8rem);
         font-weight: 700;
         color: var(--admin-primary);
+        letter-spacing: -0.03em;
+        margin: 0 0 0.75rem;
       }
 
       .admin-description {
-        color: hsl(215 20.2% 65.1%);
-        font-size: 0.875rem;
+        color: var(--admin-muted-foreground);
+        font-size: 0.95rem;
+        line-height: 1.7;
+        max-width: 520px;
+      }
+
+      .admin-hero-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .admin-hero-actions p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--admin-muted-foreground);
+      }
+
+      .admin-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .metric-card {
+        background: color-mix(in srgb, var(--admin-card) 92%, transparent);
+        border: 1px solid color-mix(in srgb, var(--admin-ring) 15%, transparent);
+        border-radius: 0.9rem;
+        padding: 1.4rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 16px 35px hsl(230 70% 6% / 0.32);
+      }
+
+      .metric-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(110% 110% at 20% 10%, hsl(202 96% 58% / 0.18), transparent 60%);
+        pointer-events: none;
+      }
+
+      .metric-label {
+        color: var(--admin-muted-foreground);
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .metric-value {
+        margin-top: 0.75rem;
+        font-size: 1.85rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+
+      .metric-footnote {
+        margin-top: 0.75rem;
+        font-size: 0.78rem;
+        color: hsl(213 20% 68%);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .metric-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.6rem;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--admin-accent) 18%, transparent);
+        color: var(--admin-accent);
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
       }
 
       .admin-card {
-        background: var(--admin-card);
-        border: 1px solid var(--admin-card-border);
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        background: color-mix(in srgb, var(--admin-card) 90%, transparent);
+        border: 1px solid color-mix(in srgb, var(--admin-ring) 18%, transparent);
+        border-radius: 1rem;
+        padding: 1.75rem;
+        box-shadow: 0 20px 45px hsl(230 70% 5% / 0.28);
       }
 
       .admin-card-header {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
+        gap: 1rem;
         justify-content: space-between;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.75rem;
       }
 
       .admin-card-title {
-        font-size: 1.125rem;
+        font-size: 1.25rem;
         font-weight: 600;
         color: var(--admin-primary);
+      }
+
+      .admin-card-subtitle {
+        margin-top: 0.35rem;
+        font-size: 0.85rem;
+        color: var(--admin-muted-foreground);
+      }
+
+      #last-refresh {
+        color: var(--admin-accent);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-left: 0.25rem;
       }
 
       .button {
@@ -195,74 +432,109 @@ import { inlineCSS } from "../../styles/inline.css.ts";
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
+        padding: 0.55rem 1.1rem;
+        border-radius: 0.65rem;
+        font-size: 0.9rem;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
         border: none;
         font-family: inherit;
       }
 
       .button-secondary {
-        background: var(--admin-secondary);
+        background: color-mix(in srgb, var(--admin-secondary) 88%, transparent);
         color: var(--admin-primary);
-        border: 1px solid var(--admin-border);
+        border: 1px solid color-mix(in srgb, var(--admin-border) 80%, transparent);
+        box-shadow: 0 10px 22px hsl(230 60% 5% / 0.25);
       }
-
+      
       .button-secondary:hover {
-        background: hsl(217.2 32.6% 20%);
+        transform: translateY(-1px);
+        background: color-mix(in srgb, var(--admin-secondary) 100%, var(--admin-accent) 6%);
       }
 
       .button-destructive {
-        background: hsl(0 84.2% 60.2% / 0.1);
+        background: color-mix(in srgb, var(--admin-destructive) 12%, transparent);
         color: var(--admin-destructive);
-        border: 1px solid hsl(0 84.2% 60.2% / 0.2);
+        border: 1px solid color-mix(in srgb, var(--admin-destructive) 22%, transparent);
+        box-shadow: 0 12px 24px hsl(0 84% 45% / 0.2);
       }
 
       .button-destructive:hover {
-        background: hsl(0 84.2% 60.2% / 0.2);
+        transform: translateY(-1px);
+        background: color-mix(in srgb, var(--admin-destructive) 18%, transparent);
       }
 
       .button:disabled {
-        opacity: 0.5;
+        opacity: 0.45;
         cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .admin-status {
+        margin-bottom: 1.25rem;
+        padding: 0.85rem 1rem;
+        border-radius: 0.75rem;
+        background: color-mix(in srgb, var(--admin-muted) 90%, transparent);
+        border: 1px solid color-mix(in srgb, var(--admin-border) 70%, transparent);
+        color: var(--admin-muted-foreground);
+        font-size: 0.85rem;
+        text-align: center;
+        backdrop-filter: blur(8px);
+      }
+
+      .admin-status.error-state {
+        background: color-mix(in srgb, var(--admin-destructive) 12%, transparent);
+        border-color: color-mix(in srgb, var(--admin-destructive) 24%, transparent);
+        color: var(--admin-destructive);
       }
 
       .admin-table-wrapper {
         overflow-x: auto;
-        border-radius: 0.375rem;
+        border-radius: 0.75rem;
+        border: 1px solid color-mix(in srgb, var(--admin-border) 55%, transparent);
+        background: color-mix(in srgb, var(--admin-background-alt) 92%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--admin-card-border) 25%, transparent);
       }
 
       .admin-table {
         width: 100%;
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.9rem;
       }
 
       .admin-table thead {
-        background: var(--admin-muted);
+        position: sticky;
+        top: 0;
+        background: color-mix(in srgb, var(--admin-muted) 95%, transparent);
+        z-index: 1;
       }
 
       .admin-table th {
-        padding: 0.75rem 1rem;
+        padding: 0.9rem 1.1rem;
         text-align: left;
-        font-size: 0.75rem;
-        font-weight: 500;
-        color: hsl(215 20.2% 65.1%);
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--admin-muted-foreground);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.08em;
       }
 
       .admin-table th:last-child {
         text-align: right;
       }
 
+      .admin-table tbody tr {
+        transition: background 0.2s, transform 0.2s;
+      }
+
       .admin-table td {
-        padding: 0.75rem 1rem;
-        border-top: 1px solid var(--admin-border);
+        padding: 0.85rem 1.1rem;
+        border-top: 1px solid color-mix(in srgb, var(--admin-border) 55%, transparent);
         color: var(--admin-primary);
-        font-size: 0.875rem;
       }
 
       .admin-table td:last-child {
@@ -270,40 +542,78 @@ import { inlineCSS } from "../../styles/inline.css.ts";
       }
 
       .admin-table tbody tr:hover {
-        background: hsl(217.2 32.6% 10%);
+        background: color-mix(in srgb, var(--admin-accent-soft) 45%, transparent);
+        transform: translateY(-1px);
       }
 
       .badge {
         display: inline-flex;
         align-items: center;
-        padding: 0.25rem 0.75rem;
+        gap: 0.35rem;
+        padding: 0.3rem 0.75rem;
         border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        background: var(--admin-secondary);
-        color: var(--admin-primary);
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: color-mix(in srgb, var(--admin-accent) 16%, transparent);
+        color: var(--admin-accent);
+      }
+
+      .badge::before {
+        content: "●";
+        font-size: 0.5rem;
       }
 
       .badge-mono {
         font-family: var(--font-mono);
-        background: hsl(212.7 26.8% 16%);
-        color: hsl(210 40% 98%);
+        background: color-mix(in srgb, var(--admin-secondary) 88%, transparent);
+        color: var(--admin-primary);
+        letter-spacing: 0.04em;
       }
 
-      .admin-status {
-        margin-bottom: 1rem;
-        padding: 0.75rem;
-        border-radius: 0.375rem;
-        background: var(--admin-muted);
-        color: hsl(215 20.2% 65.1%);
-        font-size: 0.875rem;
-        text-align: center;
+      .badge-mono::before {
+        display: none;
+      }
+
+      .table-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .table-pill.never {
+        background: color-mix(in srgb, var(--admin-secondary) 65%, transparent);
+        color: var(--admin-muted-foreground);
+        border: 1px solid color-mix(in srgb, var(--admin-border) 60%, transparent);
+      }
+
+      .table-pill.expired {
+        background: color-mix(in srgb, var(--admin-destructive) 22%, transparent);
+        color: var(--admin-destructive);
+        border: 1px solid color-mix(in srgb, var(--admin-destructive) 32%, transparent);
+      }
+
+      .table-pill.warning {
+        background: color-mix(in srgb, var(--admin-warning) 28%, transparent);
+        color: var(--admin-warning);
+        border: 1px solid color-mix(in srgb, var(--admin-warning) 38%, transparent);
+      }
+
+      .table-pill.active {
+        background: color-mix(in srgb, var(--admin-success) 28%, transparent);
+        color: var(--admin-success);
+        border: 1px solid color-mix(in srgb, var(--admin-success) 38%, transparent);
       }
 
       .empty-state {
         text-align: center;
         padding: 3rem 1rem;
-        color: hsl(215 20.2% 65.1%);
+        color: var(--admin-muted-foreground);
       }
 
       .error-state {
@@ -313,28 +623,60 @@ import { inlineCSS } from "../../styles/inline.css.ts";
       }
 
       .link-target {
-        max-width: 300px;
+        max-width: 320px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        color: var(--admin-primary);
+      }
+
+      .link-target:hover {
+        color: var(--admin-accent);
+      }
+
+      @media (max-width: 1024px) {
+        .admin-wrapper {
+          padding: 2.5rem 1.5rem 3.5rem;
+        }
+
+        .admin-hero {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .admin-hero-actions {
+          width: 100%;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
       }
 
       @media (max-width: 768px) {
         .admin-wrapper {
-          padding: 1rem;
+          padding: 2.25rem 1.25rem 3rem;
+        }
+
+        .admin-hero {
+          padding: 1.6rem;
+        }
+
+        .admin-metrics {
+          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+          gap: 1rem;
         }
 
         .admin-card {
-          padding: 1rem;
+          padding: 1.25rem;
         }
 
         .admin-table {
-          font-size: 0.75rem;
+          font-size: 0.82rem;
         }
 
         .admin-table th,
         .admin-table td {
-          padding: 0.5rem;
+          padding: 0.65rem 0.8rem;
         }
       }
     </style>
@@ -343,6 +685,13 @@ import { inlineCSS } from "../../styles/inline.css.ts";
     <div id="login-screen" style="display: none;">
       <div class="login-wrapper">
         <div class="login-card">
+          <div class="login-brand">
+            <span class="login-logo">ok</span>
+            <div>
+              <div class="login-badge">Admin Console</div>
+              <div class="login-brand-name">oklinks</div>
+            </div>
+          </div>
           <div class="login-header">
             <h1 class="login-title">Welcome back</h1>
             <p class="login-description">Enter your password to access the admin panel</p>
@@ -362,6 +711,7 @@ import { inlineCSS } from "../../styles/inline.css.ts";
             <button type="submit" class="login-button" id="login-button">
               Sign in
             </button>
+            <p class="login-hint">Secured with Cloudflare Access · Session resets after closing this tab</p>
             <div id="login-error" class="login-error" style="display: none;"></div>
           </form>
         </div>
@@ -371,21 +721,35 @@ import { inlineCSS } from "../../styles/inline.css.ts";
     <div id="admin-content" class="admin-wrapper" style="display: none;">
       <div class="admin-container">
         <header class="admin-header">
-          <div class="admin-header-top">
-            <div>
-              <h1 class="admin-title">Links</h1>
-              <p class="admin-description">Manage and monitor your short links</p>
+          <div class="admin-hero">
+            <div class="admin-hero-content">
+              <span class="admin-eyebrow">
+                <span class="material-icons" style="font-size: 1rem;">bolt</span>
+                Link Ops Center
+              </span>
+              <h1 class="admin-title">Link dashboard</h1>
+              <p class="admin-description">
+                Monitor performance, clean up stale redirects, and keep your short links feeling sharp.
+              </p>
+            </div>
+            <div class="admin-hero-actions">
+              <button id="refresh" type="button" class="button button-secondary">
+                <span class="material-icons" style="font-size: 1rem;">refresh</span>
+                Refresh data
+              </button>
+              <p>Last sync <span id="last-refresh">never</span></p>
             </div>
           </div>
         </header>
 
+        <div id="admin-metrics" class="admin-metrics"></div>
+
         <div class="admin-card">
           <div class="admin-card-header">
-            <h2 class="admin-card-title">Recent links</h2>
-            <button id="refresh" type="button" class="button button-secondary">
-              <span class="material-icons" style="font-size: 1rem;">refresh</span>
-              Refresh
-            </button>
+            <div>
+              <h2 class="admin-card-title">Recent links</h2>
+              <p class="admin-card-subtitle">Showing the latest 50 entries ordered by creation date</p>
+            </div>
           </div>
 
           <div id="admin-status" class="admin-status" style="display: none;"></div>
@@ -534,6 +898,17 @@ import { inlineCSS } from "../../styles/inline.css.ts";
             }
           }
 
+          const metrics = document.getElementById('admin-metrics');
+          const lastRefreshDisplay = document.getElementById('last-refresh');
+          const numberFormatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 });
+          const averageFormatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
+          const timeFormatter = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' });
+          const formatInteger = (value) =>
+            numberFormatter.format(Math.max(0, Math.round(Number(value) || 0)));
+          const formatAverage = (value) =>
+            averageFormatter.format(Math.max(0, Number(value) || 0));
+          const refreshDefaultHTML = refresh ? refresh.innerHTML : '';
+
           async function loadLinks() {
             const token = sessionStorage.getItem('admin_token');
             if (!token) {
@@ -543,6 +918,25 @@ import { inlineCSS } from "../../styles/inline.css.ts";
 
             setStatus('Loading links...');
             if (body) body.innerHTML = '';
+            if (metrics) {
+              metrics.innerHTML = `
+                <article class="metric-card">
+                  <div class="metric-label">Dashboard</div>
+                  <div class="metric-value">...</div>
+                  <div class="metric-footnote">Fetching latest stats</div>
+                </article>`;
+            }
+            if (refresh) {
+              if (!refresh.dataset.originalContent) {
+                refresh.dataset.originalContent = refresh.innerHTML;
+              }
+              refresh.disabled = true;
+              refresh.innerHTML = '<span class="material-icons" style="font-size: 1rem;">hourglass_top</span> Updating...';
+            }
+            if (lastRefreshDisplay) {
+              lastRefreshDisplay.textContent = 'updating...';
+            }
+
             try {
               const response = await fetch('/api/links', {
                 headers: {
@@ -565,37 +959,147 @@ import { inlineCSS } from "../../styles/inline.css.ts";
               console.log('API response:', payload);
               const items = Array.isArray(payload?.links) ? payload.links : [];
               console.log('Links found:', items.length);
+
+              const nowSeconds = Math.floor(Date.now() / 1000);
+              const totalLinks = items.length;
+              const protectedCount = items.filter((link) => Boolean(link?.password_hash)).length;
+              const liveCount = items.filter((link) => {
+                const isActive = Number(link?.is_active) === 1;
+                const expires = Number(link?.expires_at);
+                const hasExpired = Number.isFinite(expires) && expires > 0 && expires <= nowSeconds;
+                return isActive && !hasExpired;
+              }).length;
+              const expiredCount = items.filter((link) => {
+                const expires = Number(link?.expires_at);
+                return Number.isFinite(expires) && expires > 0 && expires <= nowSeconds;
+              }).length;
+              const inactiveCount = items.filter((link) => Number(link?.is_active) === 0).length;
+              const soonExpiringCount = items.filter((link) => {
+                const expires = Number(link?.expires_at);
+                return (
+                  Number.isFinite(expires) &&
+                  expires > nowSeconds &&
+                  expires <= nowSeconds + 7 * 24 * 60 * 60
+                );
+              }).length;
+              const totalClicks = items.reduce(
+                (sum, link) => sum + (Number(link?.clicks_total) || 0),
+                0,
+              );
+              const averageClicks = totalLinks > 0 ? totalClicks / totalLinks : 0;
+              const newestLink = items[0];
+
+              if (metrics) {
+                const latestSummary = escapeHtml(
+                  newestLink && (newestLink.alias || newestLink.id)
+                    ? `Latest: ${newestLink.alias || newestLink.id}`
+                    : 'Latest: n/a',
+                );
+                const metricsCards = [
+                  {
+                    label: 'Total Links',
+                    value: formatInteger(totalLinks),
+                    footnote: totalLinks
+                      ? `<span class="metric-chip">${formatInteger(protectedCount)} protected</span><span>${formatInteger(totalLinks - protectedCount)} public</span>`
+                      : 'Create your first short link to populate this dashboard.',
+                  },
+                  {
+                    label: 'Live Links',
+                    value: formatInteger(liveCount),
+                    footnote: liveCount
+                      ? `<span class="metric-chip">${formatInteger(soonExpiringCount)} expiring soon</span><span>${formatInteger(totalLinks - liveCount)} paused</span>`
+                      : 'No links are currently live.',
+                  },
+                  {
+                    label: 'Expired / Inactive',
+                    value: formatInteger(expiredCount + inactiveCount),
+                    footnote: expiredCount + inactiveCount
+                      ? `<span class="metric-chip">${formatInteger(expiredCount)} expired</span><span>${formatInteger(inactiveCount)} disabled</span>`
+                      : 'Everything looks good - nothing expired.',
+                  },
+                  {
+                    label: 'Lifetime Clicks',
+                    value: formatInteger(totalClicks),
+                    footnote: totalClicks
+                      ? `<span class="metric-chip">${formatAverage(averageClicks)} avg</span><span>per link</span><span>${latestSummary}</span>`
+                      : 'No traffic has been recorded yet.',
+                  },
+                ];
+
+                metrics.innerHTML = metricsCards
+                  .map(
+                    (card) => `
+                      <article class="metric-card">
+                        <div class="metric-label">${card.label}</div>
+                        <div class="metric-value">${card.value}</div>
+                        <div class="metric-footnote">${card.footnote}</div>
+                      </article>`,
+                  )
+                  .join('');
+              }
               
               if (items.length === 0) {
                 setStatus('No links found.');
                 if (body) {
                   body.innerHTML = '<tr><td colspan="5" class="empty-state">No links created yet.</td></tr>';
                 }
+                if (lastRefreshDisplay) {
+                  lastRefreshDisplay.textContent = timeFormatter.format(new Date());
+                }
                 return;
               }
-              
+
+              const fragment = document.createDocumentFragment();
               for (const link of items) {
                 const row = document.createElement('tr');
+                const safeAlias = escapeHtml(link.alias || '');
+                const safeId = escapeHtml(link.id || '');
+                const safeTarget = escapeHtml(link.target || '');
+                const clicksDisplay = formatInteger(link.clicks_total ?? 0);
                 row.innerHTML = `
-                  <td><span class="badge badge-mono">${escapeHtml(link.alias || '')}</span></td>
-                  <td class="link-target" title="${escapeHtml(link.target || '')}">${escapeHtml(link.target || '')}</td>
-                  <td style="text-align: right;">${link.clicks_total ?? 0}</td>
+                  <td><span class="badge badge-mono">${safeAlias}</span></td>
+                  <td class="link-target" title="${safeTarget}">${safeTarget}</td>
+                  <td style="text-align: right;">${clicksDisplay}</td>
                   <td style="text-align: right;">${formatExpiry(link.expires_at)}</td>
                   <td style="text-align: right;">
-                    <button data-id="${escapeHtml(link.id || '')}" class="button button-destructive delete-btn">
+                    <button data-id="${safeId}" class="button button-destructive delete-btn">
                       <span class="material-icons" style="font-size: 1rem;">delete</span>
                       Delete
                     </button>
                   </td>`;
-                if (body) body.appendChild(row);
+                fragment.appendChild(row);
+              }
+
+              if (body) {
+                body.appendChild(fragment);
               }
               
               setStatus(`Loaded ${items.length} link${items.length !== 1 ? 's' : ''}.`);
+              if (lastRefreshDisplay) {
+                lastRefreshDisplay.textContent = timeFormatter.format(new Date());
+              }
             } catch (error) {
               console.error('Load error:', error);
               setStatus('Failed to load links: ' + (error.message || 'Unknown error'), true);
               if (body) {
                 body.innerHTML = '<tr><td colspan="5" class="error-state">Error loading links. Check console for details.</td></tr>';
+              }
+              if (metrics) {
+                const message = escapeHtml(error?.message || 'Failed to load metrics');
+                metrics.innerHTML = `
+                  <article class="metric-card">
+                    <div class="metric-label">Error</div>
+                    <div class="metric-value">!</div>
+                    <div class="metric-footnote">${message}</div>
+                  </article>`;
+              }
+              if (lastRefreshDisplay) {
+                lastRefreshDisplay.textContent = 'failed';
+              }
+            } finally {
+              if (refresh) {
+                refresh.disabled = false;
+                refresh.innerHTML = refresh.dataset.originalContent || refreshDefaultHTML || 'Refresh';
               }
             }
           }
@@ -609,18 +1113,25 @@ import { inlineCSS } from "../../styles/inline.css.ts";
 
           function formatExpiry(expires) {
             if (!expires) {
-              return '<span style="color: hsl(215 20.2% 65.1%);">Never</span>';
+              return '<span class="table-pill never">Never</span>';
             }
             const value = Number(expires);
             if (!Number.isFinite(value) || value <= 0) {
-              return '<span style="color: hsl(215 20.2% 65.1%);">Never</span>';
+              return '<span class="table-pill never">Never</span>';
             }
             const date = new Date(value * 1000);
             const now = Date.now();
+            const formattedDate = escapeHtml(date.toLocaleString());
             if (date.getTime() < now) {
-              return '<span style="color: var(--admin-destructive);">Expired</span>';
+              return `${formattedDate} <span class="table-pill expired">Expired</span>`;
             }
-            return date.toLocaleString();
+            const diffMs = date.getTime() - now;
+            const diffDays = diffMs / (1000 * 60 * 60 * 24);
+            if (diffDays <= 7) {
+              const daysRemaining = Math.max(1, Math.ceil(diffDays));
+              return `${formattedDate} <span class="table-pill warning">In ${daysRemaining}d</span>`;
+            }
+            return `${formattedDate} <span class="table-pill active">Active</span>`;
           }
 
           async function handleDelete(event) {
