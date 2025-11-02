@@ -634,7 +634,11 @@ import { inlineCSS } from "../../styles/inline.css.ts";
             if (!target) return;
             
             const id = target.getAttribute('data-id');
-            if (!id) return;
+            if (!id) {
+              console.error('Delete failed: no ID found');
+              setStatus('Error: Link ID not found', true);
+              return;
+            }
             
             if (!confirm('Are you sure you want to delete this link? This action cannot be undone.')) {
               return;
@@ -645,9 +649,23 @@ import { inlineCSS } from "../../styles/inline.css.ts";
             target.innerHTML = '<span class="material-icons" style="font-size: 1rem;">hourglass_empty</span> Deleting...';
             
             try {
-              const response = await fetch('/api/links/' + id, {
+              console.log('Deleting link:', id);
+              const response = await fetch('/api/links/' + encodeURIComponent(id), {
                 method: 'DELETE',
+                headers: {
+                  'accept': 'application/json',
+                },
               });
+              
+              console.log('Delete response status:', response.status);
+              
+              const result = await response.json().catch(async () => {
+                const text = await response.text();
+                console.error('Failed to parse response:', text);
+                return { error: 'invalid_response', message: text };
+              });
+              
+              console.log('Delete response:', result);
               
               if (!response.ok) {
                 if (response.status === 401) {
@@ -655,16 +673,15 @@ import { inlineCSS } from "../../styles/inline.css.ts";
                   showLogin();
                   return;
                 }
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || 'Delete failed');
+                throw new Error(result.error || result.message || 'Delete failed');
               }
               
-              const result = await response.json();
-              if (result.deleted) {
+              if (result.deleted === true) {
                 setStatus('Link deleted successfully.');
+                setTimeout(() => setStatus(''), 3000);
                 await loadLinks();
               } else {
-                throw new Error('Delete was not successful');
+                throw new Error(result.error || 'Delete was not successful');
               }
             } catch (error) {
               console.error('Delete error:', error);
