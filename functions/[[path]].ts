@@ -81,42 +81,49 @@ export async function onRequest(context: {
     return new Response("Not found", { status: 404 });
   }
 
-  // Handle root and admin routes using ASSETS binding
+  // Handle root and admin routes - return 404 to let Pages serve static files
+  // Note: In Pages, static files are checked AFTER Functions, so returning 404
+  // won't allow fallback. We need to actually fetch and return the static file.
+  // ASSETS binding should be available, but we'll handle errors gracefully.
   if (!path || path.length === 0 || path === "/") {
-    // Serve index.html for root
-    if (env.ASSETS) {
-      try {
-        const indexRequest = new Request(new URL("/index.html", url.origin));
+    // For root, try to serve index.html via ASSETS, otherwise return 404
+    try {
+      if (env.ASSETS) {
+        const indexUrl = new URL("/index.html", url.origin);
+        const indexRequest = new Request(indexUrl.toString(), { method: "GET" });
         const indexResponse = await env.ASSETS.fetch(indexRequest);
-        if (indexResponse.ok) {
+        if (indexResponse && indexResponse.ok) {
           return indexResponse;
         }
-      } catch (e) {
-        console.error("Error fetching index.html from ASSETS:", e);
       }
+    } catch (e: any) {
+      console.error("Error serving index.html:", e?.message || e);
     }
+    // If ASSETS not available or failed, return 404
     return new Response("Not found", { status: 404 });
   }
 
   if (path === "admin" || path.startsWith("admin/")) {
-    // Serve admin page
-    if (env.ASSETS) {
-      try {
+    // For admin, try to serve the admin page
+    try {
+      if (env.ASSETS) {
         const adminPath = path === "admin" ? "/admin/index.html" : `/${path}/index.html`;
-        const adminRequest = new Request(new URL(adminPath, url.origin));
+        const adminUrl = new URL(adminPath, url.origin);
+        const adminRequest = new Request(adminUrl.toString(), { method: "GET" });
         const adminResponse = await env.ASSETS.fetch(adminRequest);
-        if (adminResponse.ok) {
+        if (adminResponse && adminResponse.ok) {
           return adminResponse;
         }
-        // Try without index.html
-        const adminRequest2 = new Request(new URL(`/${path}.html`, url.origin));
+        // Try alternative path
+        const adminUrl2 = new URL(`/${path}.html`, url.origin);
+        const adminRequest2 = new Request(adminUrl2.toString(), { method: "GET" });
         const adminResponse2 = await env.ASSETS.fetch(adminRequest2);
-        if (adminResponse2.ok) {
+        if (adminResponse2 && adminResponse2.ok) {
           return adminResponse2;
         }
-      } catch (e) {
-        console.error("Error fetching admin page from ASSETS:", e);
       }
+    } catch (e: any) {
+      console.error("Error serving admin page:", e?.message || e);
     }
     return new Response("Not found", { status: 404 });
   }
