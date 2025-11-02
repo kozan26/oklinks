@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS links (
 );
 CREATE INDEX IF NOT EXISTS idx_links_alias ON links(alias);
 CREATE INDEX IF NOT EXISTS idx_links_active ON links(is_active);
+CREATE INDEX IF NOT EXISTS idx_links_target ON links(target);
 
 CREATE TABLE IF NOT EXISTS click_daily (
   alias TEXT NOT NULL,
