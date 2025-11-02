@@ -60,6 +60,8 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
    - Build command: `pnpm install && cd apps/web && pnpm build`
    - Build output directory: `apps/web/dist`
    - Root directory: `/` (repository root)
+   
+   **Note:** We don't use `wrangler.toml` for Pages deployment - bindings are configured in the dashboard instead.
 
 3. **Environment Variables:**
    - (Optional) Add `TURNSTILE_SECRET` if you want anti-abuse protection (from Turnstile dashboard)
