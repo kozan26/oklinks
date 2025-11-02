@@ -131,8 +131,14 @@ import Toast from "../components/Toast.astro";
 
     <script is:inline>
       {`(function () {
+  console.log('Script loaded');
   const form = document.getElementById('create-form');
-  if (!form) return;
+  if (!form) {
+    console.error('Form not found!');
+    return;
+  }
+  console.log('Form found:', form);
+  
   const status = document.getElementById('form-status');
   const spinner = document.getElementById('submit-spinner');
   const detail = document.getElementById('result-detail');
@@ -144,8 +150,11 @@ import Toast from "../components/Toast.astro";
   const copyButton = document.getElementById('copy-link');
   const qrLink = document.getElementById('qr-link');
 
+  console.log('Elements found - status:', status, 'spinner:', spinner, 'detail:', detail);
+
   if (form) {
     form.addEventListener('submit', function(e) {
+      console.log('Form submit event triggered');
       e.preventDefault();
       e.stopPropagation();
       handleSubmit(e);
@@ -153,10 +162,13 @@ import Toast from "../components/Toast.astro";
     });
     // Also prevent default form action
     form.onsubmit = function(e) {
+      console.log('Form onsubmit triggered');
       e.preventDefault();
       e.stopPropagation();
+      handleSubmit(e);
       return false;
     };
+    console.log('Event listeners attached to form');
   }
   
   if (copyButton) {
@@ -164,20 +176,26 @@ import Toast from "../components/Toast.astro";
   }
 
   async function handleSubmit(event) {
-    if (!(event.target instanceof HTMLFormElement)) {
+    console.log('handleSubmit called', event);
+    let formEl = event.target;
+    
+    if (!(formEl instanceof HTMLFormElement)) {
       // If called directly, get the form element
-      const formEl = document.getElementById('create-form');
+      formEl = document.getElementById('create-form');
       if (!formEl || !(formEl instanceof HTMLFormElement)) {
         console.error('Form element not found');
+        setStatus('Error: Form not found');
         return;
       }
-      event = { target: formEl, preventDefault: () => {}, stopPropagation: () => {} };
     }
     
     console.log('Form submit prevented, handling with JavaScript');
-    const formData = new FormData(event.target);
+    const formData = new FormData(formEl);
     const target = formData.get('target');
+    console.log('Form data - target:', target);
+    
     if (typeof target !== 'string' || target.length === 0) {
+      console.log('Target URL is empty');
       setStatus('Target URL is required.');
       return;
     }
