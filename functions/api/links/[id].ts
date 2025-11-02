@@ -1,9 +1,9 @@
 import {
   deleteLink as deleteLinkRecord,
   getLinkById,
-} from "../_lib/link-service";
-import { aliasCacheKey, json } from "../_lib/utils";
-import type { Env } from "../_lib/types";
+} from "../../_lib/link-service";
+import { aliasCacheKey, json } from "../../_lib/utils";
+import type { Env } from "../../_lib/types";
 
 export const onRequest: PagesFunction<Env> = async ({ params, env, request }) => {
   const method = request.method;
