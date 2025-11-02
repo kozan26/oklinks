@@ -76,22 +76,22 @@ export async function onRequest(context: {
     path = url.pathname.slice(1); // Remove leading /
   }
 
-  // Skip if this is an API route or static asset - let Pages handle it
-  if (path.startsWith("api/") || path.startsWith("_assets/") || path.includes(".")) {
-    return new Response("Not found", { status: 404 });
-  }
-
-  // Skip root and admin routes - these should be served as static files
-  // Pages will serve static files if the Function doesn't handle the route
-  // But since [[path]] matches everything, we need to explicitly skip them
-  // The catch-all should only handle short link aliases
-  if (!path || path.length === 0 || path === "/" || path === "index.html") {
-    // Let static files handle root - return 404 so Pages tries static files
-    return new Response("Not found", { status: 404 });
-  }
-
-  if (path === "admin" || path.startsWith("admin/")) {
-    // Let static files handle admin - return 404 so Pages tries static files  
+  // Skip API routes, static assets, and known static pages
+  // These should be handled by other Functions or static files
+  if (
+    path.startsWith("api/") || 
+    path.startsWith("_assets/") || 
+    path.includes(".") ||
+    !path || 
+    path.length === 0 || 
+    path === "/" || 
+    path === "index.html" ||
+    path === "admin" || 
+    path.startsWith("admin/")
+  ) {
+    // Return 404 - Pages should try static files after Functions
+    // Note: This might not work as expected since Functions run first
+    // But we can't avoid handling these paths with [[path]] catch-all
     return new Response("Not found", { status: 404 });
   }
 
