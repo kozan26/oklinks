@@ -81,50 +81,17 @@ export async function onRequest(context: {
     return new Response("Not found", { status: 404 });
   }
 
-  // Handle root and admin routes - return 404 to let Pages serve static files
-  // Note: In Pages, static files are checked AFTER Functions, so returning 404
-  // won't allow fallback. We need to actually fetch and return the static file.
-  // ASSETS binding should be available, but we'll handle errors gracefully.
-  if (!path || path.length === 0 || path === "/") {
-    // For root, try to serve index.html via ASSETS, otherwise return 404
-    try {
-      if (env.ASSETS) {
-        const indexUrl = new URL("/index.html", url.origin);
-        const indexRequest = new Request(indexUrl.toString(), { method: "GET" });
-        const indexResponse = await env.ASSETS.fetch(indexRequest);
-        if (indexResponse && indexResponse.ok) {
-          return indexResponse;
-        }
-      }
-    } catch (e: any) {
-      console.error("Error serving index.html:", e?.message || e);
-    }
-    // If ASSETS not available or failed, return 404
+  // Skip root and admin routes - these should be served as static files
+  // Pages will serve static files if the Function doesn't handle the route
+  // But since [[path]] matches everything, we need to explicitly skip them
+  // The catch-all should only handle short link aliases
+  if (!path || path.length === 0 || path === "/" || path === "index.html") {
+    // Let static files handle root - return 404 so Pages tries static files
     return new Response("Not found", { status: 404 });
   }
 
   if (path === "admin" || path.startsWith("admin/")) {
-    // For admin, try to serve the admin page
-    try {
-      if (env.ASSETS) {
-        const adminPath = path === "admin" ? "/admin/index.html" : `/${path}/index.html`;
-        const adminUrl = new URL(adminPath, url.origin);
-        const adminRequest = new Request(adminUrl.toString(), { method: "GET" });
-        const adminResponse = await env.ASSETS.fetch(adminRequest);
-        if (adminResponse && adminResponse.ok) {
-          return adminResponse;
-        }
-        // Try alternative path
-        const adminUrl2 = new URL(`/${path}.html`, url.origin);
-        const adminRequest2 = new Request(adminUrl2.toString(), { method: "GET" });
-        const adminResponse2 = await env.ASSETS.fetch(adminRequest2);
-        if (adminResponse2 && adminResponse2.ok) {
-          return adminResponse2;
-        }
-      }
-    } catch (e: any) {
-      console.error("Error serving admin page:", e?.message || e);
-    }
+    // Let static files handle admin - return 404 so Pages tries static files  
     return new Response("Not found", { status: 404 });
   }
 
