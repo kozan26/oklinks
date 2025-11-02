@@ -162,6 +162,97 @@ import { inlineCSS } from "../../styles/inline.css.ts";
         padding: 3rem 1rem;
         color: #ff6b6b;
       }
+      .login-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 4rem);
+      }
+      .login-box {
+        background: var(--surface-elevated);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 100%;
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+      .login-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+      .login-subtitle {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .login-field {
+        margin-bottom: 1.5rem;
+      }
+      .login-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .login-input {
+        width: 100%;
+        padding: 0.875rem 1.125rem;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(11, 13, 14, 0.6);
+        color: var(--text-primary);
+        font-size: 1rem;
+        font-family: var(--font-display);
+        transition: all 0.2s ease;
+        outline: none;
+      }
+      .login-input:focus {
+        border-color: var(--accent);
+        background: rgba(11, 13, 14, 0.8);
+        box-shadow: 0 0 0 3px var(--accent-light);
+      }
+      .login-button {
+        width: 100%;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, var(--accent) 0%, #2aa7d2 100%);
+        color: var(--ink);
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: var(--font-display);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 20px rgba(67, 213, 255, 0.3);
+      }
+      .login-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(67, 213, 255, 0.4);
+      }
+      .login-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .login-error {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+        background: rgba(255, 107, 107, 0.1);
+        border: 1px solid rgba(255, 107, 107, 0.3);
+        color: #ff6b6b;
+        font-size: 0.875rem;
+        text-align: center;
+      }
       @media (max-width: 768px) {
         .admin-container {
           padding: 1rem;
@@ -180,11 +271,37 @@ import { inlineCSS } from "../../styles/inline.css.ts";
     </style>
   </head>
   <body class="admin-page">
-    <main class="admin-container">
+    <div id="login-screen" style="display: none;">
+      <div class="login-container">
+        <div class="login-box">
+          <h1 class="login-title">Admin Login</h1>
+          <p class="login-subtitle">Enter password to access admin panel</p>
+          <form id="login-form">
+            <div class="login-field">
+              <label for="admin-password" class="login-label">Password</label>
+              <input
+                id="admin-password"
+                type="password"
+                class="login-input"
+                placeholder="Enter admin password"
+                required
+                autocomplete="current-password"
+              />
+            </div>
+            <button type="submit" class="login-button" id="login-button">
+              Login
+            </button>
+            <div id="login-error" class="login-error" style="display: none;"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <main id="admin-content" class="admin-container" style="display: none;">
       <header class="admin-header">
         <h1 class="admin-title">oklinks admin</h1>
         <p class="admin-subtitle">
-          Protected via Cloudflare Access. Manage the latest short links below.
+          Manage the latest short links below.
         </p>
       </header>
 
@@ -223,16 +340,136 @@ import { inlineCSS } from "../../styles/inline.css.ts";
         }
         
         function init() {
+          const loginScreen = document.getElementById('login-screen');
+          const adminContent = document.getElementById('admin-content');
+          const loginForm = document.getElementById('login-form');
+          const loginError = document.getElementById('login-error');
+          const loginButton = document.getElementById('login-button');
+          const passwordInput = document.getElementById('admin-password');
+
+          // Check if already authenticated
+          const token = sessionStorage.getItem('admin_token');
+          if (token) {
+            verifyToken(token);
+          } else {
+            showLogin();
+          }
+
+          if (loginForm) {
+            loginForm.addEventListener('submit', handleLogin);
+          }
+
+          async function handleLogin(e) {
+            e.preventDefault();
+            if (!passwordInput) return;
+
+            const password = passwordInput.value;
+            if (!password) return;
+
+            if (loginButton) {
+              loginButton.disabled = true;
+              loginButton.textContent = 'Logging in...';
+            }
+
+            try {
+              const response = await fetch('/api/admin-auth', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ password }),
+              });
+
+              const data = await response.json();
+
+              if (!response.ok) {
+                showError(data.error === 'invalid_password' ? 'Invalid password' : 'Authentication failed');
+                if (loginButton) {
+                  loginButton.disabled = false;
+                  loginButton.textContent = 'Login';
+                }
+                return;
+              }
+
+              if (data.token) {
+                sessionStorage.setItem('admin_token', data.token);
+                showAdmin();
+                loadLinks();
+              }
+            } catch (error) {
+              console.error('Login error:', error);
+              showError('Failed to authenticate. Please try again.');
+              if (loginButton) {
+                loginButton.disabled = false;
+                loginButton.textContent = 'Login';
+              }
+            }
+          }
+
+          async function verifyToken(token) {
+            try {
+              const response = await fetch('/api/admin-auth', {
+                headers: { 'Authorization': `Bearer ${token}` },
+              });
+
+              const data = await response.json();
+              if (data.authenticated) {
+                showAdmin();
+                loadLinks();
+              } else {
+                sessionStorage.removeItem('admin_token');
+                showLogin();
+              }
+            } catch (error) {
+              console.error('Token verification error:', error);
+              sessionStorage.removeItem('admin_token');
+              showLogin();
+            }
+          }
+
+          function showLogin() {
+            if (loginScreen) loginScreen.style.display = '';
+            if (adminContent) adminContent.style.display = 'none';
+            if (passwordInput) passwordInput.value = '';
+          }
+
+          function showAdmin() {
+            if (loginScreen) loginScreen.style.display = 'none';
+            if (adminContent) adminContent.style.display = '';
+            if (loginError) loginError.style.display = 'none';
+          }
+
+          function showError(message) {
+            if (loginError) {
+              loginError.textContent = message;
+              loginError.style.display = '';
+            }
+          }
+
           const status = document.getElementById('admin-status');
           const body = document.getElementById('links-body');
           const refresh = document.getElementById('refresh');
 
-          async function load() {
+          async function loadLinks() {
+            const token = sessionStorage.getItem('admin_token');
+            if (!token) {
+              showLogin();
+              return;
+            }
+
             if (status) status.textContent = 'Loading...';
             if (body) body.innerHTML = '';
             try {
-              const response = await fetch('/api/links', { headers: { accept: 'application/json' } });
+              const response = await fetch('/api/links', {
+                headers: {
+                  accept: 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+              });
               if (!response.ok) {
+                if (response.status === 401) {
+                  sessionStorage.removeItem('admin_token');
+                  showLogin();
+                  return;
+                }
                 const errorText = await response.text();
                 console.error('API error:', response.status, errorText);
                 throw new Error('Request failed: ' + response.status);
@@ -292,6 +529,12 @@ import { inlineCSS } from "../../styles/inline.css.ts";
           }
 
           async function handleDelete(event) {
+            const token = sessionStorage.getItem('admin_token');
+            if (!token) {
+              showLogin();
+              return;
+            }
+
             const target = event.target;
             if (!(target instanceof HTMLElement)) return;
             if (!target.classList.contains('delete-btn')) return;
@@ -299,11 +542,19 @@ import { inlineCSS } from "../../styles/inline.css.ts";
             if (!id) return;
             target.setAttribute('disabled', 'true');
             try {
-              const response = await fetch('/api/links/' + id, { method: 'DELETE' });
+              const response = await fetch('/api/links/' + id, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` },
+              });
               if (!response.ok) {
+                if (response.status === 401) {
+                  sessionStorage.removeItem('admin_token');
+                  showLogin();
+                  return;
+                }
                 throw new Error('Delete failed');
               }
-              await load();
+              await loadLinks();
             } catch (error) {
               console.error(error);
               if (status) status.textContent = 'Failed to delete link.';
@@ -313,14 +564,12 @@ import { inlineCSS } from "../../styles/inline.css.ts";
           }
 
           if (refresh) {
-            refresh.addEventListener('click', load);
+            refresh.addEventListener('click', loadLinks);
           }
 
           if (body) {
             body.addEventListener('click', handleDelete);
           }
-
-          load();
         }
       })();
       console.log('Admin script setup complete');
