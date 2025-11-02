@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { inlineCSS } from "../styles/inline.css.ts";
 import Toast from "../components/Toast.astro";
 ---
 <!DOCTYPE html>
@@ -13,13 +14,13 @@ import Toast from "../components/Toast.astro";
       content="oklinks is a tactical URL shortener for Cloudflare Pages with D1 persistence, KV caching, and queue-backed analytics."
     />
     <link rel="icon" type="image/svg+xml" href="/oklinks.svg" />
-    <link rel="stylesheet" href="/styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
       rel="stylesheet"
     />
+    <style is:global>{inlineCSS}</style>
   </head>
   <body>
     <div class="page">
