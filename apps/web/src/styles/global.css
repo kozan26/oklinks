@@ -6,22 +6,43 @@
   color-scheme: dark;
 }
 
+@layer base {
+  * {
+    @apply border-olive/20;
+  }
+}
+
 body {
-  @apply bg-ink text-white min-h-screen font-sans;
+  @apply bg-ink text-white min-h-screen font-sans antialiased;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(67, 213, 255, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(67, 213, 255, 0.03) 0px, transparent 50%);
 }
 
-input, button, textarea, select {
-  @apply bg-graphite text-white border border-olive/40 rounded-md px-3 py-2 transition outline-none;
+input[type="text"],
+input[type="url"],
+input[type="datetime-local"] {
+  @apply bg-graphite/80 text-white border border-olive/40 rounded-lg px-4 py-3 
+         transition-all duration-200 outline-none placeholder:text-accent/30
+         focus:border-accent focus:ring-2 focus:ring-accent/30 focus:bg-graphite
+         hover:border-olive/60;
 }
 
-input:focus, button:focus {
-  @apply border-accent ring-2 ring-accent/40;
+button[type="submit"] {
+  @apply bg-accent hover:bg-accent/90 text-ink font-semibold 
+         rounded-lg px-6 py-3 transition-all duration-200
+         shadow-lg shadow-accent/20 hover:shadow-accent/30
+         active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed
+         disabled:scale-100;
 }
 
-button {
-  @apply bg-olive hover:bg-olive/80 cursor-pointer font-semibold;
+button[type="button"] {
+  @apply bg-transparent border border-accent/40 text-accent
+         rounded-lg px-4 py-2 text-sm font-semibold
+         transition-all duration-200 hover:bg-accent/10 hover:border-accent/60
+         active:scale-[0.98];
 }
 
-button:disabled {
-  @apply opacity-60 cursor-not-allowed;
+a[target="_blank"] {
+  @apply transition-colors duration-200 hover:text-accent/80;
 }

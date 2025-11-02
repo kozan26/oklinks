@@ -23,27 +23,27 @@ const siteKey = "";
     />
   </head>
   <body class="font-display">
-    <main class="mx-auto flex min-h-screen max-w-5xl flex-col gap-12 px-6 py-16">
-      <header class="flex flex-col gap-4">
-        <span class="inline-flex max-w-max items-center gap-2 rounded-full bg-graphite/80 px-4 py-2 text-xs uppercase tracking-[0.3em] text-accent">Tactical Noir</span>
-        <h1 class="text-5xl font-semibold tracking-tight sm:text-6xl">
+    <main class="mx-auto flex min-h-screen max-w-5xl flex-col gap-16 px-6 py-20 md:py-24">
+      <header class="flex flex-col gap-5">
+        <span class="inline-flex max-w-max items-center gap-2 rounded-full bg-graphite/90 backdrop-blur-sm px-5 py-2.5 text-xs font-medium uppercase tracking-[0.3em] text-accent border border-accent/20 shadow-lg shadow-accent/10">Tactical Noir</span>
+        <h1 class="text-6xl font-bold tracking-tight sm:text-7xl bg-gradient-to-br from-white via-accent/90 to-accent bg-clip-text text-transparent">
           oklinks
         </h1>
-        <p class="max-w-2xl text-lg text-accent/80">
+        <p class="max-w-2xl text-xl text-accent/70 leading-relaxed">
           Short. Smart. Yours. Build branded redirects with D1 persistence,
           KV caching, and queue-backed analytics in seconds.
         </p>
       </header>
 
-      <section class="grid gap-12 md:grid-cols-[1.6fr_1fr]">
+      <section class="grid gap-8 md:grid-cols-[1.6fr_1fr] lg:gap-12">
         <form
           id="create-form"
-          class="flex flex-col gap-6 rounded-2xl border border-olive/30 bg-graphite/60 p-8 shadow-xl shadow-black/50"
+          class="flex flex-col gap-7 rounded-2xl border border-olive/30 bg-graphite/70 backdrop-blur-sm p-8 md:p-10 shadow-2xl shadow-black/60 ring-1 ring-white/5"
           method="post"
           action="/api/links"
         >
-          <div class="flex flex-col gap-2">
-            <label for="target" class="text-sm uppercase tracking-[0.3em] text-accent">
+          <div class="flex flex-col gap-3">
+            <label for="target" class="text-sm font-medium uppercase tracking-[0.3em] text-accent">
               Target URL
             </label>
             <input
@@ -52,12 +52,13 @@ const siteKey = "";
               type="url"
               required
               placeholder="https://example.com/docs"
+              class="w-full"
             />
           </div>
 
-          <div class="grid gap-4 md:grid-cols-2">
-            <div class="flex flex-col gap-2">
-              <label for="alias" class="text-sm uppercase tracking-[0.3em] text-accent">
+          <div class="grid gap-6 md:grid-cols-2">
+            <div class="flex flex-col gap-3">
+              <label for="alias" class="text-sm font-medium uppercase tracking-[0.3em] text-accent">
                 Custom Alias
               </label>
               <input
@@ -66,52 +67,55 @@ const siteKey = "";
                 type="text"
                 pattern="[a-zA-Z0-9-_]+"
                 placeholder="optional-code"
+                class="w-full font-mono"
               />
-              <p class="text-xs text-accent/60">
+              <p class="text-xs text-accent/50 leading-relaxed">
                 Allowed: letters, numbers, dashes, underscores.
               </p>
             </div>
-            <div class="flex flex-col gap-2">
-              <label for="expiresAt" class="text-sm uppercase tracking-[0.3em] text-accent">
+            <div class="flex flex-col gap-3">
+              <label for="expiresAt" class="text-sm font-medium uppercase tracking-[0.3em] text-accent">
                 Expires
               </label>
-              <input id="expiresAt" name="expiresAt" type="datetime-local" />
-              <p class="text-xs text-accent/60">Leave blank to never expire.</p>
+              <input id="expiresAt" name="expiresAt" type="datetime-local" class="w-full" />
+              <p class="text-xs text-accent/50 leading-relaxed">Leave blank to never expire.</p>
             </div>
           </div>
 
-          <div class="border-t border-olive/30 pt-4 text-xs text-accent/60">
-            Anti-abuse challenge is disabled.
+          <div class="border-t border-olive/30 pt-5">
+            <p class="text-xs text-accent/50">Anti-abuse challenge is disabled.</p>
           </div>
 
-          <div class="flex flex-col gap-3">
+          <div class="flex flex-col gap-4">
             <button
               type="submit"
-              class="flex items-center justify-center gap-2 rounded-md bg-accent px-4 py-3 font-semibold uppercase tracking-[0.2em] text-ink transition hover:bg-accent/90"
+              class="flex items-center justify-center gap-2 w-full"
             >
               <span>Create link</span>
               <span id="submit-spinner" class="hidden animate-spin text-ink">
                 ●
               </span>
             </button>
-            <p id="form-status" class="text-sm text-accent/70"></p>
+            <p id="form-status" class="text-sm font-medium text-accent/70 min-h-[1.5rem]"></p>
           </div>
         </form>
 
         <aside
           id="result-card"
-          class="flex h-max flex-col gap-4 rounded-2xl border border-olive/30 bg-graphite/40 p-6 shadow-lg shadow-black/40"
+          class="flex h-max flex-col gap-5 rounded-2xl border border-olive/30 bg-graphite/60 backdrop-blur-sm p-7 md:p-8 shadow-xl shadow-black/50 ring-1 ring-white/5 transition-all duration-300"
           data-state="empty"
         >
-          <h2 class="text-sm uppercase tracking-[0.3em] text-accent">Latest link</h2>
-          <p class="text-xs text-accent/60">
-            Generated links appear here with quick access actions.
-          </p>
-          <div class="hidden flex-col gap-3" id="result-detail">
+          <div class="flex flex-col gap-2">
+            <h2 class="text-sm font-medium uppercase tracking-[0.3em] text-accent">Latest link</h2>
+            <p class="text-xs text-accent/50 leading-relaxed">
+              Generated links appear here with quick access actions.
+            </p>
+          </div>
+          <div class="hidden flex-col gap-4" id="result-detail">
             <a
               id="result-url"
               href="#"
-              class="text-lg font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+              class="text-lg font-semibold text-accent underline decoration-accent/40 underline-offset-4 break-all hover:text-accent/80 transition-colors"
               target="_blank"
               rel="noopener"
             ></a>
@@ -119,7 +123,6 @@ const siteKey = "";
               <button
                 id="copy-link"
                 type="button"
-                class="rounded-md border border-accent/40 px-4 py-2 text-sm font-semibold text-accent"
               >
                 Copy URL
               </button>
@@ -128,23 +131,23 @@ const siteKey = "";
                 href="#"
                 target="_blank"
                 rel="noopener"
-                class="rounded-md border border-accent/40 px-4 py-2 text-sm font-semibold text-accent"
+                class="inline-flex items-center justify-center rounded-lg border border-accent/40 px-4 py-2 text-sm font-semibold text-accent transition-all duration-200 hover:bg-accent/10 hover:border-accent/60"
               >
                 View QR
               </a>
             </div>
-            <dl class="grid gap-2 text-xs text-accent/70">
-              <div class="flex justify-between gap-4">
-                <dt>Alias</dt>
-                <dd id="result-alias" class="font-mono text-accent"></dd>
+            <dl class="grid gap-3 pt-2 border-t border-olive/20 text-xs">
+              <div class="flex justify-between items-start gap-4">
+                <dt class="text-accent/60 font-medium">Alias</dt>
+                <dd id="result-alias" class="font-mono text-accent text-right break-all"></dd>
               </div>
-              <div class="flex justify-between gap-4">
-                <dt>Target</dt>
-                <dd id="result-target" class="truncate text-right"></dd>
+              <div class="flex justify-between items-start gap-4">
+                <dt class="text-accent/60 font-medium">Target</dt>
+                <dd id="result-target" class="truncate text-right text-accent/80 max-w-[200px]"></dd>
               </div>
-              <div class="flex justify-between gap-4">
-                <dt>Expires</dt>
-                <dd id="result-expires" class="text-right"></dd>
+              <div class="flex justify-between items-start gap-4">
+                <dt class="text-accent/60 font-medium">Expires</dt>
+                <dd id="result-expires" class="text-right text-accent/80"></dd>
               </div>
             </dl>
           </div>
