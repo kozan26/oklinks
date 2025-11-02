@@ -9,6 +9,9 @@ export async function onRequestGet(context: {
   const { env, params } = context;
 
   try {
+    if (!env.DB) {
+      return json({ error: "Database not configured" }, 503);
+    }
     const result = await env.DB.prepare("SELECT * FROM links WHERE id = ?")
       .bind(params.id)
       .first<{
@@ -45,6 +48,9 @@ export async function onRequestDelete(context: {
   const { env, params } = context;
 
   try {
+    if (!env.DB) {
+      return json({ error: "Database not configured" }, 503);
+    }
     // Get alias before deleting
     const link = await env.DB.prepare("SELECT alias FROM links WHERE id = ?")
       .bind(params.id)
@@ -54,8 +60,8 @@ export async function onRequestDelete(context: {
       .bind(params.id)
       .run();
 
-    // Also remove from KV cache
-    if (link) {
+    // Also remove from KV cache (if available)
+    if (link && env.CACHE) {
       await env.CACHE.delete(`a:${link.alias}`);
     }
 

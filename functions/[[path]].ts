@@ -12,14 +12,19 @@ async function resolveAlias(
   alias: string,
   env: CloudflarePagesEnv
 ): Promise<string | null> {
-  // Try KV first
+  // Try KV first (if available)
   const kvKey = `a:${alias}`;
-  const cached = await env.CACHE.get(kvKey);
-  if (cached) {
-    return cached;
+  if (env.CACHE) {
+    const cached = await env.CACHE.get(kvKey);
+    if (cached) {
+      return cached;
+    }
   }
 
-  // Check D1
+  // Check D1 (required)
+  if (!env.DB) {
+    return null;
+  }
   const result = await env.DB.prepare(
     `SELECT target, is_active, expires_at FROM links WHERE alias = ? LIMIT 1`
   )
@@ -47,8 +52,10 @@ async function resolveAlias(
     }
   }
 
-  // Cache in KV with 3600s TTL
-  await env.CACHE.put(kvKey, result.target, { expirationTtl: 3600 });
+  // Cache in KV with 3600s TTL (if available)
+  if (env.CACHE) {
+    await env.CACHE.put(kvKey, result.target, { expirationTtl: 3600 });
+  }
 
   return result.target;
 }
@@ -92,19 +99,21 @@ export async function onRequest(context: {
     return new Response("Link not found", { status: 404 });
   }
 
-  // Enqueue click event
-  const clickEvent: ClickEvent = {
-    alias,
-    ts: Math.floor(Date.now() / 1000),
-    ua: request.headers.get("user-agent") || null,
-    ref: request.headers.get("referer") || null,
-  };
+  // Enqueue click event (if queue is available)
+  if (env.CLICK_QUEUE) {
+    const clickEvent: ClickEvent = {
+      alias,
+      ts: Math.floor(Date.now() / 1000),
+      ua: request.headers.get("user-agent") || null,
+      ref: request.headers.get("referer") || null,
+    };
 
-  try {
-    await env.CLICK_QUEUE.send(clickEvent);
-  } catch (error) {
-    // Log but don't fail the redirect
-    console.error("Failed to enqueue click event:", error);
+    try {
+      await env.CLICK_QUEUE.send(clickEvent);
+    } catch (error) {
+      // Log but don't fail the redirect
+      console.error("Failed to enqueue click event:", error);
+    }
   }
 
   // Redirect

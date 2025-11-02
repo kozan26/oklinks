@@ -110,8 +110,10 @@ export async function onRequestPost(context: {
       .bind(id, alias, body.target, expiresAt, passwordHash, createdBy)
       .run();
 
-    // Cache in KV with 3600s TTL
-    await env.CACHE.put(kvKey, body.target, { expirationTtl: 3600 });
+    // Cache in KV with 3600s TTL (if available)
+    if (env.CACHE) {
+      await env.CACHE.put(kvKey, body.target, { expirationTtl: 3600 });
+    }
 
     return json({
       id,
@@ -129,6 +131,9 @@ export async function onRequestGet(context: {
   env: CloudflarePagesEnv;
 }): Promise<Response> {
   const { env, request } = context;
+  if (!env.DB) {
+    return json({ error: "Database not configured" }, 503);
+  }
   const url = new URL(request.url);
   const limit = parseInt(url.searchParams.get("limit") || "50", 10);
 
