@@ -24,106 +24,144 @@ import Toast from "../components/Toast.astro";
   <body>
     <div class="page">
       <nav class="nav">
-        <a href="/" class="logo">
-          <span>oklinks</span>
-        </a>
+        <a href="/" class="logo">oklinks</a>
         <div class="nav-actions">
-          <a class="outline-button" href="/admin">Admin</a>
+          <a class="nav-link" href="/admin">Admin</a>
         </div>
       </nav>
 
-      <main class="content">
-        <section class="main-grid">
-          <header class="hero">
-            <span class="hero-pill">short. smart. yours.</span>
-            <h1 class="hero-title">Launch tactical short links in seconds.</h1>
-          </header>
+      <main class="main-content">
+        <div class="hero-section">
+          <div class="hero-content">
+            <span class="hero-badge">short. smart. yours.</span>
+            <h1 class="hero-title">Create short links instantly</h1>
+            <p class="hero-subtitle">Turn any URL into a clean, shareable link in seconds</p>
+          </div>
+        </div>
 
-          <form id="create-form" class="card" method="post" action="/api/links" onsubmit="return false;">
-            <div class="form-grid">
-              <div>
-                <label for="target">Target URL</label>
-                <input id="target" name="target" type="url" required placeholder="https://example.com/docs" />
+        <div class="workspace">
+          <div class="form-container">
+            <form id="create-form" class="form-card" method="post" action="/api/links" onsubmit="return false;">
+              <div class="form-header">
+                <h2 class="form-title">Create New Link</h2>
               </div>
-
-              <div class="two-col">
-                <div>
-                  <label for="alias">Custom Alias</label>
-                  <input
-                    id="alias"
-                    name="alias"
-                    type="text"
-                    pattern="[a-zA-Z0-9-_]+"
-                    placeholder="optional-code"
+              
+              <div class="form-body">
+                <div class="input-group">
+                  <label for="target" class="input-label">
+                    <span class="label-text">Target URL</span>
+                    <span class="label-required">*</span>
+                  </label>
+                  <input 
+                    id="target" 
+                    name="target" 
+                    type="url" 
+                    required 
+                    placeholder="https://example.com" 
+                    class="input-field"
                   />
-                  <p class="helper-text">Allowed: letters, numbers, dashes, underscores.</p>
                 </div>
-                <div>
-                  <label for="expiresAt">Expires</label>
-                  <input id="expiresAt" name="expiresAt" type="datetime-local" />
-                  <p class="helper-text">Leave blank to never expire.</p>
+
+                <div class="input-row">
+                  <div class="input-group input-group-half">
+                    <label for="alias" class="input-label">
+                      <span class="label-text">Custom Alias</span>
+                      <span class="label-optional">optional</span>
+                    </label>
+                    <input
+                      id="alias"
+                      name="alias"
+                      type="text"
+                      pattern="[a-zA-Z0-9-_]+"
+                      placeholder="my-link"
+                      class="input-field input-field-mono"
+                    />
+                    <p class="input-hint">Letters, numbers, dashes, underscores</p>
+                  </div>
+                  
+                  <div class="input-group input-group-half">
+                    <label for="expiresAt" class="input-label">
+                      <span class="label-text">Expiration</span>
+                      <span class="label-optional">optional</span>
+                    </label>
+                    <input 
+                      id="expiresAt" 
+                      name="expiresAt" 
+                      type="datetime-local" 
+                      class="input-field"
+                    />
+                    <p class="input-hint">Leave blank for no expiration</p>
+                  </div>
+                </div>
+
+                <div class="form-footer">
+                  <button type="submit" class="submit-btn">
+                    <span class="btn-text">Create Link</span>
+                    <span id="submit-spinner" class="btn-spinner" style="display:none;">●</span>
+                  </button>
+                  <p id="form-status" class="form-status"></p>
                 </div>
               </div>
+            </form>
 
-              <p class="helper-text">Anti-abuse challenge is disabled.</p>
-
-              <div>
-                <button type="submit" class="primary-button">
-                  <span>Create link</span>
-                  <span id="submit-spinner" style="display:none;margin-left:0.5rem;">●</span>
-                </button>
-                <p id="form-status" class="helper-text" style="margin-top:0.75rem;"></p>
+            <aside id="result-card" class="result-card" data-state="empty">
+              <div id="result-placeholder" class="result-placeholder">
+                <div class="placeholder-icon">🔗</div>
+                <h3 class="placeholder-title">Your Link</h3>
+                <p class="placeholder-text">Created links will appear here</p>
               </div>
-            </div>
-          </form>
-        </section>
-
-        <section class="main-grid">
-          <aside id="result-card" class="card" data-state="empty">
-            <div id="result-placeholder">
-              <h2>Latest link</h2>
-              <p>Generated links appear here with quick access actions.</p>
-            </div>
-            <div id="result-detail" style="display:none;">
-              <a id="result-url" href="#" target="_blank" rel="noopener" style="display:block;font-size:1.05rem;font-weight:600;word-break:break-all;color:var(--accent);"></a>
-              <div class="actions">
-                <button id="copy-link" type="button">Copy URL</button>
-                <a id="qr-link" href="#" target="_blank" rel="noopener">View QR</a>
+              
+              <div id="result-detail" class="result-detail" style="display:none;">
+                <div class="result-header">
+                  <div class="result-icon">✓</div>
+                  <h3 class="result-title">Link Created</h3>
+                </div>
+                
+                <div class="result-url-container">
+                  <a 
+                    id="result-url" 
+                    href="#" 
+                    target="_blank" 
+                    rel="noopener" 
+                    class="result-url-link"
+                  ></a>
+                </div>
+                
+                <div class="result-actions">
+                  <button id="copy-link" type="button" class="action-btn action-btn-primary">
+                    <span class="action-icon">📋</span>
+                    Copy URL
+                  </button>
+                  <a 
+                    id="qr-link" 
+                    href="#" 
+                    target="_blank" 
+                    rel="noopener"
+                    class="action-btn action-btn-secondary"
+                  >
+                    <span class="action-icon">📱</span>
+                    View QR
+                  </a>
+                </div>
+                
+                <div class="result-info">
+                  <div class="info-row">
+                    <span class="info-label">Alias</span>
+                    <code id="result-alias" class="info-value info-value-code"></code>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Target</span>
+                    <span id="result-target" class="info-value info-value-target"></span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Expires</span>
+                    <span id="result-expires" class="info-value"></span>
+                  </div>
+                </div>
               </div>
-              <dl class="result-meta">
-                <div class="meta-row">
-                  <dt>Alias</dt>
-                  <dd id="result-alias" class="meta-value meta-value--mono"></dd>
-                </div>
-                <div class="meta-row">
-                  <dt>Target</dt>
-                  <dd id="result-target" class="meta-value meta-value--target"></dd>
-                </div>
-                <div class="meta-row">
-                  <dt>Expires</dt>
-                  <dd id="result-expires" class="meta-value"></dd>
-                </div>
-              </dl>
-            </div>
-          </aside>
-        </section>
-
-        <section class="benefits">
-          <div class="benefit-card">
-            <h3>Workflow ready</h3>
-            <p>
-              Ship from CLI or the dashboard. Queue processing is optional—D1 updates are already batched for you.
-            </p>
+            </aside>
           </div>
-          <div class="benefit-card">
-            <h3>Brand-led redirects</h3>
-            <p>Custom aliases, expirations, future password support, and QR badges for every link.</p>
-          </div>
-          <div class="benefit-card">
-            <h3>Access controlled</h3>
-            <p>Lock down the admin list with Cloudflare Access. Add audit trails or team workspaces next.</p>
-          </div>
-        </section>
+        </div>
       </main>
     </div>
 
@@ -263,7 +301,6 @@ import Toast from "../components/Toast.astro";
             
             if (detail) {
               detail.style.display = '';
-              detail.style.removeProperty('display');
               detail.removeAttribute('style');
               console.log('Showing result detail');
             } else {
@@ -276,7 +313,7 @@ import Toast from "../components/Toast.astro";
               console.error('Card element not found!');
             }
             
-            setStatus('Link created.');
+            setStatus('Link created successfully!');
             if (formEl) formEl.reset();
           } catch (error) {
             console.error('Error:', error);
@@ -290,6 +327,11 @@ import Toast from "../components/Toast.astro";
           const submit = form.querySelector('button[type="submit"]');
           if (submit instanceof HTMLButtonElement) {
             submit.disabled = value;
+            if (value) {
+              submit.classList.add('submitting');
+            } else {
+              submit.classList.remove('submitting');
+            }
           }
           if (spinner) spinner.style.display = value ? 'inline-block' : 'none';
         }
@@ -297,6 +339,9 @@ import Toast from "../components/Toast.astro";
         function setStatus(message) {
           if (status) {
             status.textContent = message;
+            status.className = message.includes('error') || message.includes('Error') || message.includes('Failed') 
+              ? 'form-status form-status-error' 
+              : 'form-status';
           }
         }
 
@@ -305,6 +350,13 @@ import Toast from "../components/Toast.astro";
           const href = urlAnchor.href;
           try {
             await navigator.clipboard.writeText(href);
+            if (copyButton) {
+              const originalText = copyButton.innerHTML;
+              copyButton.innerHTML = '<span class="action-icon">✓</span> Copied!';
+              setTimeout(() => {
+                copyButton.innerHTML = originalText;
+              }, 2000);
+            }
             window.dispatchEvent(
               new CustomEvent('toast', { detail: { message: 'Short link copied' } }),
             );
