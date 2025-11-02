@@ -40,19 +40,19 @@ function parseExpiresAt(input: string | number | null | undefined): number | nul
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
-  let body = await readJson<CreateLinkRequest>(request);
+  const contentType = request.headers.get("content-type") ?? "";
 
-  if (!body) {
-    const contentType = request.headers.get("content-type") ?? "";
-    if (contentType.includes("application/x-www-form-urlencoded")) {
-      const form = await request.formData();
-      body = {
-        target: form.get("target")?.toString(),
-        alias: form.get("alias")?.toString(),
-        expiresAt: form.get("expiresAt")?.toString() ?? null,
-        password: form.get("password")?.toString(),
-      };
-    }
+  let body: CreateLinkRequest | null = null;
+  if (contentType.includes("application/x-www-form-urlencoded")) {
+    const form = await request.formData();
+    body = {
+      target: form.get("target")?.toString(),
+      alias: form.get("alias")?.toString(),
+      expiresAt: form.get("expiresAt")?.toString() ?? null,
+      password: form.get("password")?.toString(),
+    };
+  } else {
+    body = await readJson<CreateLinkRequest>(request);
   }
 
   if (!body || typeof body.target !== "string" || !isValidHttpUrl(body.target)) {
