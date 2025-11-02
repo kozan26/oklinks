@@ -1,0 +1,42 @@
+import type { FunctionalComponent } from "astro/jsx-runtime";
+
+const Toast: FunctionalComponent = () => (
+  <>
+    <div
+      id="toast-root"
+      class="fixed bottom-6 right-6 flex items-center gap-3 rounded-lg bg-graphite/90 px-4 py-3 shadow-lg shadow-black/50 ring-1 ring-accent/40 backdrop-blur transition-opacity duration-200 opacity-0 pointer-events-none"
+      role="status"
+      aria-live="polite"
+    >
+      <span class="flex h-8 w-8 items-center justify-center rounded-full bg-olive/60 text-accent">
+        ✓
+      </span>
+      <span data-message class="text-sm font-medium tracking-wide text-accent">
+        Copied.
+      </span>
+    </div>
+    <script is:inline>
+      {`(function () {
+  const toast = document.getElementById('toast-root');
+  if (!toast) return;
+  let hideTimer = 0;
+  function hide() {
+    toast.style.opacity = '0';
+    toast.style.pointerEvents = 'none';
+  }
+  window.addEventListener('toast', (event) => {
+    const detail = (event?.detail ?? {});
+    const message = typeof detail.message === 'string' ? detail.message : 'Copied.';
+    const target = toast.querySelector('[data-message]');
+    if (target) target.textContent = message;
+    toast.style.opacity = '1';
+    toast.style.pointerEvents = 'auto';
+    clearTimeout(hideTimer);
+    hideTimer = window.setTimeout(hide, 2400);
+  });
+})();`}
+    </script>
+  </>
+);
+
+export default Toast;

@@ -1,0 +1,297 @@
+---
+import "../styles/global.css";
+import Toast from "../components/Toast";
+
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>oklinks — Short. Smart. Yours.</title>
+    <meta
+      name="description"
+      content="oklinks is a tactical URL shortener powered by Cloudflare Pages."
+    />
+    <link rel="icon" type="image/svg+xml" href="/oklinks.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+      async
+      defer
+    ></script>
+  </head>
+  <body class="font-display">
+    <main class="mx-auto flex min-h-screen max-w-5xl flex-col gap-12 px-6 py-16">
+      <header class="flex flex-col gap-4">
+        <span class="inline-flex max-w-max items-center gap-2 rounded-full bg-graphite/80 px-4 py-2 text-xs uppercase tracking-[0.3em] text-accent">Tactical Noir</span>
+        <h1 class="text-5xl font-semibold tracking-tight sm:text-6xl">
+          oklinks
+        </h1>
+        <p class="max-w-2xl text-lg text-accent/80">
+          Short. Smart. Yours. Build branded redirects with D1 persistence,
+          KV caching, and queue-backed analytics in seconds.
+        </p>
+      </header>
+
+      <section class="grid gap-12 md:grid-cols-[1.6fr_1fr]">
+        <form
+          id="create-form"
+          class="flex flex-col gap-6 rounded-2xl border border-olive/30 bg-graphite/60 p-8 shadow-xl shadow-black/50"
+        >
+          <div class="flex flex-col gap-2">
+            <label for="target" class="text-sm uppercase tracking-[0.3em] text-accent">
+              Target URL
+            </label>
+            <input
+              id="target"
+              name="target"
+              type="url"
+              required
+              placeholder="https://example.com/docs"
+            />
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="flex flex-col gap-2">
+              <label for="alias" class="text-sm uppercase tracking-[0.3em] text-accent">
+                Custom Alias
+              </label>
+              <input
+                id="alias"
+                name="alias"
+                type="text"
+                pattern="[a-zA-Z0-9-_]+"
+                placeholder="optional-code"
+              />
+              <p class="text-xs text-accent/60">
+                Allowed: letters, numbers, dashes, underscores.
+              </p>
+            </div>
+            <div class="flex flex-col gap-2">
+              <label for="expiresAt" class="text-sm uppercase tracking-[0.3em] text-accent">
+                Expires
+              </label>
+              <input id="expiresAt" name="expiresAt" type="datetime-local" />
+              <p class="text-xs text-accent/60">Leave blank to never expire.</p>
+            </div>
+          </div>
+
+          <div class="border-t border-olive/30 pt-4">
+            <div
+              class="cf-turnstile"
+              data-sitekey={siteKey}
+              data-theme="dark"
+              data-size="flexible"
+            ></div>
+            {
+              !siteKey && (
+                <p class="mt-2 text-xs text-accent/60">
+                  Provide PUBLIC_TURNSTILE_SITE_KEY to enable the widget.
+                </p>
+              )
+            }
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <button
+              type="submit"
+              class="flex items-center justify-center gap-2 rounded-md bg-accent px-4 py-3 font-semibold uppercase tracking-[0.2em] text-ink transition hover:bg-accent/90"
+            >
+              <span>Create link</span>
+              <span id="submit-spinner" class="hidden animate-spin text-ink">
+                ●
+              </span>
+            </button>
+            <p id="form-status" class="text-sm text-accent/70"></p>
+          </div>
+        </form>
+
+        <aside
+          id="result-card"
+          class="flex h-max flex-col gap-4 rounded-2xl border border-olive/30 bg-graphite/40 p-6 shadow-lg shadow-black/40"
+          data-state="empty"
+        >
+          <h2 class="text-sm uppercase tracking-[0.3em] text-accent">Latest link</h2>
+          <p class="text-xs text-accent/60">
+            Generated links appear here with quick access actions.
+          </p>
+          <div class="hidden flex-col gap-3" id="result-detail">
+            <a
+              id="result-url"
+              href="#"
+              class="text-lg font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+              target="_blank"
+              rel="noopener"
+            ></a>
+            <div class="flex flex-wrap gap-3">
+              <button
+                id="copy-link"
+                type="button"
+                class="rounded-md border border-accent/40 px-4 py-2 text-sm font-semibold text-accent"
+              >
+                Copy URL
+              </button>
+              <a
+                id="qr-link"
+                href="#"
+                target="_blank"
+                rel="noopener"
+                class="rounded-md border border-accent/40 px-4 py-2 text-sm font-semibold text-accent"
+              >
+                View QR
+              </a>
+            </div>
+            <dl class="grid gap-2 text-xs text-accent/70">
+              <div class="flex justify-between gap-4">
+                <dt>Alias</dt>
+                <dd id="result-alias" class="font-mono text-accent"></dd>
+              </div>
+              <div class="flex justify-between gap-4">
+                <dt>Target</dt>
+                <dd id="result-target" class="truncate text-right"></dd>
+              </div>
+              <div class="flex justify-between gap-4">
+                <dt>Expires</dt>
+                <dd id="result-expires" class="text-right"></dd>
+              </div>
+            </dl>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <Toast />
+
+    <script is:inline>
+      {`(function () {
+  const form = document.getElementById('create-form');
+  if (!form) return;
+  const status = document.getElementById('form-status');
+  const spinner = document.getElementById('submit-spinner');
+  const detail = document.getElementById('result-detail');
+  const card = document.getElementById('result-card');
+  const urlAnchor = document.getElementById('result-url');
+  const aliasEl = document.getElementById('result-alias');
+  const targetEl = document.getElementById('result-target');
+  const expiresEl = document.getElementById('result-expires');
+  const copyButton = document.getElementById('copy-link');
+  const qrLink = document.getElementById('qr-link');
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    if (!(event.target instanceof HTMLFormElement)) return;
+    const formData = new FormData(event.target);
+    const target = formData.get('target');
+    if (typeof target !== 'string' || target.length === 0) {
+      setStatus('Target URL is required.');
+      return;
+    }
+    const alias = formData.get('alias');
+    const expiresAt = formData.get('expiresAt');
+    const tokenInput = event.target.querySelector('input[name="cf-turnstile-response"]');
+    const turnstileToken = tokenInput?.value ?? '';
+
+    const payload = {
+      target,
+      alias: typeof alias === 'string' && alias.length > 0 ? alias : undefined,
+      expiresAt: typeof expiresAt === 'string' && expiresAt.length > 0 ? new Date(expiresAt).toISOString() : undefined,
+      turnstileToken: turnstileToken || undefined,
+    };
+
+    setSubmitting(true);
+    try {
+      const response = await fetch('/api/links', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        const message = typeof result?.error === 'string' ? result.error : 'Failed to create link';
+        setStatus(message.replace(/_/g, ' '));
+        if (window.turnstile && typeof window.turnstile.reset === 'function') {
+          window.turnstile.reset();
+        }
+        return;
+      }
+
+      const aliasValue = result.alias;
+      const shortUrl = new URL(aliasValue, window.location.origin).toString();
+      if (urlAnchor) {
+        urlAnchor.textContent = shortUrl;
+        urlAnchor.href = shortUrl;
+      }
+      if (aliasEl) aliasEl.textContent = aliasValue;
+      if (targetEl) targetEl.textContent = payload.target;
+      if (expiresEl) {
+        if (payload.expiresAt) {
+          const expiresDate = new Date(payload.expiresAt);
+          expiresEl.textContent = expiresDate.toLocaleString();
+        } else {
+          expiresEl.textContent = 'Never';
+        }
+      }
+      if (qrLink) {
+        qrLink.href = '/qr/' + aliasValue;
+      }
+      if (detail) detail.classList.remove('hidden');
+      if (card) card.dataset.state = 'ready';
+      setStatus('Link created.');
+      event.target.reset();
+      if (window.turnstile && typeof window.turnstile.reset === 'function') {
+        window.turnstile.reset();
+      }
+    } catch (error) {
+      console.error(error);
+      setStatus('Unexpected error. Try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function setSubmitting(value) {
+    const submit = form.querySelector('button[type="submit"]');
+    if (submit instanceof HTMLButtonElement) {
+      submit.disabled = value;
+    }
+    if (spinner) spinner.classList.toggle('hidden', !value);
+  }
+
+  function setStatus(message) {
+    if (status) {
+      status.textContent = message;
+    }
+  }
+
+  async function handleCopy() {
+    if (!urlAnchor) return;
+    const href = urlAnchor.href;
+    try {
+      await navigator.clipboard.writeText(href);
+      window.dispatchEvent(
+        new CustomEvent('toast', { detail: { message: 'Short link copied' } }),
+      );
+    } catch (error) {
+      console.error('Copy failed', error);
+      window.dispatchEvent(
+        new CustomEvent('toast', { detail: { message: 'Copy failed' } }),
+      );
+    }
+  }
+
+  form.addEventListener('submit', handleSubmit);
+  if (copyButton) {
+    copyButton.addEventListener('click', handleCopy);
+  }
+})();`}
+    </script>
+  </body>
+</html>

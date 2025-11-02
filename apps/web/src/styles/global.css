@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-ink text-white min-h-screen font-sans;
+}
+
+input, button, textarea, select {
+  @apply bg-graphite text-white border border-olive/40 rounded-md px-3 py-2 transition outline-none;
+}
+
+input:focus, button:focus {
+  @apply border-accent ring-2 ring-accent/40;
+}
+
+button {
+  @apply bg-olive hover:bg-olive/80 cursor-pointer font-semibold;
+}
+
+button:disabled {
+  @apply opacity-60 cursor-not-allowed;
+}

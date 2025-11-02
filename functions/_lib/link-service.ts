@@ -1,0 +1,157 @@
+import { aliasCacheKey } from "./utils";
+import type { Env, LinkRecord } from "./types";
+
+export async function getLinkById(env: Env, id: string): Promise<LinkRecord | null> {
+  const row = await env.DB.prepare(
+    "SELECT * FROM links WHERE id = ? LIMIT 1",
+  )
+    .bind(id)
+    .first<LinkRecord>();
+  return row ?? null;
+}
+
+export async function getLinkByAlias(
+  env: Env,
+  alias: string,
+): Promise<LinkRecord | null> {
+  const row = await env.DB.prepare(
+    "SELECT * FROM links WHERE alias = ? LIMIT 1",
+  )
+    .bind(alias)
+    .first<LinkRecord>();
+  return row ?? null;
+}
+
+export async function saveLink(
+  env: Env,
+  record: Omit<LinkRecord, "clicks_total" | "created_at">,
+): Promise<void> {
+  await env.DB.prepare(
+    `INSERT INTO links (id, alias, target, created_at, expires_at, password_hash, is_active, clicks_total, created_by)
+     VALUES (?, ?, ?, strftime('%s','now'), ?, ?, ?, ?, ?)`
+  )
+    .bind(
+      record.id,
+      record.alias,
+      record.target,
+      record.expires_at,
+      record.password_hash,
+      record.is_active,
+      0,
+      record.created_by,
+    )
+    .run();
+}
+
+export async function upsertAliasCache(
+  env: Env,
+  record: Pick<LinkRecord, "alias" | "target" | "expires_at" | "is_active">,
+  ttlSeconds = 3600,
+): Promise<void> {
+  await env.CACHE.put(
+    aliasCacheKey(record.alias),
+    JSON.stringify({
+      target: record.target,
+      expiresAt: record.expires_at,
+      isActive: Boolean(record.is_active),
+    }),
+    { expirationTtl: ttlSeconds },
+  );
+}
+
+export interface ResolvedAlias {
+  target: string;
+  record: LinkRecord | null;
+  expiresAt: number | null;
+}
+
+export async function resolveAlias(
+  env: Env,
+  alias: string,
+): Promise<ResolvedAlias | null> {
+  const cacheKey = aliasCacheKey(alias);
+  const cached = await env.CACHE.get(cacheKey);
+  if (cached) {
+    try {
+      const payload = JSON.parse(cached) as {
+        target: string;
+        expiresAt: number | null;
+        isActive: boolean;
+      };
+      if (!payload.isActive) {
+        return null;
+      }
+      if (
+        payload.expiresAt &&
+        payload.expiresAt > 0 &&
+        payload.expiresAt < Math.floor(Date.now() / 1000)
+      ) {
+        return null;
+      }
+      return {
+        target: payload.target,
+        record: null,
+        expiresAt: payload.expiresAt ?? null,
+      };
+    } catch (error) {
+      console.warn("Failed to parse cache payload", error);
+    }
+  }
+
+  const row = await getLinkByAlias(env, alias);
+  if (!row) {
+    return null;
+  }
+
+  if (!row.is_active) {
+    return null;
+  }
+
+  if (row.expires_at && row.expires_at < Math.floor(Date.now() / 1000)) {
+    return null;
+  }
+
+  await upsertAliasCache(env, row);
+
+  return { target: row.target, record: row, expiresAt: row.expires_at };
+}
+
+export async function aliasExists(env: Env, alias: string): Promise<boolean> {
+  const cached = await env.CACHE.get(aliasCacheKey(alias));
+  if (cached) {
+    return true;
+  }
+  const row = await env.DB.prepare(
+    "SELECT 1 FROM links WHERE alias = ? LIMIT 1",
+  )
+    .bind(alias)
+    .first<{ 1: number }>();
+  return Boolean(row);
+}
+
+export interface ListLinksOptions {
+  limit?: number;
+}
+
+export async function listLinks(
+  env: Env,
+  options: ListLinksOptions = {},
+): Promise<LinkRecord[]> {
+  const limit = Math.min(Math.max(options.limit ?? 50, 1), 200);
+  const { results } = await env.DB.prepare(
+    `SELECT * FROM links ORDER BY created_at DESC LIMIT ?`,
+  )
+    .bind(limit)
+    .all<LinkRecord>();
+  return results ?? [];
+}
+
+export async function deleteLink(
+  env: Env,
+  id: string,
+): Promise<boolean> {
+  const result = await env.DB.prepare("DELETE FROM links WHERE id = ?")
+    .bind(id)
+    .run();
+  return (result.success ?? false) && (result.changes ?? 0) > 0;
+}

@@ -1,0 +1,144 @@
+---
+import "../../styles/global.css";
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>oklinks — Admin</title>
+    <link rel="icon" type="image/svg+xml" href="/oklinks.svg" />
+  </head>
+  <body class="font-display">
+    <main class="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-6 py-12">
+      <header class="flex flex-col gap-2">
+        <h1 class="text-4xl font-semibold text-accent">oklinks admin</h1>
+        <p class="text-sm text-accent/70">
+          Protected via Cloudflare Access. Manage the latest short links below.
+        </p>
+      </header>
+
+      <section class="rounded-2xl border border-olive/30 bg-graphite/50 p-6 shadow-lg shadow-black/40">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm uppercase tracking-[0.3em] text-accent">
+            Recent links
+          </h2>
+          <button
+            id="refresh"
+            type="button"
+            class="rounded-md border border-accent/40 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent"
+          >
+            Refresh
+          </button>
+        </div>
+        <p id="admin-status" class="mt-2 text-xs text-accent/70"></p>
+        <div class="mt-6 overflow-x-auto">
+          <table class="min-w-full divide-y divide-olive/30 text-sm text-accent/80">
+            <thead class="bg-graphite/60 text-xs uppercase tracking-[0.2em] text-accent/60">
+              <tr>
+                <th class="px-4 py-3 text-left font-medium">Alias</th>
+                <th class="px-4 py-3 text-left font-medium">Target</th>
+                <th class="px-4 py-3 text-left font-medium">Clicks</th>
+                <th class="px-4 py-3 text-left font-medium">Expires</th>
+                <th class="px-4 py-3 text-right font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="links-body" class="divide-y divide-olive/20"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script is:inline>
+      {`(function () {
+  const status = document.getElementById('admin-status');
+  const body = document.getElementById('links-body');
+  const refresh = document.getElementById('refresh');
+
+  async function load() {
+    setStatus('Loading...');
+    body.innerHTML = '';
+    try {
+      const response = await fetch('/api/links', { headers: { accept: 'application/json' } });
+      if (!response.ok) {
+        throw new Error('Request failed');
+      }
+      const payload = await response.json();
+      const items = Array.isArray(payload?.links) ? payload.links : [];
+      if (items.length === 0) {
+        setStatus('No links yet.');
+        return;
+      }
+      for (const link of items) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="px-4 py-3 font-mono text-accent">${link.alias}</td>
+          <td class="px-4 py-3 max-w-xs truncate">${link.target}</td>
+          <td class="px-4 py-3 text-right">${link.clicks_total ?? 0}</td>
+          <td class="px-4 py-3 text-right">${formatExpiry(link.expires_at)}</td>
+          <td class="px-4 py-3 text-right">
+            <button data-id="${link.id}" class="delete rounded-md border border-accent/40 px-3 py-1 text-xs uppercase tracking-[0.2em] text-accent">
+              Delete
+            </button>
+          </td>`;
+        body.appendChild(row);
+      }
+      setStatus('Loaded.');
+    } catch (error) {
+      console.error(error);
+      setStatus('Failed to load links.');
+    }
+  }
+
+  function formatExpiry(expires) {
+    if (!expires) {
+      return 'Never';
+    }
+    const value = Number(expires);
+    if (!Number.isFinite(value) || value <= 0) {
+      return 'Never';
+    }
+    const date = new Date(value * 1000);
+    return date.toLocaleString();
+  }
+
+  async function handleDelete(event) {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    if (!target.classList.contains('delete')) return;
+    const id = target.getAttribute('data-id');
+    if (!id) return;
+    target.setAttribute('disabled', 'true');
+    try {
+      const response = await fetch('/api/links/' + id, { method: 'DELETE' });
+      if (!response.ok) {
+        throw new Error('Delete failed');
+      }
+      await load();
+    } catch (error) {
+      console.error(error);
+      setStatus('Failed to delete link.');
+    } finally {
+      target.removeAttribute('disabled');
+    }
+  }
+
+  function setStatus(message) {
+    if (status) {
+      status.textContent = message;
+    }
+  }
+
+  if (refresh) {
+    refresh.addEventListener('click', load);
+  }
+
+  if (body) {
+    body.addEventListener('click', handleDelete);
+  }
+
+  load();
+})();`}
+    </script>
+  </body>
+</html>
