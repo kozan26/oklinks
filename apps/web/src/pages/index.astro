@@ -64,7 +64,9 @@ import Toast from "../components/Toast";
             />
           </div>
 
-          <div class="cf-turnstile" data-sitekey="your-turnstile-site-key-here"></div>
+          <div id="turnstile-container" class="hidden">
+            <div class="cf-turnstile" data-sitekey="your-turnstile-site-key-here"></div>
+          </div>
 
           <button
             type="submit"
@@ -118,6 +120,10 @@ import Toast from "../components/Toast";
       const copyBtn = document.getElementById("copy-btn") as HTMLButtonElement;
       const qrLink = document.getElementById("qr-link") as HTMLAnchorElement;
       const toast = document.querySelector("toast-component") as any;
+      const turnstileContainer = document.getElementById("turnstile-container") as HTMLDivElement;
+      
+      // Hide Turnstile widget by default (only show if configured)
+      // If you set up Turnstile, add: turnstileContainer.classList.remove("hidden");
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();

@@ -15,7 +15,7 @@ id = "your-kv-namespace-id-here"
 producers = [{ queue = "oklinks-clicks", binding = "CLICK_QUEUE" }]
 
 [vars]
-TURNSTILE_SECRET = "your-turnstile-secret-here"
+# TURNSTILE_SECRET = "your-turnstile-secret-here" # Optional: only needed if you want Turnstile anti-abuse
 # ACCESS_AUD = "your-access-aud-here" # Optional: for JWT validation
 
 # Note: Click consumer worker should be deployed separately

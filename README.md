@@ -10,7 +10,7 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
 
 - Node.js 18+ and pnpm (or npm)
 - Cloudflare account with Wrangler CLI
-- Turnstile site key and secret (from Cloudflare Dashboard)
+- Turnstile (optional - only if you want anti-abuse protection)
 
 ### One-Shot Setup
 
@@ -44,7 +44,7 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
 6. **Configure wrangler.toml:**
    - Add the `database_id` from step 2 to both D1 database bindings
    - Add the KV `id` from step 3 to the KV namespace binding
-   - Set `TURNSTILE_SECRET` (get from Cloudflare Dashboard > Turnstile)
+   - (Optional) Set `TURNSTILE_SECRET` if you want anti-abuse protection (get from Cloudflare Dashboard > Turnstile)
 
 7. **Run locally:**
    ```bash
@@ -67,8 +67,8 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
    - Root directory: `/` (repository root)
 
 3. **Environment Variables:**
-   - Add `TURNSTILE_SECRET` (from Turnstile dashboard)
-   - Optionally add `ACCESS_AUD` for JWT validation
+   - (Optional) Add `TURNSTILE_SECRET` if you want anti-abuse protection (from Turnstile dashboard)
+   - (Optional) Add `ACCESS_AUD` for JWT validation
 
 4. **Bindings:**
    - **D1 Database:** Select `oklinks-db` → binding name: `DB`

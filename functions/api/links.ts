@@ -48,15 +48,16 @@ export async function onRequestPost(context: {
   try {
     const body = await request.json<CreateLinkRequest>();
 
-    // Validate Turnstile if secret is set
-    if (env.TURNSTILE_SECRET && body.turnstileToken) {
+    // Validate Turnstile if secret is set (optional - skip if not configured)
+    if (env.TURNSTILE_SECRET) {
+      if (!body.turnstileToken) {
+        return json({ error: "Turnstile token required" }, 400);
+      }
       const ip = request.headers.get("CF-Connecting-IP") || undefined;
       const isValid = await verifyTurnstile(body.turnstileToken, env.TURNSTILE_SECRET, ip);
       if (!isValid) {
         return json({ error: "Turnstile verification failed" }, 400);
       }
-    } else if (env.TURNSTILE_SECRET && !body.turnstileToken) {
-      return json({ error: "Turnstile token required" }, 400);
     }
 
     // Validate target URL
