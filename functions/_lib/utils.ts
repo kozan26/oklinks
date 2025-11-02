@@ -67,6 +67,9 @@ export async function verifyTurnstile(
   token: string,
   remoteIp?: string | null,
 ): Promise<boolean> {
+  if (!secret) {
+    return true;
+  }
   const form = new FormData();
   form.append("secret", secret);
   form.append("response", token);

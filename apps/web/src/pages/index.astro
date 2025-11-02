@@ -2,7 +2,7 @@
 import "../styles/global.css";
 import Toast from "../components/Toast.astro";
 
-const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
+const siteKey = "";
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -21,13 +21,6 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    {siteKey && (
-      <script
-        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-        async
-        defer
-      ></script>
-    )}
   </head>
   <body class="font-display">
     <main class="mx-auto flex min-h-screen max-w-5xl flex-col gap-12 px-6 py-16">
@@ -85,20 +78,8 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
             </div>
           </div>
 
-          <div class="border-t border-olive/30 pt-4">
-            {siteKey ? (
-              <div
-                class="cf-turnstile"
-                data-sitekey={siteKey}
-                data-theme="dark"
-                data-size="flexible"
-              ></div>
-            ) : (
-              <p class="text-xs text-accent/60">
-                Provide `PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET` to enable
-                the Turnstile widget. Requests work without it in development.
-              </p>
-            )}
+          <div class="border-t border-olive/30 pt-4 text-xs text-accent/60">
+            Anti-abuse challenge is disabled.
           </div>
 
           <div class="flex flex-col gap-3">
@@ -197,14 +178,10 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
     }
     const alias = formData.get('alias');
     const expiresAt = formData.get('expiresAt');
-    const tokenInput = event.target.querySelector('input[name="cf-turnstile-response"]');
-    const turnstileToken = tokenInput?.value ?? '';
-
     const payload = {
       target,
       alias: typeof alias === 'string' && alias.length > 0 ? alias : undefined,
       expiresAt: typeof expiresAt === 'string' && expiresAt.length > 0 ? new Date(expiresAt).toISOString() : undefined,
-      turnstileToken: turnstileToken || undefined,
     };
 
     setSubmitting(true);

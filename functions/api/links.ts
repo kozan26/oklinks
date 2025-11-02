@@ -20,7 +20,6 @@ interface CreateLinkRequest {
   target?: string;
   expiresAt?: string | number | null;
   password?: string;
-  turnstileToken?: string;
 }
 
 function parseExpiresAt(input: string | number | null | undefined): number | null {
@@ -49,13 +48,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   if (env.TURNSTILE_SECRET) {
-    if (!body.turnstileToken) {
-      return json({ error: "turnstile_required" }, 400);
-    }
     const remoteIp = request.headers.get("CF-Connecting-IP");
     const valid = await verifyTurnstile(
       env.TURNSTILE_SECRET,
-      body.turnstileToken,
+      request.headers.get("cf-turnstile-token") ?? "",
       remoteIp,
     );
     if (!valid) {
