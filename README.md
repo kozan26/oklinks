@@ -41,9 +41,12 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
    pnpm db:apply
    ```
 
-6. **Configure wrangler.toml:**
-   - Add the `database_id` from step 2 to both D1 database bindings
-   - Add the KV `id` from step 3 to the KV namespace binding
+6. **Get resource IDs and configure wrangler.toml:**
+   - Get D1 database ID: `npx wrangler d1 list` (find oklinks-db and copy the ID)
+   - Get KV namespace ID: `npx wrangler kv namespace list` (find CACHE and copy the ID)
+   - Open `wrangler.toml` and replace:
+     - `your-database-id-here` with the actual D1 database ID
+     - `your-kv-namespace-id-here` with the actual KV namespace ID
    - (Optional) Set `TURNSTILE_SECRET` if you want anti-abuse protection (get from Cloudflare Dashboard > Turnstile)
 
 7. **Run locally:**
@@ -70,12 +73,12 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
    - (Optional) Add `TURNSTILE_SECRET` if you want anti-abuse protection (from Turnstile dashboard)
    - (Optional) Add `ACCESS_AUD` for JWT validation
 
-4. **Bindings (IMPORTANT - Configure these in Pages dashboard):**
-   - Go to your Pages project → **Settings** → **Functions**
-   - **D1 Database Bindings:** Click "Add binding" → Select `oklinks-db` → Set binding name to: `DB`
-   - **KV Namespace Bindings:** Click "Add binding" → Select `CACHE` → Set binding name to: `CACHE`
-   - **Queue Bindings:** Click "Add binding" → Select `oklinks-clicks` → Set binding name to: `CLICK_QUEUE`
-   - These bindings are required for the Functions to work!
+4. **Configure Bindings in wrangler.toml (IMPORTANT):**
+   - Bindings are managed through `wrangler.toml` (not the dashboard)
+   - Make sure you've replaced the placeholder IDs in `wrangler.toml`:
+     - `your-database-id-here` → actual D1 database ID
+     - `your-kv-namespace-id-here` → actual KV namespace ID
+   - If you haven't done this yet, see step 6 in "One-Shot Setup" above
 
 5. **Deploy:** Click "Save and Deploy"
 
