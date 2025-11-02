@@ -77,19 +77,37 @@ export async function onRequestPost(context: {
       alias = randomBase62(6);
     }
 
-    // Check collision: KV first
+    // Check collision: KV first (if available)
     const kvKey = `a:${alias}`;
-    const cached = await env.CACHE.get(kvKey);
-    if (cached) {
-      return json({ error: "Alias already taken", alias_taken: true }, 409);
+    if (env.CACHE) {
+      const cached = await env.CACHE.get(kvKey);
+      if (cached) {
+        return json({ error: "Alias already taken", alias_taken: true }, 409);
+      }
     }
 
-    // Check D1
-    const existing = await env.DB.prepare(
-      "SELECT alias FROM links WHERE alias = ? LIMIT 1"
-    )
-      .bind(alias)
-      .first<{ alias: string }>();
+    // Check D1 (required)
+    if (!env.DB) {
+      return json({ error: "Database not configured. Please add the DB binding in Pages Settings → Functions." }, 503);
+    }
+    
+    let existing;
+    try {
+      existing = await env.DB.prepare(
+        "SELECT alias FROM links WHERE alias = ? LIMIT 1"
+      )
+        .bind(alias)
+        .first<{ alias: string }>();
+    } catch (dbError: any) {
+      console.error("Database query error:", dbError);
+      const errorMsg = dbError?.message || "Database error";
+      return json({ 
+        error: "Database error", 
+        details: errorMsg.includes("no such table") 
+          ? "Database schema not applied. Please run the schema migration." 
+          : errorMsg 
+      }, 500);
+    }
 
     if (existing) {
       return json({ error: "Alias already taken", alias_taken: true }, 409);
@@ -103,12 +121,23 @@ export async function onRequestPost(context: {
     const expiresAt = body.expiresAt ? Math.floor(body.expiresAt / 1000) : null;
     const createdBy = request.headers.get("CF-Connecting-IP") || null;
 
-    await env.DB.prepare(
-      `INSERT INTO links (id, alias, target, expires_at, password_hash, created_by)
-       VALUES (?, ?, ?, ?, ?, ?)`
-    )
-      .bind(id, alias, body.target, expiresAt, passwordHash, createdBy)
-      .run();
+    try {
+      await env.DB.prepare(
+        `INSERT INTO links (id, alias, target, expires_at, password_hash, created_by)
+         VALUES (?, ?, ?, ?, ?, ?)`
+      )
+        .bind(id, alias, body.target, expiresAt, passwordHash, createdBy)
+        .run();
+    } catch (dbError: any) {
+      console.error("Database insert error:", dbError);
+      const errorMsg = dbError?.message || "Database error";
+      return json({ 
+        error: "Database error", 
+        details: errorMsg.includes("no such table") 
+          ? "Database schema not applied. Please run the schema migration in your Cloudflare D1 dashboard." 
+          : errorMsg 
+      }, 500);
+    }
 
     // Cache in KV with 3600s TTL (if available)
     if (env.CACHE) {
@@ -120,9 +149,13 @@ export async function onRequestPost(context: {
       alias,
       target: body.target,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating link:", error);
-    return json({ error: "Internal server error" }, 500);
+    const errorMsg = error?.message || "Unknown error";
+    return json({ 
+      error: "Internal server error", 
+      details: errorMsg 
+    }, 500);
   }
 }
 
