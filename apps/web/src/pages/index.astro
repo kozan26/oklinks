@@ -168,7 +168,10 @@ import Toast from "../components/Toast";
 
           if (!response.ok) {
             const error = await response.json();
-            alert(error.error || "Failed to create link");
+            const errorMsg = error.details 
+              ? `${error.error}\n\n${error.details}` 
+              : error.error || "Failed to create link";
+            alert(errorMsg);
             return;
           }
 
