@@ -85,7 +85,15 @@ export async function onRequest(context: {
   if (!path || path.length === 0 || path === "/") {
     // Serve index.html for root
     if (env.ASSETS) {
-      return env.ASSETS.fetch(new Request(new URL("/index.html", url.origin)));
+      try {
+        const indexRequest = new Request(new URL("/index.html", url.origin));
+        const indexResponse = await env.ASSETS.fetch(indexRequest);
+        if (indexResponse.ok) {
+          return indexResponse;
+        }
+      } catch (e) {
+        console.error("Error fetching index.html from ASSETS:", e);
+      }
     }
     return new Response("Not found", { status: 404 });
   }
@@ -93,15 +101,21 @@ export async function onRequest(context: {
   if (path === "admin" || path.startsWith("admin/")) {
     // Serve admin page
     if (env.ASSETS) {
-      const adminPath = path === "admin" ? "/admin/index.html" : `/${path}/index.html`;
-      const adminResponse = await env.ASSETS.fetch(new Request(new URL(adminPath, url.origin)));
-      if (adminResponse.ok) {
-        return adminResponse;
-      }
-      // Try without index.html
-      const adminResponse2 = await env.ASSETS.fetch(new Request(new URL(`/${path}.html`, url.origin)));
-      if (adminResponse2.ok) {
-        return adminResponse2;
+      try {
+        const adminPath = path === "admin" ? "/admin/index.html" : `/${path}/index.html`;
+        const adminRequest = new Request(new URL(adminPath, url.origin));
+        const adminResponse = await env.ASSETS.fetch(adminRequest);
+        if (adminResponse.ok) {
+          return adminResponse;
+        }
+        // Try without index.html
+        const adminRequest2 = new Request(new URL(`/${path}.html`, url.origin));
+        const adminResponse2 = await env.ASSETS.fetch(adminRequest2);
+        if (adminResponse2.ok) {
+          return adminResponse2;
+        }
+      } catch (e) {
+        console.error("Error fetching admin page from ASSETS:", e);
       }
     }
     return new Response("Not found", { status: 404 });
@@ -136,10 +150,35 @@ export async function onRequest(context: {
     return new Response("Database not configured", { status: 503 });
   }
 
-  const target = await resolveAlias(alias, env);
+  try {
+    const target = await resolveAlias(alias, env);
 
-  if (!target) {
-    return new Response("Link not found", { status: 404 });
+    if (!target) {
+      return new Response("Link not found", { status: 404 });
+    }
+
+    // Enqueue click event (if queue is available)
+    if (env.CLICK_QUEUE) {
+      const clickEvent: ClickEvent = {
+        alias,
+        ts: Math.floor(Date.now() / 1000),
+        ua: request.headers.get("user-agent") || null,
+        ref: request.headers.get("referer") || null,
+      };
+
+      try {
+        await env.CLICK_QUEUE.send(clickEvent);
+      } catch (error) {
+        // Log but don't fail the redirect
+        console.error("Failed to enqueue click event:", error);
+      }
+    }
+
+    // Redirect
+    return Response.redirect(target, 302);
+  } catch (error) {
+    console.error("Error resolving alias:", error);
+    return new Response("Error processing request", { status: 500 });
   }
 
   // Enqueue click event (if queue is available)
