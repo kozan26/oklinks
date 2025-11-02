@@ -11,7 +11,7 @@ database_id = "your-database-id-here"
 binding = "CACHE"
 id = "your-kv-namespace-id-here"
 
-[[queues]]
+[queues]
 producers = [{ queue = "oklinks-clicks", binding = "CLICK_QUEUE" }]
 
 [vars]
