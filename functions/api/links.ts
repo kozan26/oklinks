@@ -1,10 +1,13 @@
 import {
   aliasExists,
+  deleteLink as deleteLinkRecord,
   getActiveLinkByTarget,
+  getLinkById,
   listLinks,
   saveLink,
   upsertAliasCache,
 } from "../_lib/link-service";
+import { aliasCacheKey } from "../_lib/utils";
 import type { Env } from "../_lib/types";
 import {
   isValidHttpUrl,
@@ -40,6 +43,9 @@ function parseExpiresAt(input: string | number | null | undefined): number | nul
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
+  // POST should only handle /api/links (create new link)
+  // DELETE requests to /api/links/{id} should be handled by links_[id].ts
+  // This handler only creates new links
   const { request, env } = context;
   const contentType = request.headers.get("content-type") ?? "";
 
@@ -232,8 +238,58 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   return json(responsePayload);
 };
 
-export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
+export const onRequestDelete: PagesFunction<Env> = async ({ request, env }) => {
   const url = new URL(request.url);
+  const pathParts = url.pathname.split('/').filter(Boolean);
+  
+  // Only handle DELETE for /api/links/{id}
+  if (pathParts.length === 3 && pathParts[0] === 'api' && pathParts[1] === 'links') {
+    const id = pathParts[2];
+    
+    if (!id || typeof id !== 'string') {
+      console.error('Delete failed: missing or invalid ID', { id, url: request.url });
+      return json({ error: "missing_id", deleted: false }, 400);
+    }
+
+    console.log('Attempting to delete link:', id);
+    const record = await getLinkById(env, id);
+    
+    if (!record) {
+      console.error('Delete failed: link not found', { id });
+      return json({ error: "link_not_found", deleted: false }, 404);
+    }
+
+    const success = await deleteLinkRecord(env, id);
+    
+    if (!success) {
+      console.error('Delete failed: database deletion returned false', { id });
+      return json({ error: "delete_failed", deleted: false }, 500);
+    }
+
+    // Clear cache
+    if (record) {
+      await env.CACHE.delete(aliasCacheKey(record.alias));
+    }
+
+    console.log('Link deleted successfully:', id);
+    return json({ deleted: true, id });
+  }
+  
+  // For other DELETE requests, return method not allowed
+  return json({ error: "method_not_allowed" }, 405);
+};
+
+export const onRequestGet: PagesFunction<Env> = async ({ request, env, next }) => {
+  const url = new URL(request.url);
+  
+  // Check if this is a request for a specific link ID (path has more segments)
+  const pathParts = url.pathname.split('/').filter(Boolean);
+  // If path is /api/links/{id} (3 parts), let links_[id].ts handle it
+  if (pathParts.length > 2 && pathParts[0] === 'api' && pathParts[1] === 'links') {
+    return next();
+  }
+  
+  // Otherwise, handle as list request
   const limitParam = url.searchParams.get("limit");
   const limit = limitParam ? Number.parseInt(limitParam, 10) : 50;
   const links = await listLinks(env, { limit: Number.isFinite(limit) ? limit : 50 });
