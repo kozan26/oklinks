@@ -279,17 +279,21 @@ export const onRequestDelete: PagesFunction<Env> = async ({ request, env }) => {
   return json({ error: "method_not_allowed" }, 405);
 };
 
-export const onRequestGet: PagesFunction<Env> = async ({ request, env, next }) => {
+export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   const url = new URL(request.url);
-  
-  // Check if this is a request for a specific link ID (path has more segments)
   const pathParts = url.pathname.split('/').filter(Boolean);
-  // If path is /api/links/{id} (3 parts), let links_[id].ts handle it
-  if (pathParts.length > 2 && pathParts[0] === 'api' && pathParts[1] === 'links') {
-    return next();
+  
+  // Handle GET for /api/links/{id} - get a specific link by ID
+  if (pathParts.length === 3 && pathParts[0] === 'api' && pathParts[1] === 'links') {
+    const id = pathParts[2];
+    if (!id || typeof id !== 'string') {
+      return json({ error: "missing_id" }, 400);
+    }
+    const record = await getLinkById(env, id);
+    return json(record ?? null);
   }
   
-  // Otherwise, handle as list request
+  // Otherwise, handle as list request for /api/links
   const limitParam = url.searchParams.get("limit");
   const limit = limitParam ? Number.parseInt(limitParam, 10) : 50;
   const links = await listLinks(env, { limit: Number.isFinite(limit) ? limit : 50 });
