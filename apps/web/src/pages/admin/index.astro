@@ -42,10 +42,9 @@ import { inlineCSS } from "../../styles/inline.css.ts";
       .admin-page {
         min-height: 100vh;
         background: 
-          radial-gradient(circle at 0% 0%, hsl(230 58% 8% / 1) 0%, transparent 50%),
-          radial-gradient(circle at 100% 0%, hsl(202 84% 12% / 0.8) 0%, transparent 50%),
-          radial-gradient(circle at 50% 100%, hsl(234 60% 8% / 0.6) 0%, transparent 50%),
-          linear-gradient(180deg, hsl(230 58% 6%) 0%, hsl(234 60% 7%) 100%);
+          radial-gradient(circle at 20% 20%, hsl(202 84% 15% / 0.4) 0%, transparent 50%),
+          radial-gradient(circle at 80% 80%, hsl(230 58% 10% / 0.3) 0%, transparent 50%),
+          linear-gradient(135deg, hsl(230 58% 6%) 0%, hsl(234 60% 7%) 50%, hsl(230 58% 6%) 100%);
         color: var(--admin-primary);
         position: relative;
         overflow-x: hidden;
@@ -257,23 +256,24 @@ import { inlineCSS } from "../../styles/inline.css.ts";
 
       .admin-hero {
         background: linear-gradient(135deg, 
-          color-mix(in srgb, var(--admin-card) 95%, transparent) 0%,
-          color-mix(in srgb, var(--admin-card) 88%, transparent) 100%);
-        border: 1px solid color-mix(in srgb, var(--admin-ring) 25%, transparent);
-        border-radius: 1.25rem;
-        padding: clamp(2rem, 3vw + 1rem, 2.5rem);
+          hsl(235 46% 14%) 0%,
+          hsl(235 46% 12%) 100%);
+        border: 1.5px solid hsl(202 100% 53% / 0.25);
+        border-radius: 1.5rem;
+        padding: clamp(2.25rem, 3vw + 1rem, 2.75rem);
         position: relative;
         overflow: hidden;
         box-shadow: 
-          0 20px 60px hsl(230 70% 5% / 0.4),
-          0 0 0 1px color-mix(in srgb, var(--admin-ring) 10%, transparent) inset;
+          0 25px 70px hsl(230 70% 5% / 0.5),
+          0 0 0 1px hsl(202 100% 53% / 0.08) inset,
+          0 1px 0 hsl(202 100% 53% / 0.12) inset;
         display: flex;
         flex-wrap: wrap;
         align-items: flex-start;
         justify-content: space-between;
-        gap: 2rem;
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        gap: 2.5rem;
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
       }
 
       .admin-hero::after {
@@ -349,26 +349,28 @@ import { inlineCSS } from "../../styles/inline.css.ts";
 
       .metric-card {
         background: linear-gradient(135deg, 
-          color-mix(in srgb, var(--admin-card) 96%, transparent) 0%,
-          color-mix(in srgb, var(--admin-card) 90%, transparent) 100%);
-        border: 1px solid color-mix(in srgb, var(--admin-ring) 20%, transparent);
-        border-radius: 1rem;
-        padding: 1.75rem;
+          hsl(235 46% 14%) 0%,
+          hsl(235 46% 12%) 100%);
+        border: 1px solid hsl(202 100% 53% / 0.2);
+        border-radius: 1.25rem;
+        padding: 2rem;
         position: relative;
         overflow: hidden;
         box-shadow: 
-          0 8px 24px hsl(230 70% 6% / 0.3),
-          0 0 0 1px color-mix(in srgb, var(--admin-ring) 8%, transparent) inset;
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+          0 10px 30px hsl(230 70% 6% / 0.4),
+          0 0 0 1px hsl(202 100% 53% / 0.06) inset;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .metric-card:hover {
-        transform: translateY(-2px);
+        transform: translateY(-4px) scale(1.02);
+        border-color: hsl(202 100% 53% / 0.3);
         box-shadow: 
-          0 12px 32px hsl(230 70% 6% / 0.4),
-          0 0 0 1px color-mix(in srgb, var(--admin-ring) 12%, transparent) inset;
+          0 16px 40px hsl(230 70% 6% / 0.5),
+          0 0 0 1px hsl(202 100% 53% / 0.1) inset,
+          0 0 20px hsl(202 100% 53% / 0.1);
       }
 
       .metric-card::after {
@@ -418,16 +420,17 @@ import { inlineCSS } from "../../styles/inline.css.ts";
 
       .admin-card {
         background: linear-gradient(135deg, 
-          color-mix(in srgb, var(--admin-card) 95%, transparent) 0%,
-          color-mix(in srgb, var(--admin-card) 88%, transparent) 100%);
-        border: 1px solid color-mix(in srgb, var(--admin-ring) 22%, transparent);
-        border-radius: 1.25rem;
-        padding: 2rem;
+          hsl(235 46% 14%) 0%,
+          hsl(235 46% 12%) 100%);
+        border: 1.5px solid hsl(202 100% 53% / 0.22);
+        border-radius: 1.5rem;
+        padding: 2.25rem;
         box-shadow: 
-          0 16px 48px hsl(230 70% 5% / 0.35),
-          0 0 0 1px color-mix(in srgb, var(--admin-ring) 10%, transparent) inset;
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+          0 20px 55px hsl(230 70% 5% / 0.45),
+          0 0 0 1px hsl(202 100% 53% / 0.08) inset,
+          0 1px 0 hsl(202 100% 53% / 0.1) inset;
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
       }
 
       .admin-card-header {
