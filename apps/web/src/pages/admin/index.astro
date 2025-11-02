@@ -650,7 +650,10 @@ import { inlineCSS } from "../../styles/inline.css.ts";
             
             try {
               console.log('Deleting link:', id);
-              const response = await fetch('/api/links/' + encodeURIComponent(id), {
+              const url = '/api/links/' + encodeURIComponent(id);
+              console.log('Delete URL:', url);
+              
+              const response = await fetch(url, {
                 method: 'DELETE',
                 headers: {
                   'accept': 'application/json',
@@ -658,24 +661,28 @@ import { inlineCSS } from "../../styles/inline.css.ts";
               });
               
               console.log('Delete response status:', response.status);
+              console.log('Delete response headers:', Object.fromEntries(response.headers.entries()));
+              
+              const contentType = response.headers.get('content-type') || '';
+              console.log('Content-Type:', contentType);
               
               let result;
-              const contentType = response.headers.get('content-type');
+              const responseText = await response.text();
+              console.log('Response text:', responseText.substring(0, 500));
               
               try {
-                if (contentType && contentType.includes('application/json')) {
-                  result = await response.json();
+                if (contentType.includes('application/json') || responseText.trim().startsWith('{')) {
+                  result = JSON.parse(responseText);
                 } else {
-                  const text = await response.text();
-                  console.error('Non-JSON response:', text);
-                  result = { error: 'invalid_response', message: text };
+                  console.error('Non-JSON response received:', responseText);
+                  result = { error: 'invalid_response', message: responseText.substring(0, 100) };
                 }
               } catch (parseError) {
-                console.error('Failed to parse response:', parseError);
-                result = { error: 'parse_error', message: 'Failed to parse server response' };
+                console.error('Failed to parse response:', parseError, 'Text:', responseText.substring(0, 200));
+                result = { error: 'parse_error', message: 'Failed to parse server response: ' + responseText.substring(0, 100) };
               }
               
-              console.log('Delete response:', result);
+              console.log('Parsed result:', result);
               
               if (!response.ok) {
                 if (response.status === 401) {

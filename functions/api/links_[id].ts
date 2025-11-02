@@ -17,13 +17,21 @@ export const onRequestGet: PagesFunction<Env> = async ({ params, env }) => {
 
 export const onRequestDelete: PagesFunction<Env> = async ({ params, env, request }) => {
   try {
-    // Extract ID from URL path
-    const url = new URL(request.url);
-    const pathParts = url.pathname.split('/');
-    const id = pathParts[pathParts.length - 1] || params?.id;
+    // In Cloudflare Pages Functions, params.id should be populated from the filename pattern
+    let id = params?.id as string | undefined;
+    
+    // Fallback: extract from URL if params.id is not available
+    if (!id) {
+      const url = new URL(request.url);
+      const pathParts = url.pathname.split('/').filter(Boolean);
+      // Path should be /api/links/{id}
+      if (pathParts.length >= 3 && pathParts[0] === 'api' && pathParts[1] === 'links') {
+        id = pathParts[2];
+      }
+    }
     
     if (!id || typeof id !== 'string') {
-      console.error('Delete failed: missing or invalid ID', { id, params, pathname: url.pathname });
+      console.error('Delete failed: missing or invalid ID', { id, params, url: request.url });
       return json({ error: "missing_id", deleted: false }, 400);
     }
 
@@ -51,6 +59,10 @@ export const onRequestDelete: PagesFunction<Env> = async ({ params, env, request
     return json({ deleted: true, id });
   } catch (error) {
     console.error('Delete error:', error);
-    return json({ error: "server_error", deleted: false, message: error instanceof Error ? error.message : 'Unknown error' }, 500);
+    return json({ 
+      error: "server_error", 
+      deleted: false, 
+      message: error instanceof Error ? error.message : 'Unknown error' 
+    }, 500);
   }
 };
