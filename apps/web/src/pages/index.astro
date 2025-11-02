@@ -222,18 +222,29 @@ import Toast from "../components/Toast.astro";
       if (placeholder) {
         placeholder.style.display = 'none';
         console.log('Hiding placeholder');
+      } else {
+        console.error('Placeholder element not found!');
       }
       
       if (detail) {
-        detail.style.display = 'flex';
-        detail.style.flexDirection = 'column';
-        detail.style.gap = '1rem';
+        detail.style.display = '';
+        detail.style.removeProperty('display');
+        detail.removeAttribute('style');
         console.log('Showing result detail');
+        console.log('Detail element:', detail);
+        console.log('Detail visibility:', window.getComputedStyle(detail).display);
+      } else {
+        console.error('Detail element not found!');
       }
       if (card) {
         card.dataset.state = 'ready';
         console.log('Card state set to ready');
+      } else {
+        console.error('Card element not found!');
       }
+      
+      // Force a reflow to ensure display changes take effect
+      void detail?.offsetHeight;
       
       setStatus('Link created.');
       event.target.reset();
