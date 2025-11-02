@@ -68,10 +68,17 @@ export async function onRequest(context: {
   const { request, env, params } = context;
   const url = new URL(request.url);
   
-  // Get path from params first, then fall back to URL pathname
+  // Get path from params (Cloudflare Pages Functions provides this)
+  // params.path is undefined for root, or contains the path segment
   let path = params.path;
-  if (!path || path === "") {
+  if (path === undefined) {
+    // If params.path is undefined, get from URL pathname
     path = url.pathname.slice(1); // Remove leading /
+  }
+
+  // Skip if this is an API route or static asset - let Pages handle it
+  if (path.startsWith("api/") || path.startsWith("_assets/") || path.includes(".")) {
+    return new Response("Not found", { status: 404 });
   }
 
   // Handle QR code generation
