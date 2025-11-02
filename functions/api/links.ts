@@ -1,5 +1,6 @@
 import {
   aliasExists,
+  getActiveLinkByTarget,
   listLinks,
   saveLink,
   upsertAliasCache,
@@ -59,6 +60,81 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return json({ error: "invalid_target" }, 400);
   }
 
+  const expiresAt = parseExpiresAt(body.expiresAt ?? null);
+  const passwordHash = body.password ? await sha256Hex(body.password) : null;
+  const createdBy =
+    request.headers.get("CF-Access-Authenticated-User-Email") ?? null;
+
+  // Check if the same URL was already shortened (only if no custom alias and no password)
+  if (!body.alias && !body.password) {
+    const existingLink = await getActiveLinkByTarget(env, body.target);
+    if (existingLink) {
+      // Return the existing link
+      const responsePayload = {
+        id: existingLink.id,
+        alias: existingLink.alias,
+        target: existingLink.target,
+      };
+
+      // Ensure cache is up to date
+      await upsertAliasCache(env, {
+        alias: existingLink.alias,
+        target: existingLink.target,
+        expires_at: existingLink.expires_at,
+        is_active: existingLink.is_active,
+      });
+
+      const prefersHtml =
+        contentType.includes("application/x-www-form-urlencoded") &&
+        (request.headers.get("accept") ?? "").includes("text/html");
+
+      if (prefersHtml) {
+        const origin = new URL(request.url).origin;
+        const shortUrl = `${origin.replace(/\/$/, "")}/${existingLink.alias}`;
+        const html = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Short link found · oklinks</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#0B0D0E; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; margin:0; padding:2rem; }
+      a { color:#43D5FF; }
+      .card { background:#1A1C1E; padding:2rem; border-radius:1rem; max-width:32rem; text-align:center; border:1px solid rgba(67,213,255,0.3); box-shadow:0 25px 60px rgba(0,0,0,0.6);}
+      .short { font-size:1.2rem; margin:1rem 0; font-weight:600; }
+      .buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+      button { background:#3A3F36; border:1px solid rgba(67,213,255,0.4); color:#43D5FF; padding:0.6rem 1.4rem; border-radius:999px; cursor:pointer; }
+      button:hover { background:#2a2d28; }
+      .note { margin-top:1rem; font-size:0.85rem; color:rgba(255,255,255,0.6); }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Link already exists</h1>
+      <p class="short"><a href="${shortUrl}">${shortUrl}</a></p>
+      <p class="note">This URL was already shortened previously.</p>
+      <div class="buttons">
+        <button type="button" onclick="navigator.clipboard.writeText('${shortUrl}').then(()=>this.textContent='Copied!').catch(()=>this.textContent='Copy manually')">Copy</button>
+        <a href="${shortUrl}" rel="noopener" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.4rem;border-radius:999px;border:1px solid rgba(67,213,255,0.4);text-decoration:none;">Open link</a>
+        <a href="/" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.4rem;border-radius:999px;border:1px solid rgba(255,255,255,0.12);text-decoration:none;color:#fff;">Create another</a>
+      </div>
+      <p style="margin-top:1.5rem;font-size:0.85rem;color:rgba(255,255,255,0.6);">Target: <span style="word-break:break-all;">${body.target}</span></p>
+    </div>
+  </body>
+</html>`;
+        return new Response(html, {
+          status: 200,
+          headers: {
+            "content-type": "text/html; charset=utf-8",
+            "cache-control": "no-store",
+          },
+        });
+      }
+
+      return json(responsePayload);
+    }
+  }
+
   let alias = "";
   if (body.alias) {
     alias = sanitizeAlias(body.alias);
@@ -74,11 +150,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (collision) {
     return json({ error: "alias_taken" }, 409);
   }
-
-  const expiresAt = parseExpiresAt(body.expiresAt ?? null);
-  const passwordHash = body.password ? await sha256Hex(body.password) : null;
-  const createdBy =
-    request.headers.get("CF-Access-Authenticated-User-Email") ?? null;
 
   const id = crypto.randomUUID();
 

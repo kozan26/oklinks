@@ -129,6 +129,25 @@ export async function aliasExists(env: Env, alias: string): Promise<boolean> {
   return Boolean(row);
 }
 
+export async function getActiveLinkByTarget(
+  env: Env,
+  target: string,
+): Promise<LinkRecord | null> {
+  const now = Math.floor(Date.now() / 1000);
+  const row = await env.DB.prepare(
+    `SELECT * FROM links 
+     WHERE target = ? 
+     AND is_active = 1 
+     AND (expires_at IS NULL OR expires_at > ?)
+     AND password_hash IS NULL
+     ORDER BY created_at DESC
+     LIMIT 1`
+  )
+    .bind(target, now)
+    .first<LinkRecord>();
+  return row ?? null;
+}
+
 export interface ListLinksOptions {
   limit?: number;
 }
