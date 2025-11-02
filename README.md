@@ -41,29 +41,7 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
    pnpm db:apply
    ```
 
-6. **Get resource IDs and configure wrangler.toml:**
-   - **Get D1 database ID:**
-     ```bash
-     npx wrangler d1 list
-     ```
-     Find `oklinks-db` in the output and copy the `database_id` (it's a long hex string)
-   
-   - **Get KV namespace ID:**
-     ```bash
-     npx wrangler kv namespace list
-     ```
-     Find `CACHE` in the output and copy the `id` (it's a long hex string)
-   
-   - **Update wrangler.toml:**
-     Open `wrangler.toml` and replace:
-     - `your-database-id-here` → paste your actual D1 database ID
-     - `your-kv-namespace-id-here` → paste your actual KV namespace ID
-   
-   - **(Optional)** Set `TURNSTILE_SECRET` if you want anti-abuse protection (get from Cloudflare Dashboard > Turnstile)
-   
-   **Note:** Without valid IDs, Cloudflare Pages deployment will fail. You must complete this step before deploying.
-
-7. **Run locally:**
+6. **Run locally (optional - for testing):**
    ```bash
    pnpm dev:pages
    ```
@@ -87,12 +65,13 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
    - (Optional) Add `TURNSTILE_SECRET` if you want anti-abuse protection (from Turnstile dashboard)
    - (Optional) Add `ACCESS_AUD` for JWT validation
 
-4. **Configure Bindings in wrangler.toml (IMPORTANT):**
-   - Bindings are managed through `wrangler.toml` (not the dashboard)
-   - Make sure you've replaced the placeholder IDs in `wrangler.toml`:
-     - `your-database-id-here` → actual D1 database ID
-     - `your-kv-namespace-id-here` → actual KV namespace ID
-   - If you haven't done this yet, see step 6 in "One-Shot Setup" above
+4. **Configure Bindings (EASY - in Pages Dashboard):**
+   - Go to your Pages project → **Settings** → **Functions**
+   - Click **"Add binding"** for each:
+     - **D1 Database:** Name = `DB`, Database = `oklinks-db`
+     - **KV Namespace:** Name = `CACHE`, Namespace = `CACHE`  
+     - **Queue:** Name = `CLICK_QUEUE`, Queue = `oklinks-clicks`
+   - Click **Save** - that's it! No need to edit wrangler.toml.
 
 5. **Deploy:** Click "Save and Deploy"
 

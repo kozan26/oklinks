@@ -2,23 +2,9 @@ name = "oklinks"
 compatibility_date = "2024-11-22"
 pages_build_output_dir = "apps/web/dist"
 
-# IMPORTANT: Replace the placeholder IDs below with your actual Cloudflare resource IDs
-# These are required for Pages Functions to work. Get them by running:
-# - npx wrangler d1 list (for database_id)
-# - npx wrangler kv namespace list (for KV namespace id)
-# - npx wrangler queues list (for queue name)
-
-[[d1_databases]]
-binding = "DB"
-database_name = "oklinks-db"
-database_id = "your-database-id-here"  # Replace with actual ID from: npx wrangler d1 list
-
-[[kv_namespaces]]
-binding = "CACHE"
-id = "your-kv-namespace-id-here"  # Replace with actual ID from: npx wrangler kv namespace list
-
-[queues]
-producers = [{ queue = "oklinks-clicks", binding = "CLICK_QUEUE" }]
+# Bindings (D1, KV, Queue) should be configured in Cloudflare Pages dashboard
+# Go to: Pages Project → Settings → Functions → Add bindings there
+# No need to configure them here for Pages deployment!
 
 [vars]
 # TURNSTILE_SECRET = "your-turnstile-secret-here" # Optional: only needed if you want Turnstile anti-abuse
