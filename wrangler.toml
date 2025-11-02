@@ -2,10 +2,6 @@ name = "oklinks"
 compatibility_date = "2025-11-02"
 pages_build_output_dir = "./apps/web/dist"
 
-[vars]
-# Optional: audience value to enforce Cloudflare Access JWTs on admin calls
-ACCESS_AUD = ""
-
 [[d1_databases]]
 binding = "DB"
 database_name = "oklinks-db"
