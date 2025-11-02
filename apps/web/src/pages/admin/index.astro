@@ -8,150 +8,322 @@ import { inlineCSS } from "../../styles/inline.css.ts";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>oklinks — Admin</title>
     <link rel="icon" type="image/svg+xml" href="/oklinks.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
     <style set:html={inlineCSS} is:global></style>
+    <style is:global>
+      .admin-page {
+        min-height: 100vh;
+        background: #0b0d0e;
+        color: var(--text-primary);
+      }
+      .admin-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .admin-header {
+        margin-bottom: 2rem;
+      }
+      .admin-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 0.5rem;
+      }
+      .admin-subtitle {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+      }
+      .admin-section {
+        background: var(--surface-elevated);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2rem;
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+      .admin-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .admin-section-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .refresh-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--accent);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: var(--font-display);
+      }
+      .refresh-btn:hover {
+        border-color: var(--border-strong);
+        background: var(--surface);
+      }
+      .admin-status {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        min-height: 1.5rem;
+      }
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+      }
+      .admin-table thead {
+        background: rgba(11, 13, 14, 0.6);
+        border-bottom: 1px solid var(--border);
+      }
+      .admin-table th {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.75rem;
+      }
+      .admin-table th:last-child {
+        text-align: right;
+      }
+      .admin-table td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-primary);
+      }
+      .admin-table td:last-child {
+        text-align: right;
+      }
+      .admin-table tbody tr:hover {
+        background: rgba(67, 213, 255, 0.05);
+      }
+      .alias-cell {
+        font-family: var(--font-mono);
+        color: var(--accent);
+      }
+      .target-cell {
+        max-width: 400px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .delete-btn {
+        padding: 0.375rem 0.75rem;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--accent);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: var(--font-display);
+      }
+      .delete-btn:hover {
+        border-color: #ff6b6b;
+        background: rgba(255, 107, 107, 0.1);
+        color: #ff6b6b;
+      }
+      .delete-btn[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-tertiary);
+      }
+      .error-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #ff6b6b;
+      }
+      @media (max-width: 768px) {
+        .admin-container {
+          padding: 1rem;
+        }
+        .admin-section {
+          padding: 1.5rem;
+        }
+        .admin-table {
+          font-size: 0.75rem;
+        }
+        .admin-table th,
+        .admin-table td {
+          padding: 0.5rem;
+        }
+      }
+    </style>
   </head>
-  <body class="font-display">
-    <main class="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-6 py-12">
-      <header class="flex flex-col gap-2">
-        <h1 class="text-4xl font-semibold text-accent">oklinks admin</h1>
-        <p class="text-sm text-accent/70">
+  <body class="admin-page">
+    <main class="admin-container">
+      <header class="admin-header">
+        <h1 class="admin-title">oklinks admin</h1>
+        <p class="admin-subtitle">
           Protected via Cloudflare Access. Manage the latest short links below.
         </p>
       </header>
 
-      <section class="rounded-2xl border border-olive/30 bg-graphite/50 p-6 shadow-lg shadow-black/40">
-        <div class="flex items-center justify-between">
-          <h2 class="text-sm uppercase tracking-[0.3em] text-accent">
-            Recent links
-          </h2>
-          <button
-            id="refresh"
-            type="button"
-            class="rounded-md border border-accent/40 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent"
-          >
+      <section class="admin-section">
+        <div class="admin-header-row">
+          <h2 class="admin-section-title">Recent links</h2>
+          <button id="refresh" type="button" class="refresh-btn">
             Refresh
           </button>
         </div>
-        <p id="admin-status" class="mt-2 text-xs text-accent/70"></p>
-        <div class="mt-6 overflow-x-auto">
-          <table class="min-w-full divide-y divide-olive/30 text-sm text-accent/80">
-            <thead class="bg-graphite/60 text-xs uppercase tracking-[0.2em] text-accent/60">
+        <p id="admin-status" class="admin-status"></p>
+        <div style="overflow-x: auto;">
+          <table class="admin-table">
+            <thead>
               <tr>
-                <th class="px-4 py-3 text-left font-medium">Alias</th>
-                <th class="px-4 py-3 text-left font-medium">Target</th>
-                <th class="px-4 py-3 text-left font-medium">Clicks</th>
-                <th class="px-4 py-3 text-left font-medium">Expires</th>
-                <th class="px-4 py-3 text-right font-medium">Actions</th>
+                <th>Alias</th>
+                <th>Target</th>
+                <th>Clicks</th>
+                <th>Expires</th>
+                <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="links-body" class="divide-y divide-olive/20"></tbody>
+            <tbody id="links-body"></tbody>
           </table>
         </div>
       </section>
     </main>
 
     <script is:inline>
-      {`(function () {
-  const status = document.getElementById('admin-status');
-  const body = document.getElementById('links-body');
-  const refresh = document.getElementById('refresh');
+      console.log('Admin script loading...');
+      (function() {
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', init);
+        } else {
+          init();
+        }
+        
+        function init() {
+          const status = document.getElementById('admin-status');
+          const body = document.getElementById('links-body');
+          const refresh = document.getElementById('refresh');
 
-  async function load() {
-    setStatus('Loading...');
-    if (body) body.innerHTML = '';
-    try {
-      const response = await fetch('/api/links', { headers: { accept: 'application/json' } });
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API error:', response.status, errorText);
-        throw new Error('Request failed: ' + response.status);
-      }
-      const payload = await response.json();
-      console.log('API response:', payload);
-      const items = Array.isArray(payload?.links) ? payload.links : [];
-      console.log('Links found:', items.length);
-      if (items.length === 0) {
-        setStatus('No links yet.');
-        if (body) body.innerHTML = '<tr><td colspan="5" class="px-4 py-3 text-center text-accent/60">No links created yet.</td></tr>';
-        return;
-      }
-      for (const link of items) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td class="px-4 py-3 font-mono text-accent">${escapeHtml(link.alias || '')}</td>
-          <td class="px-4 py-3 max-w-xs truncate">${escapeHtml(link.target || '')}</td>
-          <td class="px-4 py-3 text-right">${link.clicks_total ?? 0}</td>
-          <td class="px-4 py-3 text-right">${formatExpiry(link.expires_at)}</td>
-          <td class="px-4 py-3 text-right">
-            <button data-id="${escapeHtml(link.id || '')}" class="delete rounded-md border border-accent/40 px-3 py-1 text-xs uppercase tracking-[0.2em] text-accent">
-              Delete
-            </button>
-          </td>`;
-        if (body) body.appendChild(row);
-      }
-      setStatus('Loaded ' + items.length + ' link(s).');
-    } catch (error) {
-      console.error('Load error:', error);
-      setStatus('Failed to load links: ' + (error.message || 'Unknown error'));
-      if (body) body.innerHTML = '<tr><td colspan="5" class="px-4 py-3 text-center text-red-400">Error loading links. Check console for details.</td></tr>';
-    }
-  }
+          async function load() {
+            if (status) status.textContent = 'Loading...';
+            if (body) body.innerHTML = '';
+            try {
+              const response = await fetch('/api/links', { headers: { accept: 'application/json' } });
+              if (!response.ok) {
+                const errorText = await response.text();
+                console.error('API error:', response.status, errorText);
+                throw new Error('Request failed: ' + response.status);
+              }
+              const payload = await response.json();
+              console.log('API response:', payload);
+              const items = Array.isArray(payload?.links) ? payload.links : [];
+              console.log('Links found:', items.length);
+              if (items.length === 0) {
+                if (status) status.textContent = 'No links yet.';
+                if (body) {
+                  body.innerHTML = '<tr><td colspan="5" class="empty-state">No links created yet.</td></tr>';
+                }
+                return;
+              }
+              for (const link of items) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                  <td class="alias-cell">${escapeHtml(link.alias || '')}</td>
+                  <td class="target-cell" title="${escapeHtml(link.target || '')}">${escapeHtml(link.target || '')}</td>
+                  <td style="text-align: right;">${link.clicks_total ?? 0}</td>
+                  <td style="text-align: right;">${formatExpiry(link.expires_at)}</td>
+                  <td style="text-align: right;">
+                    <button data-id="${escapeHtml(link.id || '')}" class="delete-btn">
+                      Delete
+                    </button>
+                  </td>`;
+                if (body) body.appendChild(row);
+              }
+              if (status) status.textContent = 'Loaded ' + items.length + ' link(s).';
+            } catch (error) {
+              console.error('Load error:', error);
+              if (status) status.textContent = 'Failed to load links: ' + (error.message || 'Unknown error');
+              if (body) {
+                body.innerHTML = '<tr><td colspan="5" class="error-state">Error loading links. Check console for details.</td></tr>';
+              }
+            }
+          }
 
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
+          function escapeHtml(text) {
+            if (text == null) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+          }
 
-  function formatExpiry(expires) {
-    if (!expires) {
-      return 'Never';
-    }
-    const value = Number(expires);
-    if (!Number.isFinite(value) || value <= 0) {
-      return 'Never';
-    }
-    const date = new Date(value * 1000);
-    return date.toLocaleString();
-  }
+          function formatExpiry(expires) {
+            if (!expires) {
+              return 'Never';
+            }
+            const value = Number(expires);
+            if (!Number.isFinite(value) || value <= 0) {
+              return 'Never';
+            }
+            const date = new Date(value * 1000);
+            return date.toLocaleString();
+          }
 
-  async function handleDelete(event) {
-    const target = event.target;
-    if (!(target instanceof HTMLElement)) return;
-    if (!target.classList.contains('delete')) return;
-    const id = target.getAttribute('data-id');
-    if (!id) return;
-    target.setAttribute('disabled', 'true');
-    try {
-      const response = await fetch('/api/links/' + id, { method: 'DELETE' });
-      if (!response.ok) {
-        throw new Error('Delete failed');
-      }
-      await load();
-    } catch (error) {
-      console.error(error);
-      setStatus('Failed to delete link.');
-    } finally {
-      target.removeAttribute('disabled');
-    }
-  }
+          async function handleDelete(event) {
+            const target = event.target;
+            if (!(target instanceof HTMLElement)) return;
+            if (!target.classList.contains('delete-btn')) return;
+            const id = target.getAttribute('data-id');
+            if (!id) return;
+            target.setAttribute('disabled', 'true');
+            try {
+              const response = await fetch('/api/links/' + id, { method: 'DELETE' });
+              if (!response.ok) {
+                throw new Error('Delete failed');
+              }
+              await load();
+            } catch (error) {
+              console.error(error);
+              if (status) status.textContent = 'Failed to delete link.';
+            } finally {
+              target.removeAttribute('disabled');
+            }
+          }
 
-  function setStatus(message) {
-    if (status) {
-      status.textContent = message;
-    }
-  }
+          if (refresh) {
+            refresh.addEventListener('click', load);
+          }
 
-  if (refresh) {
-    refresh.addEventListener('click', load);
-  }
+          if (body) {
+            body.addEventListener('click', handleDelete);
+          }
 
-  if (body) {
-    body.addEventListener('click', handleDelete);
-  }
-
-  load();
-})();`}
+          load();
+        }
+      })();
+      console.log('Admin script setup complete');
     </script>
   </body>
 </html>
