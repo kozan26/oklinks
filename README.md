@@ -62,7 +62,7 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
 
 2. **Build Configuration:**
    - Framework preset: None (or Astro)
-   - Build command: `pnpm --filter ./apps/web build`
+   - Build command: `pnpm install && pnpm --filter ./apps/web build`
    - Build output directory: `apps/web/dist`
    - Root directory: `/` (repository root)
 

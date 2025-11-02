@@ -22,9 +22,5 @@
     "vitest": "^1.6.0",
     "wrangler": "^3.58.0"
   },
-  "workspaces": [
-    "apps/*",
-    "workers/*"
-  ]
 }
 
