@@ -81,39 +81,48 @@ export async function onRequest(context: {
     return new Response("Not found", { status: 404 });
   }
 
-  // Handle root route - serve index.html
+  // Handle root route - serve index.html via ASSETS
   if (!path || path.length === 0 || path === "/" || path === "index.html") {
     try {
-      // Try to serve via ASSETS binding if available
       if (env.ASSETS) {
-        const assetRequest = new Request(new URL("/index.html", url.origin).toString());
-        const assetResponse = await env.ASSETS.fetch(assetRequest);
-        if (assetResponse && assetResponse.ok) {
-          return assetResponse;
+        // Create a new request for the index.html file
+        const indexUrl = new URL("/index.html", url.origin);
+        const indexRequest = new Request(indexUrl.toString(), {
+          method: request.method,
+          headers: request.headers,
+        });
+        const indexResponse = await env.ASSETS.fetch(indexRequest, {
+          // Pass through request headers
+        });
+        if (indexResponse && indexResponse.ok) {
+          return indexResponse;
         }
       }
-    } catch (e) {
-      console.error("Error serving index.html:", e);
+    } catch (e: any) {
+      console.error("Error serving index.html:", e?.message || e);
     }
-    return new Response("Not found", { status: 404 });
+    return new Response("Not found - Static files may not be deployed", { status: 404 });
   }
 
-  // Handle admin routes - serve admin/index.html
+  // Handle admin routes - serve admin/index.html via ASSETS
   if (path === "admin" || path.startsWith("admin/")) {
     try {
       if (env.ASSETS) {
-        // Try /admin/index.html first
         const adminPath = path === "admin" ? "/admin/index.html" : `/${path}/index.html`;
-        const adminRequest = new Request(new URL(adminPath, url.origin).toString());
+        const adminUrl = new URL(adminPath, url.origin);
+        const adminRequest = new Request(adminUrl.toString(), {
+          method: request.method,
+          headers: request.headers,
+        });
         const adminResponse = await env.ASSETS.fetch(adminRequest);
         if (adminResponse && adminResponse.ok) {
           return adminResponse;
         }
       }
-    } catch (e) {
-      console.error("Error serving admin page:", e);
+    } catch (e: any) {
+      console.error("Error serving admin page:", e?.message || e);
     }
-    return new Response("Not found", { status: 404 });
+    return new Response("Not found - Admin page may not be deployed", { status: 404 });
   }
 
   // Handle QR code generation
