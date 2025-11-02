@@ -81,9 +81,36 @@ export async function onRequest(context: {
     return new Response("Not found", { status: 404 });
   }
 
-  // Handle empty path (root) - let static files handle it
+  // Handle empty path (root) - fetch and return the static index.html
   if (!path || path.length === 0 || path === "/") {
-    // Return 404 so Pages tries static files next
+    // For root, fetch the static index.html file
+    try {
+      const indexResponse = await fetch(new URL("/index.html", url.origin));
+      if (indexResponse.ok) {
+        return indexResponse;
+      }
+    } catch (e) {
+      // Fall through to 404
+    }
+    return new Response("Not found", { status: 404 });
+  }
+
+  // Handle admin routes - fetch and return the static admin page
+  if (path === "admin" || path.startsWith("admin/")) {
+    try {
+      const adminPath = path === "admin" ? "/admin/index.html" : `/${path}/index.html`;
+      const adminResponse = await fetch(new URL(adminPath, url.origin));
+      if (adminResponse.ok) {
+        return adminResponse;
+      }
+      // Try without trailing slash
+      const adminResponse2 = await fetch(new URL(`/${path}.html`, url.origin));
+      if (adminResponse2.ok) {
+        return adminResponse2;
+      }
+    } catch (e) {
+      // Fall through to 404
+    }
     return new Response("Not found", { status: 404 });
   }
 
