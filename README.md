@@ -19,29 +19,43 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
    pnpm i
    ```
 
-2. **Create D1 database:**
+2. **Create Cloudflare resources (REQUIRED before deploying):**
+   
+   **Create D1 database:**
    ```bash
    npx wrangler d1 create oklinks-db
    ```
-   Copy the `database_id` from the output.
-
-3. **Create KV namespace:**
+   The database will be created and visible in Cloudflare Dashboard → D1
+   
+   **Create KV namespace:**
    ```bash
    npx wrangler kv namespace create CACHE
    ```
-   Copy the `id` from the output.
-
-4. **Create Queue:**
+   The namespace will be created and visible in Cloudflare Dashboard → KV
+   
+   **Create Queue:**
    ```bash
    npx wrangler queues create oklinks-clicks
    ```
+   The queue will be created and visible in Cloudflare Dashboard → Queues
 
-5. **Apply database schema:**
+3. **Apply database schema:**
    ```bash
    pnpm db:apply
    ```
+   
+   **Note:** If this fails, you may need to create a `wrangler.toml` file temporarily for local development:
+   ```toml
+   name = "oklinks"
+   compatibility_date = "2024-11-22"
+   
+   [[d1_databases]]
+   binding = "DB"
+   database_name = "oklinks-db"
+   database_id = "your-database-id-here"  # Get from: npx wrangler d1 list
+   ```
 
-6. **Run locally (optional - for testing):**
+4. **Run locally (optional - for testing):**
    ```bash
    pnpm dev:pages
    ```
@@ -67,13 +81,22 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
    - (Optional) Add `TURNSTILE_SECRET` if you want anti-abuse protection (from Turnstile dashboard)
    - (Optional) Add `ACCESS_AUD` for JWT validation
 
-4. **Configure Bindings (EASY - in Pages Dashboard):**
+4. **Configure Bindings (in Pages Dashboard):**
+   
+   **IMPORTANT:** You must create the resources first (see step 2 above) before they'll appear in the dropdown!
+   
    - Go to your Pages project → **Settings** → **Functions**
    - Click **"Add binding"** for each:
-     - **D1 Database:** Name = `DB`, Database = `oklinks-db`
-     - **KV Namespace:** Name = `CACHE`, Namespace = `CACHE`  
-     - **Queue:** Name = `CLICK_QUEUE`, Queue = `oklinks-clicks`
-   - Click **Save** - that's it! No need to edit wrangler.toml.
+     - **D1 Database:** 
+       - Variable name = `DB`
+       - Select `oklinks-db` from dropdown (it will appear after you create it)
+     - **KV Namespace:** 
+       - Variable name = `CACHE`
+       - Select `CACHE` from dropdown
+     - **Queue:** 
+       - Variable name = `CLICK_QUEUE`
+       - Select `oklinks-clicks` from dropdown
+   - Click **Save** after adding each binding
 
 5. **Deploy:** Click "Save and Deploy"
 
