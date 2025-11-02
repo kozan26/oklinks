@@ -9,7 +9,7 @@ import { inlineCSS } from "../../styles/inline.css.ts";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>oklinks — Admin</title>
     <link rel="icon" type="image/svg+xml" href="/oklinks.svg" />
-    <style is:global>{inlineCSS}</style>
+    <style set:html={inlineCSS} is:global></style>
   </head>
   <body class="font-display">
     <main class="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-6 py-12">

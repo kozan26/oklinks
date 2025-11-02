@@ -20,7 +20,7 @@ import Toast from "../components/Toast.astro";
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <style is:global>{inlineCSS}</style>
+    <style set:html={inlineCSS} is:global></style>
   </head>
   <body>
     <div class="page">
