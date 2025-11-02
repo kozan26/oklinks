@@ -34,126 +34,123 @@ import Toast from "../components/Toast.astro";
         </div>
       </nav>
 
-      <main class="main-content">
-        <div class="hero-section">
-          <div class="hero-layout">
-            <div class="hero-content">
-              <span class="hero-badge">short. smart. yours.</span>
-              <h1 class="hero-title">Create short links instantly</h1>
-              <p class="hero-subtitle">Turn any URL into a clean, shareable link in seconds</p>
-            </div>
+      <main class="main-container">
+        <div class="hero-container">
+          <div class="hero-left">
+            <span class="hero-badge">short. smart. yours.</span>
+            <h1 class="hero-title">Create short links instantly</h1>
+            <p class="hero-subtitle">Turn any URL into a clean, shareable link in seconds</p>
+          </div>
 
-            <div class="form-wrapper">
-          <form id="create-form" class="form-simple" method="post" action="/api/links" onsubmit="return false;">
-            <div class="input-group">
-              <label for="target" class="input-label">
-                <span class="label-text">Target URL</span>
-                <span class="label-required">*</span>
-              </label>
-              <input 
-                id="target" 
-                name="target" 
-                type="url" 
-                required 
-                placeholder="https://example.com" 
-                class="input-field"
-              />
-            </div>
-
-            <div class="input-row">
-              <div class="input-group">
-                <label for="alias" class="input-label">
-                  <span class="label-text">Custom Alias</span>
-                  <span class="label-optional">optional</span>
-                </label>
-                <input
-                  id="alias"
-                  name="alias"
-                  type="text"
-                  pattern="[a-zA-Z0-9-_]+"
-                  placeholder="my-link"
-                  class="input-field input-field-mono"
-                />
-              </div>
-              
-              <div class="input-group">
-                <label for="expiresAt" class="input-label">
-                  <span class="label-text">Expiration</span>
-                  <span class="label-optional">optional</span>
+          <div class="hero-right">
+            <form id="create-form" class="link-form" method="post" action="/api/links" onsubmit="return false;">
+              <div class="form-field">
+                <label for="target" class="field-label">
+                  Target URL <span class="required">*</span>
                 </label>
                 <input 
-                  id="expiresAt" 
-                  name="expiresAt" 
-                  type="datetime-local" 
-                  class="input-field"
+                  id="target" 
+                  name="target" 
+                  type="url" 
+                  required 
+                  placeholder="https://example.com" 
+                  class="field-input"
                 />
               </div>
-            </div>
 
-            <button type="submit" class="submit-btn">
-              <span class="material-icons btn-icon">add_link</span>
-              <span class="btn-text">Create Link</span>
-              <span id="submit-spinner" class="material-icons btn-spinner" style="display:none;">hourglass_empty</span>
-            </button>
-            <p id="form-status" class="form-status"></p>
-          </form>
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="alias" class="field-label">
+                    Custom Alias <span class="optional">optional</span>
+                  </label>
+                  <input
+                    id="alias"
+                    name="alias"
+                    type="text"
+                    pattern="[a-zA-Z0-9-_]+"
+                    placeholder="my-link"
+                    class="field-input field-input-mono"
+                  />
+                </div>
+                
+                <div class="form-field">
+                  <label for="expiresAt" class="field-label">
+                    Expiration <span class="optional">optional</span>
+                  </label>
+                  <input 
+                    id="expiresAt" 
+                    name="expiresAt" 
+                    type="datetime-local" 
+                    class="field-input"
+                  />
+                </div>
+              </div>
 
-          <div id="result-card" class="result-simple" data-state="empty">
-            <div id="result-placeholder" class="result-placeholder">
-              <span class="material-icons placeholder-icon">link</span>
-              <p class="placeholder-text">Your created link will appear here</p>
-            </div>
-            
-            <div id="result-detail" class="result-detail" style="display:none;">
-              <div class="result-header">
-                <span class="material-icons result-icon">check_circle</span>
-                <h3 class="result-title">Link Created</h3>
+              <button type="submit" class="submit-button">
+                <span class="material-icons button-icon">add_link</span>
+                <span>Create Link</span>
+                <span id="submit-spinner" class="material-icons button-spinner" style="display:none;">hourglass_empty</span>
+              </button>
+              
+              <p id="form-status" class="form-status"></p>
+            </form>
+
+            <div id="result-card" class="result-box" data-state="empty">
+              <div id="result-placeholder" class="result-placeholder">
+                <span class="material-icons placeholder-icon">link</span>
+                <p class="placeholder-text">Your created link will appear here</p>
               </div>
               
-              <div class="result-url-container">
-                <a 
-                  id="result-url" 
-                  href="#" 
-                  target="_blank" 
-                  rel="noopener" 
-                  class="result-url-link"
-                  title="Open short link in new tab"
-                ></a>
-              </div>
-              
-              <div class="result-actions">
-                <button id="copy-link" type="button" class="action-btn action-btn-primary">
-                  <span class="material-icons action-icon">content_copy</span>
-                  Copy URL
-                </button>
-                <a 
-                  id="qr-link" 
-                  href="#" 
-                  target="_blank" 
-                  rel="noopener"
-                  class="action-btn action-btn-secondary"
-                  title="View QR code for this link"
-                >
-                  <span class="material-icons action-icon">qr_code</span>
-                  View QR
-                </a>
-              </div>
-              
-              <div class="result-info">
-                <div class="info-row">
-                  <span class="info-label">Alias</span>
-                  <code id="result-alias" class="info-value info-value-code"></code>
+              <div id="result-detail" class="result-content" style="display:none;">
+                <div class="result-header">
+                  <span class="material-icons result-icon">check_circle</span>
+                  <h3 class="result-title">Link Created</h3>
                 </div>
-                <div class="info-row">
-                  <span class="info-label">Target</span>
-                  <span id="result-target" class="info-value info-value-target"></span>
+                
+                <div class="result-url-wrapper">
+                  <a 
+                    id="result-url" 
+                    href="#" 
+                    target="_blank" 
+                    rel="noopener" 
+                    class="result-url"
+                    title="Open short link in new tab"
+                  ></a>
                 </div>
-                <div class="info-row">
-                  <span class="info-label">Expires</span>
-                  <span id="result-expires" class="info-value"></span>
+                
+                <div class="result-buttons">
+                  <button id="copy-link" type="button" class="result-btn result-btn-primary">
+                    <span class="material-icons">content_copy</span>
+                    Copy URL
+                  </button>
+                  <a 
+                    id="qr-link" 
+                    href="#" 
+                    target="_blank" 
+                    rel="noopener"
+                    class="result-btn result-btn-secondary"
+                    title="View QR code for this link"
+                  >
+                    <span class="material-icons">qr_code</span>
+                    View QR
+                  </a>
+                </div>
+                
+                <div class="result-details">
+                  <div class="detail-item">
+                    <span class="detail-label">Alias</span>
+                    <code id="result-alias" class="detail-value detail-code"></code>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Target</span>
+                    <span id="result-target" class="detail-value detail-target"></span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Expires</span>
+                    <span id="result-expires" class="detail-value"></span>
+                  </div>
                 </div>
               </div>
-            </div>
             </div>
           </div>
         </div>
@@ -172,204 +169,197 @@ import Toast from "../components/Toast.astro";
         }
         
         function init() {
-        console.log('DOM loaded');
-        const form = document.getElementById('create-form');
-        if (!form) {
-          console.error('Form not found!');
-          return;
-        }
-        console.log('Form found');
-        
-        const status = document.getElementById('form-status');
-        const spinner = document.getElementById('submit-spinner');
-        const detail = document.getElementById('result-detail');
-        const card = document.getElementById('result-card');
-        const urlAnchor = document.getElementById('result-url');
-        const aliasEl = document.getElementById('result-alias');
-        const targetEl = document.getElementById('result-target');
-        const expiresEl = document.getElementById('result-expires');
-        const copyButton = document.getElementById('copy-link');
-        const qrLink = document.getElementById('qr-link');
-
-        console.log('All elements found');
-
-        form.addEventListener('submit', function(e) {
-          console.log('SUBMIT EVENT!');
-          e.preventDefault();
-          e.stopPropagation();
-          handleSubmit(e);
-          return false;
-        });
-        
-        if (copyButton) {
-          copyButton.addEventListener('click', handleCopy);
-        }
-
-        async function handleSubmit(event) {
-          console.log('handleSubmit called', event);
-          let formEl = event.target || form;
-          
-          if (!(formEl instanceof HTMLFormElement)) {
-            formEl = document.getElementById('create-form');
-            if (!formEl || !(formEl instanceof HTMLFormElement)) {
-              console.error('Form element not found');
-              setStatus('Error: Form not found');
-              return;
-            }
-          }
-          
-          console.log('Processing form submission');
-          const formData = new FormData(formEl);
-          const target = formData.get('target');
-          console.log('Target URL:', target);
-          
-          if (typeof target !== 'string' || target.length === 0) {
-            console.log('Target URL is empty');
-            setStatus('Target URL is required.');
+          console.log('DOM loaded');
+          const form = document.getElementById('create-form');
+          if (!form) {
+            console.error('Form not found!');
             return;
           }
-          const alias = formData.get('alias');
-          const expiresAt = formData.get('expiresAt');
-          const payload = {
-            target,
-            alias: typeof alias === 'string' && alias.length > 0 ? alias : undefined,
-            expiresAt: typeof expiresAt === 'string' && expiresAt.length > 0 ? new Date(expiresAt).toISOString() : undefined,
-          };
-
-          console.log('Payload:', payload);
-          setSubmitting(true);
+          console.log('Form found');
           
-          try {
-            console.log('Sending request to /api/links');
-            const response = await fetch('/api/links', {
-              method: 'POST',
-              headers: { 'content-type': 'application/json' },
-              body: JSON.stringify(payload),
-            });
+          const status = document.getElementById('form-status');
+          const spinner = document.getElementById('submit-spinner');
+          const detail = document.getElementById('result-detail');
+          const card = document.getElementById('result-card');
+          const urlAnchor = document.getElementById('result-url');
+          const aliasEl = document.getElementById('result-alias');
+          const targetEl = document.getElementById('result-target');
+          const expiresEl = document.getElementById('result-expires');
+          const copyButton = document.getElementById('copy-link');
+          const qrLink = document.getElementById('qr-link');
 
-            console.log('Response status:', response.status);
-            const result = await response.json();
-            console.log('Create link response:', result);
+          console.log('All elements found');
+
+          form.addEventListener('submit', function(e) {
+            console.log('SUBMIT EVENT!');
+            e.preventDefault();
+            e.stopPropagation();
+            handleSubmit(e);
+            return false;
+          });
+          
+          if (copyButton) {
+            copyButton.addEventListener('click', handleCopy);
+          }
+
+          async function handleSubmit(event) {
+            console.log('handleSubmit called', event);
+            let formEl = event.target || form;
             
-            if (!response.ok) {
-              const message = typeof result?.error === 'string' ? result.error : 'Failed to create link';
-              setStatus(message.replace(/_/g, ' '));
-              return;
-            }
-
-            if (!result || !result.alias) {
-              console.error('Invalid response:', result);
-              setStatus('Invalid response from server.');
-              return;
-            }
-
-            const aliasValue = result.alias;
-            const shortUrl = new URL(aliasValue, window.location.origin).toString();
-            console.log('Short URL:', shortUrl);
-            
-            if (urlAnchor) {
-              urlAnchor.textContent = shortUrl;
-              urlAnchor.href = shortUrl;
-              console.log('Updated URL anchor');
-            }
-            if (aliasEl) {
-              aliasEl.textContent = aliasValue;
-              console.log('Updated alias:', aliasValue);
-            }
-            if (targetEl) {
-              targetEl.textContent = payload.target;
-              console.log('Updated target:', payload.target);
-            }
-            if (expiresEl) {
-              if (payload.expiresAt) {
-                const expiresDate = new Date(payload.expiresAt);
-                expiresEl.textContent = expiresDate.toLocaleString();
-              } else {
-                expiresEl.textContent = 'Never';
+            if (!(formEl instanceof HTMLFormElement)) {
+              formEl = document.getElementById('create-form');
+              if (!formEl || !(formEl instanceof HTMLFormElement)) {
+                console.error('Form element not found');
+                setStatus('Error: Form not found');
+                return;
               }
             }
-            if (qrLink) {
-              qrLink.href = '/qr/' + aliasValue;
-            }
             
-            // Hide placeholder and show detail section
-            const placeholder = document.getElementById('result-placeholder');
-            if (placeholder) {
-              placeholder.style.display = 'none';
-              console.log('Hiding placeholder');
-            } else {
-              console.error('Placeholder element not found!');
-            }
+            console.log('Processing form submission');
+            const formData = new FormData(formEl);
+            const target = formData.get('target');
+            console.log('Target URL:', target);
             
-            if (detail) {
-              detail.style.display = '';
-              detail.removeAttribute('style');
-              console.log('Showing result detail');
-            } else {
-              console.error('Detail element not found!');
+            if (typeof target !== 'string' || target.length === 0) {
+              console.log('Target URL is empty');
+              setStatus('Target URL is required.');
+              return;
             }
-            if (card) {
-              card.dataset.state = 'ready';
-              console.log('Card state set to ready');
-            } else {
-              console.error('Card element not found!');
-            }
+            const alias = formData.get('alias');
+            const expiresAt = formData.get('expiresAt');
+            const payload = {
+              target,
+              alias: typeof alias === 'string' && alias.length > 0 ? alias : undefined,
+              expiresAt: typeof expiresAt === 'string' && expiresAt.length > 0 ? new Date(expiresAt).toISOString() : undefined,
+            };
+
+            console.log('Payload:', payload);
+            setSubmitting(true);
             
-            setStatus('Link created successfully!');
-            if (formEl) formEl.reset();
-          } catch (error) {
-            console.error('Error:', error);
-            setStatus('Unexpected error. Try again.');
-          } finally {
-            setSubmitting(false);
-          }
-        }
+            try {
+              console.log('Sending request to /api/links');
+              const response = await fetch('/api/links', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify(payload),
+              });
 
-        function setSubmitting(value) {
-          const submit = form.querySelector('button[type="submit"]');
-          if (submit instanceof HTMLButtonElement) {
-            submit.disabled = value;
-            if (value) {
-              submit.classList.add('submitting');
-            } else {
-              submit.classList.remove('submitting');
+              console.log('Response status:', response.status);
+              const result = await response.json();
+              console.log('Create link response:', result);
+              
+              if (!response.ok) {
+                const message = typeof result?.error === 'string' ? result.error : 'Failed to create link';
+                setStatus(message.replace(/_/g, ' '));
+                return;
+              }
+
+              if (!result || !result.alias) {
+                console.error('Invalid response:', result);
+                setStatus('Invalid response from server.');
+                return;
+              }
+
+              const aliasValue = result.alias;
+              const shortUrl = new URL(aliasValue, window.location.origin).toString();
+              console.log('Short URL:', shortUrl);
+              
+              if (urlAnchor) {
+                urlAnchor.textContent = shortUrl;
+                urlAnchor.href = shortUrl;
+                console.log('Updated URL anchor');
+              }
+              if (aliasEl) {
+                aliasEl.textContent = aliasValue;
+                console.log('Updated alias:', aliasValue);
+              }
+              if (targetEl) {
+                targetEl.textContent = payload.target;
+                console.log('Updated target:', payload.target);
+              }
+              if (expiresEl) {
+                if (payload.expiresAt) {
+                  const expiresDate = new Date(payload.expiresAt);
+                  expiresEl.textContent = expiresDate.toLocaleString();
+                } else {
+                  expiresEl.textContent = 'Never';
+                }
+              }
+              if (qrLink) {
+                qrLink.href = '/qr/' + aliasValue;
+              }
+              
+              const placeholder = document.getElementById('result-placeholder');
+              if (placeholder) {
+                placeholder.style.display = 'none';
+                console.log('Hiding placeholder');
+              }
+              
+              if (detail) {
+                detail.style.display = '';
+                detail.removeAttribute('style');
+                console.log('Showing result detail');
+              }
+              if (card) {
+                card.dataset.state = 'ready';
+                console.log('Card state set to ready');
+              }
+              
+              setStatus('Link created successfully!');
+              if (formEl) formEl.reset();
+            } catch (error) {
+              console.error('Error:', error);
+              setStatus('Unexpected error. Try again.');
+            } finally {
+              setSubmitting(false);
             }
           }
-          if (spinner) spinner.style.display = value ? 'inline-block' : 'none';
-        }
 
-        function setStatus(message) {
-          if (status) {
-            status.textContent = message;
-            status.className = message.includes('error') || message.includes('Error') || message.includes('Failed') 
-              ? 'form-status form-status-error' 
-              : 'form-status';
-          }
-        }
-
-        async function handleCopy() {
-          if (!urlAnchor) return;
-          const href = urlAnchor.href;
-          try {
-            await navigator.clipboard.writeText(href);
-            if (copyButton) {
-              const originalText = copyButton.innerHTML;
-              copyButton.innerHTML = '<span class="material-icons action-icon">check</span> Copied!';
-              setTimeout(() => {
-                copyButton.innerHTML = originalText;
-              }, 2000);
+          function setSubmitting(value) {
+            const submit = form.querySelector('button[type="submit"]');
+            if (submit instanceof HTMLButtonElement) {
+              submit.disabled = value;
+              if (value) {
+                submit.classList.add('submitting');
+              } else {
+                submit.classList.remove('submitting');
+              }
             }
-            window.dispatchEvent(
-              new CustomEvent('toast', { detail: { message: 'Short link copied' } }),
-            );
-          } catch (error) {
-            console.error('Copy failed', error);
-            window.dispatchEvent(
-              new CustomEvent('toast', { detail: { message: 'Copy failed' } }),
-            );
+            if (spinner) spinner.style.display = value ? 'inline-block' : 'none';
+          }
+
+          function setStatus(message) {
+            if (status) {
+              status.textContent = message;
+              status.className = message.includes('error') || message.includes('Error') || message.includes('Failed') 
+                ? 'form-status form-status-error' 
+                : 'form-status';
+            }
+          }
+
+          async function handleCopy() {
+            if (!urlAnchor) return;
+            const href = urlAnchor.href;
+            try {
+              await navigator.clipboard.writeText(href);
+              if (copyButton) {
+                const originalText = copyButton.innerHTML;
+                copyButton.innerHTML = '<span class="material-icons">check</span> Copied!';
+                setTimeout(() => {
+                  copyButton.innerHTML = originalText;
+                }, 2000);
+              }
+              window.dispatchEvent(
+                new CustomEvent('toast', { detail: { message: 'Short link copied' } }),
+              );
+            } catch (error) {
+              console.error('Copy failed', error);
+              window.dispatchEvent(
+                new CustomEvent('toast', { detail: { message: 'Copy failed' } }),
+              );
+            }
           }
         }
-        } // Close init function
       })();
       console.log('Script setup complete');
     </script>
