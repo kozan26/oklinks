@@ -19,6 +19,10 @@ import Toast from "../components/Toast.astro";
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
     <style set:html={inlineCSS} is:global></style>
   </head>
   <body>
@@ -39,129 +43,117 @@ import Toast from "../components/Toast.astro";
           </div>
         </div>
 
-        <div class="workspace">
-          <div class="form-container">
-            <form id="create-form" class="form-card" method="post" action="/api/links" onsubmit="return false;">
-              <div class="form-header">
-                <h2 class="form-title">Create New Link</h2>
+        <div class="form-wrapper">
+          <form id="create-form" class="form-simple" method="post" action="/api/links" onsubmit="return false;">
+            <div class="input-group">
+              <label for="target" class="input-label">
+                <span class="label-text">Target URL</span>
+                <span class="label-required">*</span>
+              </label>
+              <input 
+                id="target" 
+                name="target" 
+                type="url" 
+                required 
+                placeholder="https://example.com" 
+                class="input-field"
+              />
+            </div>
+
+            <div class="input-row">
+              <div class="input-group">
+                <label for="alias" class="input-label">
+                  <span class="label-text">Custom Alias</span>
+                  <span class="label-optional">optional</span>
+                </label>
+                <input
+                  id="alias"
+                  name="alias"
+                  type="text"
+                  pattern="[a-zA-Z0-9-_]+"
+                  placeholder="my-link"
+                  class="input-field input-field-mono"
+                />
               </div>
               
-              <div class="form-body">
-                <div class="input-group">
-                  <label for="target" class="input-label">
-                    <span class="label-text">Target URL</span>
-                    <span class="label-required">*</span>
-                  </label>
-                  <input 
-                    id="target" 
-                    name="target" 
-                    type="url" 
-                    required 
-                    placeholder="https://example.com" 
-                    class="input-field"
-                  />
-                </div>
-
-                <div class="input-row">
-                  <div class="input-group input-group-half">
-                    <label for="alias" class="input-label">
-                      <span class="label-text">Custom Alias</span>
-                      <span class="label-optional">optional</span>
-                    </label>
-                    <input
-                      id="alias"
-                      name="alias"
-                      type="text"
-                      pattern="[a-zA-Z0-9-_]+"
-                      placeholder="my-link"
-                      class="input-field input-field-mono"
-                    />
-                    <p class="input-hint">Letters, numbers, dashes, underscores</p>
-                  </div>
-                  
-                  <div class="input-group input-group-half">
-                    <label for="expiresAt" class="input-label">
-                      <span class="label-text">Expiration</span>
-                      <span class="label-optional">optional</span>
-                    </label>
-                    <input 
-                      id="expiresAt" 
-                      name="expiresAt" 
-                      type="datetime-local" 
-                      class="input-field"
-                    />
-                    <p class="input-hint">Leave blank for no expiration</p>
-                  </div>
-                </div>
-
-                <div class="form-footer">
-                  <button type="submit" class="submit-btn">
-                    <span class="btn-text">Create Link</span>
-                    <span id="submit-spinner" class="btn-spinner" style="display:none;">●</span>
-                  </button>
-                  <p id="form-status" class="form-status"></p>
-                </div>
+              <div class="input-group">
+                <label for="expiresAt" class="input-label">
+                  <span class="label-text">Expiration</span>
+                  <span class="label-optional">optional</span>
+                </label>
+                <input 
+                  id="expiresAt" 
+                  name="expiresAt" 
+                  type="datetime-local" 
+                  class="input-field"
+                />
               </div>
-            </form>
+            </div>
 
-            <aside id="result-card" class="result-card" data-state="empty">
-              <div id="result-placeholder" class="result-placeholder">
-                <div class="placeholder-icon">🔗</div>
-                <h3 class="placeholder-title">Your Link</h3>
-                <p class="placeholder-text">Created links will appear here</p>
+            <button type="submit" class="submit-btn">
+              <span class="material-icons btn-icon">add_link</span>
+              <span class="btn-text">Create Link</span>
+              <span id="submit-spinner" class="material-icons btn-spinner" style="display:none;">hourglass_empty</span>
+            </button>
+            <p id="form-status" class="form-status"></p>
+          </form>
+
+          <div id="result-card" class="result-simple" data-state="empty">
+            <div id="result-placeholder" class="result-placeholder">
+              <span class="material-icons placeholder-icon">link</span>
+              <p class="placeholder-text">Your created link will appear here</p>
+            </div>
+            
+            <div id="result-detail" class="result-detail" style="display:none;">
+              <div class="result-header">
+                <span class="material-icons result-icon">check_circle</span>
+                <h3 class="result-title">Link Created</h3>
               </div>
               
-              <div id="result-detail" class="result-detail" style="display:none;">
-                <div class="result-header">
-                  <div class="result-icon">✓</div>
-                  <h3 class="result-title">Link Created</h3>
+              <div class="result-url-container">
+                <a 
+                  id="result-url" 
+                  href="#" 
+                  target="_blank" 
+                  rel="noopener" 
+                  class="result-url-link"
+                  title="Open short link in new tab"
+                ></a>
+              </div>
+              
+              <div class="result-actions">
+                <button id="copy-link" type="button" class="action-btn action-btn-primary">
+                  <span class="material-icons action-icon">content_copy</span>
+                  Copy URL
+                </button>
+                <a 
+                  id="qr-link" 
+                  href="#" 
+                  target="_blank" 
+                  rel="noopener"
+                  class="action-btn action-btn-secondary"
+                  title="View QR code for this link"
+                >
+                  <span class="material-icons action-icon">qr_code</span>
+                  View QR
+                </a>
+              </div>
+              
+              <div class="result-info">
+                <div class="info-row">
+                  <span class="info-label">Alias</span>
+                  <code id="result-alias" class="info-value info-value-code"></code>
                 </div>
-                
-                <div class="result-url-container">
-                  <a 
-                    id="result-url" 
-                    href="#" 
-                    target="_blank" 
-                    rel="noopener" 
-                    class="result-url-link"
-                    title="Open short link in new tab"
-                  ></a>
+                <div class="info-row">
+                  <span class="info-label">Target</span>
+                  <span id="result-target" class="info-value info-value-target"></span>
                 </div>
-                
-                <div class="result-actions">
-                  <button id="copy-link" type="button" class="action-btn action-btn-primary">
-                    <span class="action-icon">📋</span>
-                    Copy URL
-                  </button>
-                  <a 
-                    id="qr-link" 
-                    href="#" 
-                    target="_blank" 
-                    rel="noopener"
-                    class="action-btn action-btn-secondary"
-                    title="View QR code for this link"
-                  >
-                    <span class="action-icon">📱</span>
-                    View QR
-                  </a>
-                </div>
-                
-                <div class="result-info">
-                  <div class="info-row">
-                    <span class="info-label">Alias</span>
-                    <code id="result-alias" class="info-value info-value-code"></code>
-                  </div>
-                  <div class="info-row">
-                    <span class="info-label">Target</span>
-                    <span id="result-target" class="info-value info-value-target"></span>
-                  </div>
-                  <div class="info-row">
-                    <span class="info-label">Expires</span>
-                    <span id="result-expires" class="info-value"></span>
-                  </div>
+                <div class="info-row">
+                  <span class="info-label">Expires</span>
+                  <span id="result-expires" class="info-value"></span>
                 </div>
               </div>
-            </aside>
+            </div>
           </div>
         </div>
       </main>
@@ -361,7 +353,7 @@ import Toast from "../components/Toast.astro";
             await navigator.clipboard.writeText(href);
             if (copyButton) {
               const originalText = copyButton.innerHTML;
-              copyButton.innerHTML = '<span class="action-icon">✓</span> Copied!';
+              copyButton.innerHTML = '<span class="material-icons action-icon">check</span> Copied!';
               setTimeout(() => {
                 copyButton.innerHTML = originalText;
               }, 2000);
