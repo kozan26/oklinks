@@ -172,7 +172,21 @@ export async function deleteLink(
   const result = await env.DB.prepare("DELETE FROM links WHERE id = ?")
     .bind(id)
     .run();
-  return (result.success ?? false) && (result.changes ?? 0) > 0;
+  if (!result.success) {
+    console.error("deleteLink: deletion run failed", {
+      id,
+      error: (result as { error?: unknown }).error,
+    });
+    return false;
+  }
+
+  const changes =
+    typeof (result as { changes?: unknown }).changes === "number"
+      ? (result as { changes: number }).changes
+      : typeof result.meta?.changes === "number"
+        ? result.meta.changes
+        : 0;
+  return changes > 0;
 }
 
 export async function recordClick(
