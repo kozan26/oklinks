@@ -4,6 +4,7 @@ export interface Env {
   CLICK_QUEUE?: Queue<ClickEvent>;
   TURNSTILE_SECRET?: string;
   ACCESS_AUD?: string;
+  ADMIN_PASSWORD_HASH?: string;
 }
 
 export interface LinkRecord {
