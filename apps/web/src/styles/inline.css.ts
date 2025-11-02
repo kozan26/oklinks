@@ -121,8 +121,8 @@ a:hover {
 /* Hero Section */
 .hero-section {
   text-align: center;
-  padding: 4rem 0 5rem;
-  margin-bottom: 3rem;
+  padding: 2rem 0 2rem;
+  margin-bottom: 2rem;
 }
 
 .hero-content {
@@ -168,6 +168,7 @@ a:hover {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  margin-top: 0;
 }
 
 /* Form Simple */
@@ -578,7 +579,8 @@ a:hover {
   }
   
   .hero-section {
-    padding: 2rem 0 3rem;
+    padding: 1.5rem 0 1.5rem;
+    margin-bottom: 1.5rem;
   }
   
   .form-simple,
