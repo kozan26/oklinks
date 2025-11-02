@@ -129,204 +129,194 @@ import Toast from "../components/Toast.astro";
 
     <Toast />
 
-    <script is:inline>
-      {`(function () {
-  console.log('Script loaded');
-  const form = document.getElementById('create-form');
-  if (!form) {
-    console.error('Form not found!');
-    return;
-  }
-  console.log('Form found:', form);
-  
-  const status = document.getElementById('form-status');
-  const spinner = document.getElementById('submit-spinner');
-  const detail = document.getElementById('result-detail');
-  const card = document.getElementById('result-card');
-  const urlAnchor = document.getElementById('result-url');
-  const aliasEl = document.getElementById('result-alias');
-  const targetEl = document.getElementById('result-target');
-  const expiresEl = document.getElementById('result-expires');
-  const copyButton = document.getElementById('copy-link');
-  const qrLink = document.getElementById('qr-link');
-
-  console.log('Elements found - status:', status, 'spinner:', spinner, 'detail:', detail);
-
-  if (form) {
-    form.addEventListener('submit', function(e) {
-      console.log('Form submit event triggered');
-      e.preventDefault();
-      e.stopPropagation();
-      handleSubmit(e);
-      return false;
-    });
-    // Also prevent default form action
-    form.onsubmit = function(e) {
-      console.log('Form onsubmit triggered');
-      e.preventDefault();
-      e.stopPropagation();
-      handleSubmit(e);
-      return false;
-    };
-    console.log('Event listeners attached to form');
-  }
-  
-  if (copyButton) {
-    copyButton.addEventListener('click', handleCopy);
-  }
-
-  async function handleSubmit(event) {
-    console.log('handleSubmit called', event);
-    let formEl = event.target;
-    
-    if (!(formEl instanceof HTMLFormElement)) {
-      // If called directly, get the form element
-      formEl = document.getElementById('create-form');
-      if (!formEl || !(formEl instanceof HTMLFormElement)) {
-        console.error('Form element not found');
-        setStatus('Error: Form not found');
-        return;
-      }
-    }
-    
-    console.log('Form submit prevented, handling with JavaScript');
-    const formData = new FormData(formEl);
-    const target = formData.get('target');
-    console.log('Form data - target:', target);
-    
-    if (typeof target !== 'string' || target.length === 0) {
-      console.log('Target URL is empty');
-      setStatus('Target URL is required.');
-      return;
-    }
-    const alias = formData.get('alias');
-    const expiresAt = formData.get('expiresAt');
-    const payload = {
-      target,
-      alias: typeof alias === 'string' && alias.length > 0 ? alias : undefined,
-      expiresAt: typeof expiresAt === 'string' && expiresAt.length > 0 ? new Date(expiresAt).toISOString() : undefined,
-    };
-
-    setSubmitting(true);
-    try {
-      const response = await fetch('/api/links', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-      console.log('Create link response:', result);
-      if (!response.ok) {
-        const message = typeof result?.error === 'string' ? result.error : 'Failed to create link';
-        setStatus(message.replace(/_/g, ' '));
-        return;
-      }
-
-      if (!result || !result.alias) {
-        console.error('Invalid response:', result);
-        setStatus('Invalid response from server.');
-        return;
-      }
-
-      const aliasValue = result.alias;
-      const shortUrl = new URL(aliasValue, window.location.origin).toString();
-      console.log('Short URL:', shortUrl);
-      
-      if (urlAnchor) {
-        urlAnchor.textContent = shortUrl;
-        urlAnchor.href = shortUrl;
-        console.log('Updated URL anchor');
-      }
-      if (aliasEl) {
-        aliasEl.textContent = aliasValue;
-        console.log('Updated alias:', aliasValue);
-      }
-      if (targetEl) {
-        targetEl.textContent = payload.target;
-        console.log('Updated target:', payload.target);
-      }
-      if (expiresEl) {
-        if (payload.expiresAt) {
-          const expiresDate = new Date(payload.expiresAt);
-          expiresEl.textContent = expiresDate.toLocaleString();
-        } else {
-          expiresEl.textContent = 'Never';
+    <script>
+      console.log('Script loading...');
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded');
+        const form = document.getElementById('create-form');
+        if (!form) {
+          console.error('Form not found!');
+          return;
         }
-      }
-      if (qrLink) {
-        qrLink.href = '/qr/' + aliasValue;
-      }
-      
-      // Hide placeholder and show detail section
-      const placeholder = document.getElementById('result-placeholder');
-      if (placeholder) {
-        placeholder.style.display = 'none';
-        console.log('Hiding placeholder');
-      } else {
-        console.error('Placeholder element not found!');
-      }
-      
-      if (detail) {
-        detail.style.display = '';
-        detail.style.removeProperty('display');
-        detail.removeAttribute('style');
-        console.log('Showing result detail');
-        console.log('Detail element:', detail);
-        console.log('Detail visibility:', window.getComputedStyle(detail).display);
-      } else {
-        console.error('Detail element not found!');
-      }
-      if (card) {
-        card.dataset.state = 'ready';
-        console.log('Card state set to ready');
-      } else {
-        console.error('Card element not found!');
-      }
-      
-      // Force a reflow to ensure display changes take effect
-      void detail?.offsetHeight;
-      
-      setStatus('Link created.');
-      event.target.reset();
-    } catch (error) {
-      console.error(error);
-      setStatus('Unexpected error. Try again.');
-    } finally {
-      setSubmitting(false);
-    }
-  }
+        console.log('Form found');
+        
+        const status = document.getElementById('form-status');
+        const spinner = document.getElementById('submit-spinner');
+        const detail = document.getElementById('result-detail');
+        const card = document.getElementById('result-card');
+        const urlAnchor = document.getElementById('result-url');
+        const aliasEl = document.getElementById('result-alias');
+        const targetEl = document.getElementById('result-target');
+        const expiresEl = document.getElementById('result-expires');
+        const copyButton = document.getElementById('copy-link');
+        const qrLink = document.getElementById('qr-link');
 
-  function setSubmitting(value) {
-    const submit = form.querySelector('button[type="submit"]');
-    if (submit instanceof HTMLButtonElement) {
-      submit.disabled = value;
-    }
-    if (spinner) spinner.style.display = value ? 'inline-block' : 'none';
-  }
+        console.log('All elements found');
 
-  function setStatus(message) {
-    if (status) {
-      status.textContent = message;
-    }
-  }
+        form.addEventListener('submit', function(e) {
+          console.log('SUBMIT EVENT!');
+          e.preventDefault();
+          e.stopPropagation();
+          handleSubmit(e);
+          return false;
+        });
+        
+        if (copyButton) {
+          copyButton.addEventListener('click', handleCopy);
+        }
 
-  async function handleCopy() {
-    if (!urlAnchor) return;
-    const href = urlAnchor.href;
-    try {
-      await navigator.clipboard.writeText(href);
-      window.dispatchEvent(
-        new CustomEvent('toast', { detail: { message: 'Short link copied' } }),
-      );
-    } catch (error) {
-      console.error('Copy failed', error);
-      window.dispatchEvent(
-        new CustomEvent('toast', { detail: { message: 'Copy failed' } }),
-      );
-    }
-  }
-})();`}
+        async function handleSubmit(event) {
+          console.log('handleSubmit called', event);
+          let formEl = event.target || form;
+          
+          if (!(formEl instanceof HTMLFormElement)) {
+            formEl = document.getElementById('create-form');
+            if (!formEl || !(formEl instanceof HTMLFormElement)) {
+              console.error('Form element not found');
+              setStatus('Error: Form not found');
+              return;
+            }
+          }
+          
+          console.log('Processing form submission');
+          const formData = new FormData(formEl);
+          const target = formData.get('target');
+          console.log('Target URL:', target);
+          
+          if (typeof target !== 'string' || target.length === 0) {
+            console.log('Target URL is empty');
+            setStatus('Target URL is required.');
+            return;
+          }
+          const alias = formData.get('alias');
+          const expiresAt = formData.get('expiresAt');
+          const payload = {
+            target,
+            alias: typeof alias === 'string' && alias.length > 0 ? alias : undefined,
+            expiresAt: typeof expiresAt === 'string' && expiresAt.length > 0 ? new Date(expiresAt).toISOString() : undefined,
+          };
+
+          console.log('Payload:', payload);
+          setSubmitting(true);
+          
+          try {
+            console.log('Sending request to /api/links');
+            const response = await fetch('/api/links', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+
+            console.log('Response status:', response.status);
+            const result = await response.json();
+            console.log('Create link response:', result);
+            
+            if (!response.ok) {
+              const message = typeof result?.error === 'string' ? result.error : 'Failed to create link';
+              setStatus(message.replace(/_/g, ' '));
+              return;
+            }
+
+            if (!result || !result.alias) {
+              console.error('Invalid response:', result);
+              setStatus('Invalid response from server.');
+              return;
+            }
+
+            const aliasValue = result.alias;
+            const shortUrl = new URL(aliasValue, window.location.origin).toString();
+            console.log('Short URL:', shortUrl);
+            
+            if (urlAnchor) {
+              urlAnchor.textContent = shortUrl;
+              urlAnchor.href = shortUrl;
+              console.log('Updated URL anchor');
+            }
+            if (aliasEl) {
+              aliasEl.textContent = aliasValue;
+              console.log('Updated alias:', aliasValue);
+            }
+            if (targetEl) {
+              targetEl.textContent = payload.target;
+              console.log('Updated target:', payload.target);
+            }
+            if (expiresEl) {
+              if (payload.expiresAt) {
+                const expiresDate = new Date(payload.expiresAt);
+                expiresEl.textContent = expiresDate.toLocaleString();
+              } else {
+                expiresEl.textContent = 'Never';
+              }
+            }
+            if (qrLink) {
+              qrLink.href = '/qr/' + aliasValue;
+            }
+            
+            // Hide placeholder and show detail section
+            const placeholder = document.getElementById('result-placeholder');
+            if (placeholder) {
+              placeholder.style.display = 'none';
+              console.log('Hiding placeholder');
+            } else {
+              console.error('Placeholder element not found!');
+            }
+            
+            if (detail) {
+              detail.style.display = '';
+              detail.style.removeProperty('display');
+              detail.removeAttribute('style');
+              console.log('Showing result detail');
+            } else {
+              console.error('Detail element not found!');
+            }
+            if (card) {
+              card.dataset.state = 'ready';
+              console.log('Card state set to ready');
+            } else {
+              console.error('Card element not found!');
+            }
+            
+            setStatus('Link created.');
+            if (formEl) formEl.reset();
+          } catch (error) {
+            console.error('Error:', error);
+            setStatus('Unexpected error. Try again.');
+          } finally {
+            setSubmitting(false);
+          }
+        }
+
+        function setSubmitting(value) {
+          const submit = form.querySelector('button[type="submit"]');
+          if (submit instanceof HTMLButtonElement) {
+            submit.disabled = value;
+          }
+          if (spinner) spinner.style.display = value ? 'inline-block' : 'none';
+        }
+
+        function setStatus(message) {
+          if (status) {
+            status.textContent = message;
+          }
+        }
+
+        async function handleCopy() {
+          if (!urlAnchor) return;
+          const href = urlAnchor.href;
+          try {
+            await navigator.clipboard.writeText(href);
+            window.dispatchEvent(
+              new CustomEvent('toast', { detail: { message: 'Short link copied' } }),
+            );
+          } catch (error) {
+            console.error('Copy failed', error);
+            window.dispatchEvent(
+              new CustomEvent('toast', { detail: { message: 'Copy failed' } }),
+            );
+          }
+        }
+      });
+      console.log('Script setup complete');
     </script>
   </body>
 </html>
