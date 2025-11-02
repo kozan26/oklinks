@@ -1,4 +1,5 @@
 ---
+import { Fragment } from "astro/jsx-runtime";
 import { inlineCSS } from "../styles/inline.css.ts";
 import Toast from "../components/Toast.astro";
 ---
@@ -19,7 +20,7 @@ import Toast from "../components/Toast.astro";
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <style set:html={inlineCSS} is:global></style>
+    <Fragment set:html={`<style is:global>${inlineCSS}</style>`} />
   </head>
   <body>
     <div class="page">
