@@ -21,11 +21,13 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <script
-      src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-      async
-      defer
-    ></script>
+    {siteKey && (
+      <script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        async
+        defer
+      ></script>
+    )}
   </head>
   <body class="font-display">
     <main class="mx-auto flex min-h-screen max-w-5xl flex-col gap-12 px-6 py-16">
@@ -84,19 +86,19 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? "";
           </div>
 
           <div class="border-t border-olive/30 pt-4">
-            <div
-              class="cf-turnstile"
-              data-sitekey={siteKey}
-              data-theme="dark"
-              data-size="flexible"
-            ></div>
-            {
-              !siteKey && (
-                <p class="mt-2 text-xs text-accent/60">
-                  Provide PUBLIC_TURNSTILE_SITE_KEY to enable the widget.
-                </p>
-              )
-            }
+            {siteKey ? (
+              <div
+                class="cf-turnstile"
+                data-sitekey={siteKey}
+                data-theme="dark"
+                data-size="flexible"
+              ></div>
+            ) : (
+              <p class="text-xs text-accent/60">
+                Provide `PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET` to enable
+                the Turnstile widget. Requests work without it in development.
+              </p>
+            )}
           </div>
 
           <div class="flex flex-col gap-3">

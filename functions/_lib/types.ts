@@ -1,7 +1,7 @@
 export interface Env {
   DB: D1Database;
   CACHE: KVNamespace;
-  CLICK_QUEUE: Queue<ClickEvent>;
+  CLICK_QUEUE?: Queue<ClickEvent>;
   TURNSTILE_SECRET?: string;
   ACCESS_AUD?: string;
 }

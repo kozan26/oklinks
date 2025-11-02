@@ -6,14 +6,14 @@ Dark tactical personal URL shortener built for Cloudflare Pages + Functions with
 - Cloudflare Pages with Pages Functions (TypeScript)
 - Cloudflare D1 (SQLite) for links + aggregates
 - Cloudflare KV for hot cache
-- Cloudflare Queues for async click logging → Worker consumer
+- Optional: Cloudflare Queues for async click logging → Worker consumer fallback to direct D1 writes
 - Astro + Tailwind UI, Vitest, ESLint, Prettier, pnpm, Wrangler v3
 
 ## One-shot setup
 1. `pnpm install`
 2. `npx wrangler d1 create oklinks-db`
 3. `npx wrangler kv namespace create CACHE`
-4. `npx wrangler queues create oklinks-clicks`
+4. _(Optional)_ `npx wrangler queues create oklinks-clicks`
 5. `pnpm db:apply`
 6. Add generated IDs to `wrangler.toml` & `workers/click-consumer/wrangler.toml`, set `TURNSTILE_SECRET`, `PUBLIC_TURNSTILE_SITE_KEY`, optional `ACCESS_AUD`
 7. Local run: `pnpm dev:pages`
@@ -35,10 +35,10 @@ Create a `.env` based on `.env.sample` with your Turnstile keys. When using `wra
 4. Configure bindings (Pages → Settings → Functions):
    - D1: binding `DB`, choose previously created database `oklinks-db`.
    - KV Namespace: binding `CACHE`.
-   - Queue Producer: binding `CLICK_QUEUE`, queue name `oklinks-clicks`.
+   - Queue Producer: binding `CLICK_QUEUE`, queue name `oklinks-clicks` (optional; skip if you did not create a queue).
    - Environment variable `TURNSTILE_SECRET` (and optional `ACCESS_AUD`).
    - Provide `PUBLIC_TURNSTILE_SITE_KEY` in Pages → Settings → Environment Variables (mark as public binding in new UI).
-5. Deploy the queue consumer worker separately: `wrangler deploy workers/click-consumer --config workers/click-consumer/wrangler.toml` and ensure it consumes `oklinks-clicks`.
+5. (Optional) Deploy the queue consumer worker: `wrangler deploy workers/click-consumer --config workers/click-consumer/wrangler.toml` and ensure it consumes `oklinks-clicks`.
 6. Protect `/admin/*` with a Cloudflare Access policy (e.g., email allowlist) and optionally configure JWT audience as `ACCESS_AUD`.
 7. Add a custom domain such as `okl.ink` via Pages.
 
@@ -70,9 +70,9 @@ Responses:
 ## Behaviour notes
 - KV cache keys `a:<alias>` hold `{ target, expiresAt, isActive }` with 1 hour TTL; redirects refresh cache after D1 hits.
 - Expired or inactive links stop redirecting; cached entries honour expiry windows.
-- Queue messages `{ alias, ts, ua, ref, ip }` are batched by the consumer Worker into `click_daily` and `links.clicks_total`.
+- Queue messages `{ alias, ts, ua, ref, ip }` are batched by the consumer Worker into `click_daily` and `links.clicks_total`. When no queue is configured, redirects update these metrics inline via D1.
 - Admin UI fetches `/api/links?limit=50`, shows alias, target, click totals, expiry, and allows deletions (remember to guard with Cloudflare Access).
-- Turnstile site key is exposed via `PUBLIC_TURNSTILE_SITE_KEY`; secret stays server-side.
+- Turnstile site key is exposed via `PUBLIC_TURNSTILE_SITE_KEY`; secret stays server-side. Leave the variables empty to skip Turnstile locally.
 
 ## Database schema
 `db/schema.sql` defines:

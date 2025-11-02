@@ -59,9 +59,6 @@ describe("resolveAlias", () => {
           delete store[key];
         },
       } as unknown as KVNamespace,
-      CLICK_QUEUE: {
-        send: vi.fn(),
-      } as unknown as Queue,
     };
   }
 

@@ -1,4 +1,4 @@
-import { resolveAlias } from "./_lib/link-service";
+import { recordClick, resolveAlias } from "./_lib/link-service";
 import type { Env } from "./_lib/types";
 import { json, sanitizeAlias, sha256Hex } from "./_lib/utils";
 
@@ -91,13 +91,25 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     });
   }
 
-  await env.CLICK_QUEUE.send({
+  const timestamp = Date.now();
+  const event = {
     alias,
-    ts: Date.now(),
+    ts: timestamp,
     ua: request.headers.get("user-agent"),
     ref: request.headers.get("referer"),
     ip: request.headers.get("CF-Connecting-IP"),
-  });
+  };
+
+  if (env.CLICK_QUEUE) {
+    try {
+      await env.CLICK_QUEUE.send(event);
+    } catch (error) {
+      console.warn("Queue send failed, falling back to direct logging", error);
+      await recordClick(env, alias, timestamp);
+    }
+  } else {
+    await recordClick(env, alias, timestamp);
+  }
 
   return Response.redirect(resolved.target, 302);
 };

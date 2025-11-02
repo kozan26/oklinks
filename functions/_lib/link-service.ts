@@ -1,4 +1,4 @@
-import { aliasCacheKey } from "./utils";
+import { aliasCacheKey, formatDay } from "./utils";
 import type { Env, LinkRecord } from "./types";
 
 export async function getLinkById(env: Env, id: string): Promise<LinkRecord | null> {
@@ -154,4 +154,22 @@ export async function deleteLink(
     .bind(id)
     .run();
   return (result.success ?? false) && (result.changes ?? 0) > 0;
+}
+
+export async function recordClick(
+  env: Env,
+  alias: string,
+  timestamp: number,
+): Promise<void> {
+  const day = formatDay(timestamp);
+  await env.DB.batch([
+    env.DB.prepare(
+      `INSERT INTO click_daily (alias, day, count)
+       VALUES (?, ?, 1)
+       ON CONFLICT(alias, day) DO UPDATE SET count = count + 1`,
+    ).bind(alias, day),
+    env.DB.prepare(
+      "UPDATE links SET clicks_total = clicks_total + 1 WHERE alias = ?",
+    ).bind(alias),
+  ]);
 }
