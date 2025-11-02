@@ -41,12 +41,15 @@ import { inlineCSS } from "../../styles/inline.css.ts";
 
       .admin-page {
         min-height: 100vh;
-        background: radial-gradient(120% 160% at 10% 10%, hsl(253 60% 18% / 0.6), transparent),
-          radial-gradient(120% 160% at 90% 10%, hsl(202 84% 35% / 0.35), transparent),
-          linear-gradient(160deg, var(--admin-background) 0%, hsl(234 60% 7%) 50%, var(--admin-background-alt) 100%);
+        background: 
+          radial-gradient(circle at 0% 0%, hsl(230 58% 8% / 1) 0%, transparent 50%),
+          radial-gradient(circle at 100% 0%, hsl(202 84% 12% / 0.8) 0%, transparent 50%),
+          radial-gradient(circle at 50% 100%, hsl(234 60% 8% / 0.6) 0%, transparent 50%),
+          linear-gradient(180deg, hsl(230 58% 6%) 0%, hsl(234 60% 7%) 100%);
         color: var(--admin-primary);
         position: relative;
         overflow-x: hidden;
+        cursor: default;
       }
 
       .admin-page::before,
@@ -237,7 +240,7 @@ import { inlineCSS } from "../../styles/inline.css.ts";
       /* Admin Content */
       .admin-wrapper {
         min-height: 100vh;
-        padding: 3rem 2rem 4rem;
+        padding: 2.5rem 2rem 4rem;
         position: relative;
         z-index: 1;
       }
@@ -249,31 +252,38 @@ import { inlineCSS } from "../../styles/inline.css.ts";
       }
 
       .admin-header {
-        margin-bottom: 2.5rem;
+        margin-bottom: 2rem;
       }
 
       .admin-hero {
-        background: color-mix(in srgb, var(--admin-card) 85%, transparent);
-        border: 1px solid color-mix(in srgb, var(--admin-ring) 20%, transparent);
-        border-radius: 1rem;
-        padding: clamp(1.75rem, 2vw + 1rem, 2.25rem);
+        background: linear-gradient(135deg, 
+          color-mix(in srgb, var(--admin-card) 95%, transparent) 0%,
+          color-mix(in srgb, var(--admin-card) 88%, transparent) 100%);
+        border: 1px solid color-mix(in srgb, var(--admin-ring) 25%, transparent);
+        border-radius: 1.25rem;
+        padding: clamp(2rem, 3vw + 1rem, 2.5rem);
         position: relative;
         overflow: hidden;
-        box-shadow: 0 24px 60px hsl(230 70% 5% / 0.35);
+        box-shadow: 
+          0 20px 60px hsl(230 70% 5% / 0.4),
+          0 0 0 1px color-mix(in srgb, var(--admin-ring) 10%, transparent) inset;
         display: flex;
         flex-wrap: wrap;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
-        gap: 1.5rem;
+        gap: 2rem;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
       }
 
       .admin-hero::after {
         content: "";
         position: absolute;
         inset: 0;
-        background: radial-gradient(75% 80% at 95% 15%, hsl(202 98% 60% / 0.22), transparent 55%);
-        opacity: 0.9;
+        background: radial-gradient(70% 70% at 100% 0%, hsl(202 98% 60% / 0.15), transparent 60%);
+        opacity: 1;
         pointer-events: none;
+        border-radius: 1.25rem;
       }
 
       .admin-hero-content {
@@ -299,11 +309,12 @@ import { inlineCSS } from "../../styles/inline.css.ts";
       }
 
       .admin-title {
-        font-size: clamp(2.2rem, 3vw + 1rem, 2.8rem);
+        font-size: clamp(2rem, 3vw + 1rem, 2.5rem);
         font-weight: 700;
         color: var(--admin-primary);
-        letter-spacing: -0.03em;
-        margin: 0 0 0.75rem;
+        letter-spacing: -0.02em;
+        margin: 0 0 1rem;
+        line-height: 1.1;
       }
 
       .admin-description {
@@ -316,10 +327,11 @@ import { inlineCSS } from "../../styles/inline.css.ts";
       .admin-hero-actions {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
+        align-items: flex-end;
         gap: 0.75rem;
         position: relative;
         z-index: 1;
+        min-width: 160px;
       }
 
       .admin-hero-actions p {
@@ -330,19 +342,33 @@ import { inlineCSS } from "../../styles/inline.css.ts";
 
       .admin-metrics {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 1.25rem;
-        margin-bottom: 2.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
       }
 
       .metric-card {
-        background: color-mix(in srgb, var(--admin-card) 92%, transparent);
-        border: 1px solid color-mix(in srgb, var(--admin-ring) 15%, transparent);
-        border-radius: 0.9rem;
-        padding: 1.4rem;
+        background: linear-gradient(135deg, 
+          color-mix(in srgb, var(--admin-card) 96%, transparent) 0%,
+          color-mix(in srgb, var(--admin-card) 90%, transparent) 100%);
+        border: 1px solid color-mix(in srgb, var(--admin-ring) 20%, transparent);
+        border-radius: 1rem;
+        padding: 1.75rem;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 16px 35px hsl(230 70% 6% / 0.32);
+        box-shadow: 
+          0 8px 24px hsl(230 70% 6% / 0.3),
+          0 0 0 1px color-mix(in srgb, var(--admin-ring) 8%, transparent) inset;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .metric-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 
+          0 12px 32px hsl(230 70% 6% / 0.4),
+          0 0 0 1px color-mix(in srgb, var(--admin-ring) 12%, transparent) inset;
       }
 
       .metric-card::after {
@@ -391,11 +417,17 @@ import { inlineCSS } from "../../styles/inline.css.ts";
       }
 
       .admin-card {
-        background: color-mix(in srgb, var(--admin-card) 90%, transparent);
-        border: 1px solid color-mix(in srgb, var(--admin-ring) 18%, transparent);
-        border-radius: 1rem;
-        padding: 1.75rem;
-        box-shadow: 0 20px 45px hsl(230 70% 5% / 0.28);
+        background: linear-gradient(135deg, 
+          color-mix(in srgb, var(--admin-card) 95%, transparent) 0%,
+          color-mix(in srgb, var(--admin-card) 88%, transparent) 100%);
+        border: 1px solid color-mix(in srgb, var(--admin-ring) 22%, transparent);
+        border-radius: 1.25rem;
+        padding: 2rem;
+        box-shadow: 
+          0 16px 48px hsl(230 70% 5% / 0.35),
+          0 0 0 1px color-mix(in srgb, var(--admin-ring) 10%, transparent) inset;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
       }
 
       .admin-card-header {
@@ -443,27 +475,43 @@ import { inlineCSS } from "../../styles/inline.css.ts";
       }
 
       .button-secondary {
-        background: color-mix(in srgb, var(--admin-secondary) 88%, transparent);
+        background: linear-gradient(135deg, 
+          color-mix(in srgb, var(--admin-secondary) 95%, transparent) 0%,
+          color-mix(in srgb, var(--admin-secondary) 85%, transparent) 100%);
         color: var(--admin-primary);
-        border: 1px solid color-mix(in srgb, var(--admin-border) 80%, transparent);
-        box-shadow: 0 10px 22px hsl(230 60% 5% / 0.25);
+        border: 1px solid color-mix(in srgb, var(--admin-border) 70%, transparent);
+        box-shadow: 
+          0 4px 12px hsl(230 60% 5% / 0.3),
+          0 0 0 1px color-mix(in srgb, var(--admin-ring) 8%, transparent) inset;
       }
       
-      .button-secondary:hover {
+      .button-secondary:hover:not(:disabled) {
         transform: translateY(-1px);
-        background: color-mix(in srgb, var(--admin-secondary) 100%, var(--admin-accent) 6%);
+        background: linear-gradient(135deg, 
+          color-mix(in srgb, var(--admin-secondary) 100%, var(--admin-accent) 8%) 0%,
+          color-mix(in srgb, var(--admin-secondary) 95%, var(--admin-accent) 5%) 100%);
+        border-color: color-mix(in srgb, var(--admin-border) 85%, transparent);
+        box-shadow: 
+          0 6px 16px hsl(230 60% 5% / 0.35),
+          0 0 0 1px color-mix(in srgb, var(--admin-ring) 15%, transparent) inset;
       }
 
       .button-destructive {
-        background: color-mix(in srgb, var(--admin-destructive) 12%, transparent);
+        background: color-mix(in srgb, var(--admin-destructive) 14%, transparent);
         color: var(--admin-destructive);
-        border: 1px solid color-mix(in srgb, var(--admin-destructive) 22%, transparent);
-        box-shadow: 0 12px 24px hsl(0 84% 45% / 0.2);
+        border: 1px solid color-mix(in srgb, var(--admin-destructive) 25%, transparent);
+        box-shadow: 
+          0 4px 12px hsl(0 84% 45% / 0.25),
+          0 0 0 1px color-mix(in srgb, var(--admin-destructive) 10%, transparent) inset;
       }
 
-      .button-destructive:hover {
+      .button-destructive:hover:not(:disabled) {
         transform: translateY(-1px);
-        background: color-mix(in srgb, var(--admin-destructive) 18%, transparent);
+        background: color-mix(in srgb, var(--admin-destructive) 20%, transparent);
+        border-color: color-mix(in srgb, var(--admin-destructive) 32%, transparent);
+        box-shadow: 
+          0 6px 16px hsl(0 84% 45% / 0.3),
+          0 0 0 1px color-mix(in srgb, var(--admin-destructive) 15%, transparent) inset;
       }
 
       .button:disabled {
@@ -493,10 +541,12 @@ import { inlineCSS } from "../../styles/inline.css.ts";
 
       .admin-table-wrapper {
         overflow-x: auto;
-        border-radius: 0.75rem;
-        border: 1px solid color-mix(in srgb, var(--admin-border) 55%, transparent);
-        background: color-mix(in srgb, var(--admin-background-alt) 92%, transparent);
-        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--admin-card-border) 25%, transparent);
+        border-radius: 0.875rem;
+        border: 1px solid color-mix(in srgb, var(--admin-border) 60%, transparent);
+        background: color-mix(in srgb, var(--admin-background-alt) 95%, transparent);
+        box-shadow: 
+          inset 0 2px 4px hsl(230 70% 5% / 0.2),
+          inset 0 0 0 1px color-mix(in srgb, var(--admin-card-border) 30%, transparent);
       }
 
       .admin-table {
@@ -541,9 +591,13 @@ import { inlineCSS } from "../../styles/inline.css.ts";
         text-align: right;
       }
 
+      .admin-table tbody tr {
+        transition: background 0.15s ease, transform 0.15s ease;
+      }
+
       .admin-table tbody tr:hover {
-        background: color-mix(in srgb, var(--admin-accent-soft) 45%, transparent);
-        transform: translateY(-1px);
+        background: color-mix(in srgb, var(--admin-accent-soft) 50%, transparent);
+        transform: translateX(2px);
       }
 
       .badge {
@@ -681,7 +735,7 @@ import { inlineCSS } from "../../styles/inline.css.ts";
       }
     </style>
   </head>
-  <body class="admin-page">
+  <body class="admin-page" style="cursor: default;">
     <div id="login-screen" style="display: none;">
       <div class="login-wrapper">
         <div class="login-card">
