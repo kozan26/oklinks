@@ -15,3 +15,5 @@ id = "775697626cf84fb39552691a1e60a330"
 # [[queues.producers]]
 # binding = "CLICK_QUEUE"
 # queue = "oklinks-clicks"
+
+# Deployment timestamp
