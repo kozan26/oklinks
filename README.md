@@ -21,23 +21,36 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
 
 2. **Create Cloudflare resources (REQUIRED before deploying):**
    
-   **Create D1 database:**
+   You can create these either via command line OR manually in the dashboard:
+   
+   **Option A: Command Line (Faster)**
    ```bash
    npx wrangler d1 create oklinks-db
-   ```
-   The database will be created and visible in Cloudflare Dashboard → D1
-   
-   **Create KV namespace:**
-   ```bash
    npx wrangler kv namespace create CACHE
-   ```
-   The namespace will be created and visible in Cloudflare Dashboard → KV
-   
-   **Create Queue:**
-   ```bash
    npx wrangler queues create oklinks-clicks
    ```
-   The queue will be created and visible in Cloudflare Dashboard → Queues
+   
+   **Option B: Manual (Dashboard)**
+   
+   **Create D1 Database:**
+   1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com)
+   2. Click **Workers & Pages** in the left sidebar
+   3. Click **D1** in the submenu
+   4. Click **"Create database"** button
+   5. Database name: `oklinks-db`
+   6. Click **"Create"**
+   
+   **Create KV Namespace:**
+   1. In Cloudflare Dashboard, click **Workers & Pages** → **KV**
+   2. Click **"Create a namespace"** button
+   3. Namespace name: `CACHE`
+   4. Click **"Add"**
+   
+   **Create Queue:**
+   1. In Cloudflare Dashboard, click **Workers & Pages** → **Queues**
+   2. Click **"Create queue"** button
+   3. Queue name: `oklinks-clicks`
+   4. Click **"Create queue"**
 
 3. **Apply database schema:**
    ```bash
@@ -85,18 +98,31 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
    
    **IMPORTANT:** You must create the resources first (see step 2 above) before they'll appear in the dropdown!
    
-   - Go to your Pages project → **Settings** → **Functions**
-   - Click **"Add binding"** for each:
-     - **D1 Database:** 
-       - Variable name = `DB`
-       - Select `oklinks-db` from dropdown (it will appear after you create it)
-     - **KV Namespace:** 
-       - Variable name = `CACHE`
-       - Select `CACHE` from dropdown
-     - **Queue:** 
-       - Variable name = `CLICK_QUEUE`
-       - Select `oklinks-clicks` from dropdown
-   - Click **Save** after adding each binding
+   Steps:
+   1. Go to your Pages project in Cloudflare Dashboard
+   2. Click **Settings** tab
+   3. Click **Functions** in the left sidebar
+   4. Scroll down to **Bindings** section
+   
+   **Add D1 Database Binding:**
+   - Click **"Add binding"** → Select **"D1 database"**
+   - Variable name: `DB`
+   - D1 database: Select `oklinks-db` from dropdown
+   - Click **"Save"**
+   
+   **Add KV Namespace Binding:**
+   - Click **"Add binding"** → Select **"KV namespace"**
+   - Variable name: `CACHE`
+   - KV namespace: Select `CACHE` from dropdown
+   - Click **"Save"**
+   
+   **Add Queue Binding:**
+   - Click **"Add binding"** → Select **"Queue"**
+   - Variable name: `CLICK_QUEUE`
+   - Queue: Select `oklinks-clicks` from dropdown
+   - Click **"Save"**
+   
+   **Tip:** If a resource doesn't appear in the dropdown, wait a minute and refresh the page - it may take a moment to sync.
 
 5. **Deploy:** Click "Save and Deploy"
 
