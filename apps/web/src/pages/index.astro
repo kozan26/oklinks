@@ -24,9 +24,9 @@ import Toast from "../components/Toast.astro";
   <body>
     <div class="page">
       <nav class="nav">
-        <a href="/" class="logo">oklinks</a>
+        <a href="/" class="logo" title="Go to home page">oklinks</a>
         <div class="nav-actions">
-          <a class="nav-link" href="/admin">Admin</a>
+          <a class="nav-link" href="/admin" title="Go to admin dashboard">Admin</a>
         </div>
       </nav>
 
@@ -124,6 +124,7 @@ import Toast from "../components/Toast.astro";
                     target="_blank" 
                     rel="noopener" 
                     class="result-url-link"
+                    title="Open short link in new tab"
                   ></a>
                 </div>
                 
@@ -138,6 +139,7 @@ import Toast from "../components/Toast.astro";
                     target="_blank" 
                     rel="noopener"
                     class="action-btn action-btn-secondary"
+                    title="View QR code for this link"
                   >
                     <span class="action-icon">📱</span>
                     View QR

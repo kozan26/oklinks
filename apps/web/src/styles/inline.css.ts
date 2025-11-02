@@ -186,6 +186,7 @@ a:hover {
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 2rem;
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
   transition: all 0.3s ease;
@@ -368,6 +369,7 @@ a:hover {
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 2rem;
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
   transition: all 0.3s ease;
