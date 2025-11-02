@@ -92,10 +92,21 @@ export async function onRequest(context: {
     });
   }
 
+  // Handle empty path (root)
+  if (!path || path.length === 0 || path === "/") {
+    // Return 404 - root should be handled by static files (index.html)
+    return new Response("Not found", { status: 404 });
+  }
+
   // Treat first segment as alias
   const alias = path.split("/")[0];
   if (!alias || alias.length === 0) {
     return new Response("Not found", { status: 404 });
+  }
+
+  // Don't try to resolve if DB isn't configured
+  if (!env.DB) {
+    return new Response("Database not configured", { status: 503 });
   }
 
   const target = await resolveAlias(alias, env);
