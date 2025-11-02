@@ -164,9 +164,16 @@ export async function onRequest(context: {
   }
 
   // Treat first segment as alias (short link redirect)
-  const alias = path.split("/")[0];
-  if (!alias || alias.length === 0) {
-    return new Response("Not found", { status: 404 });
+  let alias: string;
+  try {
+    const pathParts = path.split("/");
+    alias = pathParts[0];
+    if (!alias || alias.length === 0) {
+      return new Response("Not found", { status: 404 });
+    }
+  } catch (e: any) {
+    console.error("Error parsing path:", e?.message || e);
+    return new Response("Invalid request", { status: 400 });
   }
 
   // Don't try to resolve if DB isn't configured
@@ -188,30 +195,51 @@ export async function onRequest(context: {
     }
 
     // Ensure target is a valid URL
+    let targetUrl: URL;
     try {
-      new URL(target);
-    } catch (urlError) {
+      targetUrl = new URL(target);
+    } catch (urlError: any) {
       console.error("Invalid URL format for alias:", alias, "target:", target);
       return new Response("Invalid link URL", { status: 500 });
     }
 
     // Enqueue click event (if queue is available) - don't block redirect
     if (env.CLICK_QUEUE) {
-      const clickEvent: ClickEvent = {
-        alias,
-        ts: Math.floor(Date.now() / 1000),
-        ua: request.headers.get("user-agent") || null,
-        ref: request.headers.get("referer") || null,
-      };
+      try {
+        const clickEvent: ClickEvent = {
+          alias,
+          ts: Math.floor(Date.now() / 1000),
+          ua: request.headers.get("user-agent") || null,
+          ref: request.headers.get("referer") || null,
+        };
 
-      // Fire and forget - don't wait for queue
-      env.CLICK_QUEUE.send(clickEvent).catch((error) => {
-        console.error("Failed to enqueue click event:", error);
-      });
+        // Fire and forget - don't wait for queue
+        env.CLICK_QUEUE.send(clickEvent).catch((error) => {
+          console.error("Failed to enqueue click event:", error);
+        });
+      } catch (queueError: any) {
+        console.error("Error creating click event:", queueError?.message || queueError);
+        // Don't fail redirect if queue fails
+      }
     }
 
-    // Redirect
-    return Response.redirect(target, 302);
+    // Redirect - wrap in try-catch in case redirect fails
+    try {
+      return Response.redirect(targetUrl.toString(), 302);
+    } catch (redirectError: any) {
+      console.error("Redirect error:", redirectError?.message || redirectError);
+      // Fallback: return HTML redirect
+      return new Response(
+        `<html><head><meta http-equiv="refresh" content="0; url=${targetUrl.toString()}"></head><body><a href="${targetUrl.toString()}">Redirecting...</a></body></html>`,
+        {
+          status: 302,
+          headers: {
+            "Location": targetUrl.toString(),
+            "Content-Type": "text/html",
+          },
+        }
+      );
+    }
   } catch (error: any) {
     console.error("Error resolving alias:", error?.message || error);
     console.error("Alias that failed:", alias);
