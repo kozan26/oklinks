@@ -56,21 +56,44 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
    
    **Note:** Queues require a paid Cloudflare plan. The app works fine without it - you just won't get click tracking analytics. Skip this if you're on the free plan.
 
-3. **Apply database schema:**
+3. **Apply database schema (REQUIRED):**
+   
+   **Option A: Command Line**
    ```bash
    pnpm db:apply
    ```
    
-   **Note:** If this fails, you may need to create a `wrangler.toml` file temporarily for local development:
-   ```toml
-   name = "oklinks"
-   compatibility_date = "2024-11-22"
+   **Option B: Cloudflare Dashboard (Easier)**
+   1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com)
+   2. Click **Workers & Pages** → **D1**
+   3. Click on your database: `oklinks-db`
+   4. Click the **"Console"** tab (or **"Execute SQL"**)
+   5. Copy and paste the entire contents of `db/schema.sql`:
+   ```sql
+   CREATE TABLE IF NOT EXISTS links (
+     id TEXT PRIMARY KEY,
+     alias TEXT UNIQUE NOT NULL,
+     target TEXT NOT NULL,
+     created_at INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+     expires_at INTEGER,
+     password_hash TEXT,
+     is_active INTEGER NOT NULL DEFAULT 1,
+     clicks_total INTEGER NOT NULL DEFAULT 0,
+     created_by TEXT
+   );
    
-   [[d1_databases]]
-   binding = "DB"
-   database_name = "oklinks-db"
-   database_id = "your-database-id-here"  # Get from: npx wrangler d1 list
+   CREATE INDEX IF NOT EXISTS idx_links_alias ON links(alias);
+   CREATE INDEX IF NOT EXISTS idx_links_active ON links(is_active);
+   
+   CREATE TABLE IF NOT EXISTS click_daily (
+     alias TEXT NOT NULL,
+     day TEXT NOT NULL,
+     count INTEGER NOT NULL DEFAULT 0,
+     PRIMARY KEY (alias, day)
+   );
    ```
+   6. Click **"Run"** or **"Execute"**
+   7. You should see a success message
 
 4. **Run locally (optional - for testing):**
    ```bash
