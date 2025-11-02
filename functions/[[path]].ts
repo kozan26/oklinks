@@ -180,25 +180,5 @@ export async function onRequest(context: {
     console.error("Error resolving alias:", error);
     return new Response("Error processing request", { status: 500 });
   }
-
-  // Enqueue click event (if queue is available)
-  if (env.CLICK_QUEUE) {
-    const clickEvent: ClickEvent = {
-      alias,
-      ts: Math.floor(Date.now() / 1000),
-      ua: request.headers.get("user-agent") || null,
-      ref: request.headers.get("referer") || null,
-    };
-
-    try {
-      await env.CLICK_QUEUE.send(clickEvent);
-    } catch (error) {
-      // Log but don't fail the redirect
-      console.error("Failed to enqueue click event:", error);
-    }
-  }
-
-  // Redirect
-  return Response.redirect(target, 302);
 }
 
