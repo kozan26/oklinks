@@ -42,12 +42,26 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
    ```
 
 6. **Get resource IDs and configure wrangler.toml:**
-   - Get D1 database ID: `npx wrangler d1 list` (find oklinks-db and copy the ID)
-   - Get KV namespace ID: `npx wrangler kv namespace list` (find CACHE and copy the ID)
-   - Open `wrangler.toml` and replace:
-     - `your-database-id-here` with the actual D1 database ID
-     - `your-kv-namespace-id-here` with the actual KV namespace ID
-   - (Optional) Set `TURNSTILE_SECRET` if you want anti-abuse protection (get from Cloudflare Dashboard > Turnstile)
+   - **Get D1 database ID:**
+     ```bash
+     npx wrangler d1 list
+     ```
+     Find `oklinks-db` in the output and copy the `database_id` (it's a long hex string)
+   
+   - **Get KV namespace ID:**
+     ```bash
+     npx wrangler kv namespace list
+     ```
+     Find `CACHE` in the output and copy the `id` (it's a long hex string)
+   
+   - **Update wrangler.toml:**
+     Open `wrangler.toml` and replace:
+     - `your-database-id-here` → paste your actual D1 database ID
+     - `your-kv-namespace-id-here` → paste your actual KV namespace ID
+   
+   - **(Optional)** Set `TURNSTILE_SECRET` if you want anti-abuse protection (get from Cloudflare Dashboard > Turnstile)
+   
+   **Note:** Without valid IDs, Cloudflare Pages deployment will fail. You must complete this step before deploying.
 
 7. **Run locally:**
    ```bash
