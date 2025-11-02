@@ -76,22 +76,43 @@ export async function onRequest(context: {
     path = url.pathname.slice(1); // Remove leading /
   }
 
-  // Skip API routes, static assets, and known static pages
-  // These should be handled by other Functions or static files
-  if (
-    path.startsWith("api/") || 
-    path.startsWith("_assets/") || 
-    path.includes(".") ||
-    !path || 
-    path.length === 0 || 
-    path === "/" || 
-    path === "index.html" ||
-    path === "admin" || 
-    path.startsWith("admin/")
-  ) {
-    // Return 404 - Pages should try static files after Functions
-    // Note: This might not work as expected since Functions run first
-    // But we can't avoid handling these paths with [[path]] catch-all
+  // Skip API routes and static assets - let other Functions handle them
+  if (path.startsWith("api/") || path.startsWith("_assets/") || path.includes(".")) {
+    return new Response("Not found", { status: 404 });
+  }
+
+  // Handle root route - serve index.html
+  if (!path || path.length === 0 || path === "/" || path === "index.html") {
+    try {
+      // Try to serve via ASSETS binding if available
+      if (env.ASSETS) {
+        const assetRequest = new Request(new URL("/index.html", url.origin).toString());
+        const assetResponse = await env.ASSETS.fetch(assetRequest);
+        if (assetResponse && assetResponse.ok) {
+          return assetResponse;
+        }
+      }
+    } catch (e) {
+      console.error("Error serving index.html:", e);
+    }
+    return new Response("Not found", { status: 404 });
+  }
+
+  // Handle admin routes - serve admin/index.html
+  if (path === "admin" || path.startsWith("admin/")) {
+    try {
+      if (env.ASSETS) {
+        // Try /admin/index.html first
+        const adminPath = path === "admin" ? "/admin/index.html" : `/${path}/index.html`;
+        const adminRequest = new Request(new URL(adminPath, url.origin).toString());
+        const adminResponse = await env.ASSETS.fetch(adminRequest);
+        if (adminResponse && adminResponse.ok) {
+          return adminResponse;
+        }
+      }
+    } catch (e) {
+      console.error("Error serving admin page:", e);
+    }
     return new Response("Not found", { status: 404 });
   }
 
