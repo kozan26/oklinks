@@ -2,9 +2,9 @@ name = "oklinks"
 compatibility_date = "2024-11-22"
 pages_build_output_dir = "apps/web/dist"
 
-# Bindings (D1, KV, Queue) should be configured in Cloudflare Pages dashboard
-# Go to: Pages Project → Settings → Functions → Add bindings there
-# No need to configure them here for Pages deployment!
+# Bindings are configured in Cloudflare Pages dashboard
+# Settings → Functions → Add bindings there
+# The code already handles missing bindings gracefully
 
 [vars]
 # TURNSTILE_SECRET = "your-turnstile-secret-here" # Optional: only needed if you want Turnstile anti-abuse
