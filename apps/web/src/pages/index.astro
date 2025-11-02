@@ -132,10 +132,9 @@ import Toast from "../components/Toast";
         const alias = formData.get("alias") as string;
         const expiresAt = formData.get("expiresAt") as string;
 
-        // Get Turnstile token (only if widget exists)
+        // Get Turnstile token (only if widget is visible and configured)
         let turnstileToken: string | undefined;
-        const turnstileWidget = document.getElementById("turnstile-widget");
-        if (turnstileWidget && (window as any).turnstile) {
+        if (!turnstileContainer.classList.contains("hidden") && (window as any).turnstile) {
           const token = (window as any).turnstile.getResponse();
           if (!token) {
             alert("Please complete the verification challenge");

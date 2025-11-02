@@ -121,7 +121,7 @@ Content-Type: application/json
   "alias": "my-link",  # optional
   "expiresAt": 1735689600000,  # optional, Unix timestamp in ms
   "password": "secret",  # optional
-  "turnstileToken": "..."  # required if TURNSTILE_SECRET is set
+  "turnstileToken": "..."  # optional, only if TURNSTILE_SECRET is configured
 }
 ```
 
