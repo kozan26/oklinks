@@ -81,7 +81,7 @@ import Toast from "../components/Toast.astro";
 
         <section class="main-grid">
           <aside id="result-card" class="card" data-state="empty">
-            <div>
+            <div id="result-placeholder">
               <h2>Latest link</h2>
               <p>Generated links appear here with quick access actions.</p>
             </div>
@@ -176,20 +176,36 @@ import Toast from "../components/Toast.astro";
       });
 
       const result = await response.json();
+      console.log('Create link response:', result);
       if (!response.ok) {
         const message = typeof result?.error === 'string' ? result.error : 'Failed to create link';
         setStatus(message.replace(/_/g, ' '));
         return;
       }
 
+      if (!result || !result.alias) {
+        console.error('Invalid response:', result);
+        setStatus('Invalid response from server.');
+        return;
+      }
+
       const aliasValue = result.alias;
       const shortUrl = new URL(aliasValue, window.location.origin).toString();
+      console.log('Short URL:', shortUrl);
+      
       if (urlAnchor) {
         urlAnchor.textContent = shortUrl;
         urlAnchor.href = shortUrl;
+        console.log('Updated URL anchor');
       }
-      if (aliasEl) aliasEl.textContent = aliasValue;
-      if (targetEl) targetEl.textContent = payload.target;
+      if (aliasEl) {
+        aliasEl.textContent = aliasValue;
+        console.log('Updated alias:', aliasValue);
+      }
+      if (targetEl) {
+        targetEl.textContent = payload.target;
+        console.log('Updated target:', payload.target);
+      }
       if (expiresEl) {
         if (payload.expiresAt) {
           const expiresDate = new Date(payload.expiresAt);
@@ -201,8 +217,25 @@ import Toast from "../components/Toast.astro";
       if (qrLink) {
         qrLink.href = '/qr/' + aliasValue;
       }
-      if (detail) detail.style.display = 'block';
-      if (card) card.dataset.state = 'ready';
+      
+      // Hide placeholder and show detail section
+      const placeholder = document.getElementById('result-placeholder');
+      if (placeholder) {
+        placeholder.style.display = 'none';
+        console.log('Hiding placeholder');
+      }
+      
+      if (detail) {
+        detail.style.display = 'flex';
+        detail.style.flexDirection = 'column';
+        detail.style.gap = '1rem';
+        console.log('Showing result detail');
+      }
+      if (card) {
+        card.dataset.state = 'ready';
+        console.log('Card state set to ready');
+      }
+      
       setStatus('Link created.');
       event.target.reset();
     } catch (error) {
