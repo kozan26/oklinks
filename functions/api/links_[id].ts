@@ -5,17 +5,22 @@ import {
 import { aliasCacheKey, json } from "../_lib/utils";
 import type { Env } from "../_lib/types";
 
-export const onRequestGet: PagesFunction<Env> = async ({ params, env }) => {
-  const id = params?.id;
-  if (!id) {
-    return json({ error: "missing_id" }, 400);
+export const onRequest: PagesFunction<Env> = async ({ params, env, request }) => {
+  const method = request.method;
+  
+  // Handle GET requests
+  if (method === "GET") {
+    const id = params?.id;
+    if (!id) {
+      return json({ error: "missing_id" }, 400);
+    }
+
+    const record = await getLinkById(env, id);
+    return json(record ?? null);
   }
-
-  const record = await getLinkById(env, id);
-  return json(record ?? null);
-};
-
-export const onRequestDelete: PagesFunction<Env> = async ({ params, env, request }) => {
+  
+  // Handle DELETE requests
+  if (method === "DELETE") {
   try {
     // In Cloudflare Pages Functions, params.id should be populated from the filename pattern
     let id = params?.id as string | undefined;
@@ -65,4 +70,8 @@ export const onRequestDelete: PagesFunction<Env> = async ({ params, env, request
       message: error instanceof Error ? error.message : 'Unknown error' 
     }, 500);
   }
+  }
+  
+  // Method not allowed
+  return json({ error: "method_not_allowed" }, 405);
 };
