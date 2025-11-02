@@ -67,7 +67,12 @@ export async function onRequest(context: {
 }): Promise<Response> {
   const { request, env, params } = context;
   const url = new URL(request.url);
-  const path = params.path || url.pathname.slice(1);
+  
+  // Get path from params first, then fall back to URL pathname
+  let path = params.path;
+  if (!path || path === "") {
+    path = url.pathname.slice(1); // Remove leading /
+  }
 
   // Handle QR code generation
   if (path.startsWith("qr/")) {
