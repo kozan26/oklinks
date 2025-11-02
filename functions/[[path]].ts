@@ -101,53 +101,40 @@ export async function onRequest(context: {
     path = url.pathname.slice(1); // Remove leading /
   }
 
-  // Skip API routes and static assets - let other Functions handle them
-  if (path.startsWith("api/") || path.startsWith("_assets/") || path.includes(".")) {
+  // Skip API routes - let other Functions handle them
+  if (path.startsWith("api/")) {
     return new Response("Not found", { status: 404 });
   }
 
-  // Handle root route - serve index.html via ASSETS
-  if (!path || path.length === 0 || path === "/" || path === "index.html") {
+  // IMPORTANT: Check ASSETS first for static files before handling as alias
+  // This ensures static files (index.html, admin/index.html, etc.) are served correctly
+  if (env.ASSETS) {
     try {
-      if (env.ASSETS) {
-        // Create a new request for the index.html file
-        const indexUrl = new URL("/index.html", url.origin);
-        const indexRequest = new Request(indexUrl.toString(), {
-          method: request.method,
-          headers: request.headers,
-        });
-        const indexResponse = await env.ASSETS.fetch(indexRequest, {
-          // Pass through request headers
-        });
-        if (indexResponse && indexResponse.ok) {
-          return indexResponse;
-        }
+      // Try to fetch the static asset
+      const assetResponse = await env.ASSETS.fetch(request);
+      // If asset exists (status is not 404), return it
+      if (assetResponse && assetResponse.status !== 404) {
+        return assetResponse;
       }
     } catch (e: any) {
-      console.error("Error serving index.html:", e?.message || e);
+      // If ASSETS fetch fails, continue to alias resolution
+      console.error("ASSETS fetch error:", e?.message || e);
     }
-    return new Response("Not found - Static files may not be deployed", { status: 404 });
   }
 
-  // Handle admin routes - serve admin/index.html via ASSETS
+  // Skip static asset files (should have been handled by ASSETS above)
+  if (path.startsWith("_assets/") || path.includes(".")) {
+    return new Response("Not found", { status: 404 });
+  }
+
+  // For root/admin routes, if ASSETS didn't find them, return 404
+  // This should not happen if static files are properly deployed
+  if (!path || path.length === 0 || path === "/" || path === "index.html") {
+    return new Response("Not found", { status: 404 });
+  }
+
   if (path === "admin" || path.startsWith("admin/")) {
-    try {
-      if (env.ASSETS) {
-        const adminPath = path === "admin" ? "/admin/index.html" : `/${path}/index.html`;
-        const adminUrl = new URL(adminPath, url.origin);
-        const adminRequest = new Request(adminUrl.toString(), {
-          method: request.method,
-          headers: request.headers,
-        });
-        const adminResponse = await env.ASSETS.fetch(adminRequest);
-        if (adminResponse && adminResponse.ok) {
-          return adminResponse;
-        }
-      }
-    } catch (e: any) {
-      console.error("Error serving admin page:", e?.message || e);
-    }
-    return new Response("Not found - Admin page may not be deployed", { status: 404 });
+    return new Response("Not found", { status: 404 });
   }
 
   // Handle QR code generation
