@@ -12,7 +12,6 @@ import {
   readJson,
   sanitizeAlias,
   sha256Hex,
-  verifyTurnstile,
 } from "../_lib/utils";
 
 interface CreateLinkRequest {
@@ -45,18 +44,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   if (!body || typeof body.target !== "string" || !isValidHttpUrl(body.target)) {
     return json({ error: "invalid_target" }, 400);
-  }
-
-  if (env.TURNSTILE_SECRET) {
-    const remoteIp = request.headers.get("CF-Connecting-IP");
-    const valid = await verifyTurnstile(
-      env.TURNSTILE_SECRET,
-      request.headers.get("cf-turnstile-token") ?? "",
-      remoteIp,
-    );
-    if (!valid) {
-      return json({ error: "turnstile_failed" }, 400);
-    }
   }
 
   let alias = "";
