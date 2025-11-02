@@ -81,6 +81,12 @@ export async function onRequest(context: {
     return new Response("Not found", { status: 404 });
   }
 
+  // Handle empty path (root) - let static files handle it
+  if (!path || path.length === 0 || path === "/") {
+    // Return 404 so Pages tries static files next
+    return new Response("Not found", { status: 404 });
+  }
+
   // Handle QR code generation
   if (path.startsWith("qr/")) {
     const alias = path.slice(3);
@@ -97,12 +103,6 @@ export async function onRequest(context: {
         "Cache-Control": "public, max-age=3600",
       },
     });
-  }
-
-  // Handle empty path (root)
-  if (!path || path.length === 0 || path === "/") {
-    // Return 404 - root should be handled by static files (index.html)
-    return new Response("Not found", { status: 404 });
   }
 
   // Treat first segment as alias
