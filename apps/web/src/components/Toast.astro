@@ -1,15 +1,45 @@
-<div
-  id="toast-root"
-  class="fixed bottom-6 right-6 flex items-center gap-3 rounded-lg bg-graphite/90 px-4 py-3 shadow-lg shadow-black/50 ring-1 ring-accent/40 backdrop-blur transition-opacity duration-200 opacity-0 pointer-events-none"
-  role="status"
-  aria-live="polite"
->
-  <span class="flex h-8 w-8 items-center justify-center rounded-full bg-olive/60 text-accent">
-    ✓
-  </span>
-  <span data-message class="text-sm font-medium tracking-wide text-accent">
-    Copied.
-  </span>
+<style>
+  #toast-root {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.3rem;
+    border-radius: 16px;
+    background: rgba(26, 28, 30, 0.9);
+    border: 1px solid rgba(67, 213, 255, 0.3);
+    box-shadow: 0 18px 36px rgba(10, 12, 14, 0.65);
+    backdrop-filter: blur(18px);
+    transition: opacity 0.25s ease;
+    opacity: 0;
+    pointer-events: none;
+    color: #43d5ff;
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    z-index: 50;
+  }
+  #toast-root .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(58, 63, 54, 0.6);
+    color: #43d5ff;
+    font-weight: 600;
+  }
+  #toast-root .message {
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+</style>
+
+<div id="toast-root" role="status" aria-live="polite">
+  <span class="icon">✓</span>
+  <span data-message class="message">Copied.</span>
 </div>
 
 <script>
