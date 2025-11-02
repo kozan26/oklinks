@@ -1,0 +1,163 @@
+---
+// Note: This page should be protected by Cloudflare Access at the route level.
+// Optionally verify CF-Access-Jwt-Assertion header if ACCESS_AUD is configured.
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - oklinks</title>
+  </head>
+  <body class="bg-ink text-default min-h-screen">
+    <div class="container mx-auto px-4 py-16 max-w-6xl">
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-2">Admin Dashboard</h1>
+        <p class="text-muted">Manage your short links</p>
+      </div>
+
+      <div id="app" class="bg-graphite rounded-lg p-8 shadow-lg">
+        <div id="loading" class="text-center py-8">
+          <p class="text-muted">Loading links...</p>
+        </div>
+
+        <div id="links-list" class="hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-olive">
+                  <th class="text-left py-3 px-4 font-semibold">Alias</th>
+                  <th class="text-left py-3 px-4 font-semibold">Target</th>
+                  <th class="text-left py-3 px-4 font-semibold">Clicks</th>
+                  <th class="text-left py-3 px-4 font-semibold">Created</th>
+                  <th class="text-left py-3 px-4 font-semibold">Expires</th>
+                  <th class="text-left py-3 px-4 font-semibold">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="links-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="error" class="hidden text-red-400 py-4">
+          Failed to load links. Please refresh the page.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      interface Link {
+        id: string;
+        alias: string;
+        target: string;
+        created_at: number;
+        expires_at: number | null;
+        clicks_total: number;
+        is_active: number;
+      }
+
+      const loading = document.getElementById("loading") as HTMLDivElement;
+      const linksList = document.getElementById("links-list") as HTMLDivElement;
+      const linksTbody = document.getElementById("links-tbody") as HTMLTableSectionElement;
+      const errorDiv = document.getElementById("error") as HTMLDivElement;
+
+      async function loadLinks() {
+        try {
+          // Note: This requires a list endpoint at /api/links (GET without ID)
+          // For now, using a workaround - in production add GET /api/links endpoint
+          const response = await fetch("/api/links");
+          
+          if (!response.ok) {
+            throw new Error("Failed to fetch links");
+          }
+
+          const links: Link[] = await response.json();
+          
+          loading.classList.add("hidden");
+          
+          if (links.length === 0) {
+            linksTbody.innerHTML = `
+              <tr>
+                <td colspan="6" class="text-center py-8 text-muted">No links found</td>
+              </tr>
+            `;
+          } else {
+            linksTbody.innerHTML = links
+              .map(
+                (link) => `
+              <tr class="border-b border-olive">
+                <td class="py-3 px-4">
+                  <a href="/${link.alias}" target="_blank" class="text-accent hover:underline">
+                    ${link.alias}
+                  </a>
+                </td>
+                <td class="py-3 px-4 text-muted truncate max-w-md" title="${link.target}">
+                  ${link.target}
+                </td>
+                <td class="py-3 px-4">${link.clicks_total}</td>
+                <td class="py-3 px-4 text-muted text-sm">
+                  ${new Date(link.created_at * 1000).toLocaleDateString()}
+                </td>
+                <td class="py-3 px-4 text-muted text-sm">
+                  ${link.expires_at ? new Date(link.expires_at * 1000).toLocaleDateString() : "Never"}
+                </td>
+                <td class="py-3 px-4">
+                  <button
+                    onclick="deleteLink('${link.id}', '${link.alias}')"
+                    class="text-red-400 hover:text-red-300 focus:outline-none focus:ring-2 focus:ring-red-400 rounded px-2"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            `
+              )
+              .join("");
+          }
+
+          linksList.classList.remove("hidden");
+        } catch (error) {
+          console.error("Error loading links:", error);
+          loading.classList.add("hidden");
+          errorDiv.classList.remove("hidden");
+        }
+      }
+
+      async function deleteLink(id: string, alias: string) {
+        if (!confirm(`Delete link "${alias}"?`)) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/links/${id}`, {
+            method: "DELETE",
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to delete link");
+          }
+
+          // Reload the list
+          loadLinks();
+        } catch (error) {
+          console.error("Error deleting link:", error);
+          alert("Failed to delete link");
+        }
+      }
+
+      // Make deleteLink available globally
+      (window as any).deleteLink = deleteLink;
+
+      // Load links on page load
+      loadLinks();
+    </script>
+  </body>
+</html>
+
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+      sans-serif;
+  }
+</style>
+

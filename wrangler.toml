@@ -1,0 +1,23 @@
+name = "oklinks"
+compatibility_date = "2024-11-22"
+pages_build_output_dir = "apps/web/dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "oklinks-db"
+database_id = "your-database-id-here"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "your-kv-namespace-id-here"
+
+[[queues]]
+producers = [{ queue = "oklinks-clicks", binding = "CLICK_QUEUE" }]
+
+[vars]
+TURNSTILE_SECRET = "your-turnstile-secret-here"
+# ACCESS_AUD = "your-access-aud-here" # Optional: for JWT validation
+
+# Note: Click consumer worker should be deployed separately
+# Run: cd workers/click-consumer && npx wrangler deploy
+# Or configure in Cloudflare Dashboard as a Worker that consumes oklinks-clicks queue
