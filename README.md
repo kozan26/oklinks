@@ -1,8 +1,10 @@
 # oklinks
 
-A production-ready personal URL shortener built on Cloudflare Pages with Pages Functions. Features include D1 database, KV caching, async click tracking via Queues, Turnstile anti-abuse protection, and Cloudflare Access for admin routes.
+A production-ready personal URL shortener built on Cloudflare Pages with Pages Functions. Features include D1 database, KV caching, async click tracking via Queues (optional - paid plan), Turnstile anti-abuse protection (optional), and Cloudflare Access for admin routes.
 
 **Short. Smart. Yours.**
+
+**Works on free plan!** Only Queues require a paid plan. All core features work without it.
 
 ## Quick Start
 
