@@ -46,11 +46,13 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
    3. Namespace name: `CACHE`
    4. Click **"Add"**
    
-   **Create Queue:**
+   **Create Queue (Optional - requires paid plan):**
    1. In Cloudflare Dashboard, click **Workers & Pages** → **Queues**
    2. Click **"Create queue"** button
    3. Queue name: `oklinks-clicks`
    4. Click **"Create queue"**
+   
+   **Note:** Queues require a paid Cloudflare plan. The app works fine without it - you just won't get click tracking analytics. Skip this if you're on the free plan.
 
 3. **Apply database schema:**
    ```bash
@@ -116,17 +118,21 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
    - KV namespace: Select `CACHE` from dropdown
    - Click **"Save"**
    
-   **Add Queue Binding:**
+   **Add Queue Binding (Optional - requires paid plan):**
    - Click **"Add binding"** → Select **"Queue"**
    - Variable name: `CLICK_QUEUE`
    - Queue: Select `oklinks-clicks` from dropdown
    - Click **"Save"**
    
+   **Note:** Queues are optional - skip this if you don't have a paid plan. The app will work without click tracking.
+   
    **Tip:** If a resource doesn't appear in the dropdown, wait a minute and refresh the page - it may take a moment to sync.
 
 5. **Deploy:** Click "Save and Deploy"
 
-### Click Consumer Worker
+### Click Consumer Worker (Optional - requires paid plan)
+
+**Note:** This is only needed if you have Queues set up (requires paid plan). Skip this if you're on the free plan.
 
 Deploy the click consumer worker separately:
 
