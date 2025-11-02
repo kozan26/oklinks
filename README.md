@@ -70,10 +70,12 @@ A production-ready personal URL shortener built on Cloudflare Pages with Pages F
    - (Optional) Add `TURNSTILE_SECRET` if you want anti-abuse protection (from Turnstile dashboard)
    - (Optional) Add `ACCESS_AUD` for JWT validation
 
-4. **Bindings:**
-   - **D1 Database:** Select `oklinks-db` → binding name: `DB`
-   - **KV Namespace:** Select `CACHE` → binding name: `CACHE`
-   - **Queue:** Select `oklinks-clicks` → binding name: `CLICK_QUEUE`
+4. **Bindings (IMPORTANT - Configure these in Pages dashboard):**
+   - Go to your Pages project → **Settings** → **Functions**
+   - **D1 Database Bindings:** Click "Add binding" → Select `oklinks-db` → Set binding name to: `DB`
+   - **KV Namespace Bindings:** Click "Add binding" → Select `CACHE` → Set binding name to: `CACHE`
+   - **Queue Bindings:** Click "Add binding" → Select `oklinks-clicks` → Set binding name to: `CLICK_QUEUE`
+   - These bindings are required for the Functions to work!
 
 5. **Deploy:** Click "Save and Deploy"
 

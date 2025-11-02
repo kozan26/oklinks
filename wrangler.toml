@@ -2,17 +2,22 @@ name = "oklinks"
 compatibility_date = "2024-11-22"
 pages_build_output_dir = "apps/web/dist"
 
-[[d1_databases]]
-binding = "DB"
-database_name = "oklinks-db"
-database_id = "your-database-id-here"
-
-[[kv_namespaces]]
-binding = "CACHE"
-id = "your-kv-namespace-id-here"
-
-[queues]
-producers = [{ queue = "oklinks-clicks", binding = "CLICK_QUEUE" }]
+# Note: For Cloudflare Pages, bindings (D1, KV, Queue) should be configured
+# in the Pages dashboard under "Settings" > "Functions", not here.
+# This file is mainly for build configuration and local development.
+# 
+# Local development bindings (uncomment and set when testing locally):
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "oklinks-db"
+# database_id = "your-database-id-here"
+#
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "your-kv-namespace-id-here"
+#
+# [queues]
+# producers = [{ queue = "oklinks-clicks", binding = "CLICK_QUEUE" }]
 
 [vars]
 # TURNSTILE_SECRET = "your-turnstile-secret-here" # Optional: only needed if you want Turnstile anti-abuse
