@@ -9,11 +9,11 @@ ACCESS_AUD = ""
 [[d1_databases]]
 binding = "DB"
 database_name = "oklinks-db"
-database_id = "REPLACE_WITH_D1_ID"
+database_id = "21e5d715-de35-4817-86d9-923180ef4d84"
 
 [[kv_namespaces]]
 binding = "CACHE"
-id = "REPLACE_WITH_KV_ID"
+id = "775697626cf84fb39552691a1e60a330"
 
 # Uncomment to enable queue-backed click logging (requires Cloudflare Queues)
 # [[queues.producers]]
