@@ -19,7 +19,8 @@ import { inlineCSS } from "../../styles/inline.css.ts";
       rel="stylesheet"
     />
     <style set:html={inlineCSS} is:global></style>
-    <style is:global>
+    <!-- Admin page specific styles -->
+    <style is:global define:vars={{}}>
       :root {
         --admin-background: hsl(230 58% 6%);
         --admin-background-alt: hsl(236 43% 9%);
