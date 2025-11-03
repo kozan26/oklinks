@@ -3,9 +3,9 @@ main = "src/index.ts"
 compatibility_date = "2025-11-02"
 
 [[queues.consumers]]
-queue = "oklinks-clicks"
+queue = "sakla-clicks"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "oklinks-db"
+database_name = "sakla-db"
 database_id = "REPLACE_WITH_D1_ID"

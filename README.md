@@ -1,4 +1,4 @@
-# oklinks
+# sakla
 
 Dark tactical personal URL shortener built for Cloudflare Pages + Functions with D1 storage, KV caching, Turnstile protection, and Queue-based analytics.
 
@@ -11,9 +11,9 @@ Dark tactical personal URL shortener built for Cloudflare Pages + Functions with
 
 ## One-shot setup
 1. `pnpm install`
-2. `npx wrangler d1 create oklinks-db`
+2. `npx wrangler d1 create sakla-db`
 3. `npx wrangler kv namespace create CACHE`
-4. _(Optional)_ `npx wrangler queues create oklinks-clicks`
+4. _(Optional)_ `npx wrangler queues create sakla-clicks`
 5. `pnpm db:apply`
 6. Add generated IDs to `wrangler.toml` & `workers/click-consumer/wrangler.toml`, set `TURNSTILE_SECRET`, `PUBLIC_TURNSTILE_SITE_KEY`, optional `ACCESS_AUD`
 7. Local run: `pnpm dev:pages`
@@ -30,30 +30,30 @@ Create a `.env` based on `.env.sample` with your Turnstile keys. When using `wra
 
 ## Cloudflare Pages deployment
 1. Push to a Git repository and connect it in the Cloudflare Pages dashboard.
-2. Set Build command `pnpm --filter oklinks-web build`, Output directory `apps/web/dist`.
+2. Set Build command `pnpm --filter sakla-web build`, Output directory `apps/web/dist`.
 3. Enable Functions for the project; Wrangler config already points to the output directory.
 4. Configure bindings (Pages → Settings → Functions):
-   - D1: binding `DB`, choose previously created database `oklinks-db`.
+   - D1: binding `DB`, choose previously created database `sakla-db`.
    - KV Namespace: binding `CACHE`.
-   - Queue Producer: binding `CLICK_QUEUE`, queue name `oklinks-clicks` (optional; skip if you did not create a queue).
+   - Queue Producer: binding `CLICK_QUEUE`, queue name `sakla-clicks` (optional; skip if you did not create a queue).
    - Environment variable `TURNSTILE_SECRET` (and optional `ACCESS_AUD`).
    - Provide `PUBLIC_TURNSTILE_SITE_KEY` in Pages → Settings → Environment Variables (mark as public binding in new UI).
-5. (Optional) Deploy the queue consumer worker: `wrangler deploy workers/click-consumer --config workers/click-consumer/wrangler.toml` and ensure it consumes `oklinks-clicks`.
+5. (Optional) Deploy the queue consumer worker: `wrangler deploy workers/click-consumer --config workers/click-consumer/wrangler.toml` and ensure it consumes `sakla-clicks`.
 6. Protect `/admin/*` with a Cloudflare Access policy (e.g., email allowlist) and optionally configure JWT audience as `ACCESS_AUD`.
-7. Add a custom domain such as `okl.ink` via Pages.
+7. Add a custom domain such as `sakla.dev` via Pages.
 
 ## API examples
 ```bash
 # Create a link
-curl -X POST https://oklinks.example/api/links \
+curl -X POST https://sakla.dev/api/links \
   -H 'content-type: application/json' \
   -d '{"target":"https://example.com","alias":"docs","turnstileToken":"<token>"}'
 
 # Retrieve by ID
-curl https://oklinks.example/api/links/<id>
+curl https://sakla.dev/api/links/<id>
 
 # Delete by ID
-curl -X DELETE https://oklinks.example/api/links/<id>
+curl -X DELETE https://sakla.dev/api/links/<id>
 ```
 
 POST accepts optional fields:
@@ -95,7 +95,7 @@ Apply migrations with `pnpm db:apply` using Wrangler D1 execute.
 
 ## Repository layout
 ```
-oklinks/
+sakla/
   apps/web/        Astro UI (landing + admin)
   functions/       Pages Functions (create, manage, redirect)
   workers/         Queue consumer Worker

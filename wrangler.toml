@@ -1,4 +1,4 @@
-name = "oklinks"
+name = "sakla"
 compatibility_date = "2025-11-02"
 pages_build_output_dir = "./apps/web/dist"
 
@@ -6,7 +6,7 @@ pages_build_output_dir = "./apps/web/dist"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "oklinks-db"
+database_name = "sakla-db"
 database_id = "21e5d715-de35-4817-86d9-923180ef4d84"
 
 [[kv_namespaces]]
@@ -16,6 +16,5 @@ id = "775697626cf84fb39552691a1e60a330"
 # Uncomment to enable queue-backed click logging (requires Cloudflare Queues)
 # [[queues.producers]]
 # binding = "CLICK_QUEUE"
-# queue = "oklinks-clicks"
-
+# queue = "sakla-clicks"
 

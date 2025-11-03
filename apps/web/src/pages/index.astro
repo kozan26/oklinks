@@ -7,10 +7,10 @@ import Toast from "../components/Toast.astro";
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>oklinks — Launch tactical short links in seconds</title>
+    <title>sakla — Launch tactical short links in seconds</title>
     <meta
       name="description"
-      content="oklinks is a tactical URL shortener for Cloudflare Pages with D1 persistence, KV caching, and queue-backed analytics."
+      content="sakla is a tactical URL shortener for Cloudflare Pages with D1 persistence, KV caching, and queue-backed analytics."
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.svg" />
@@ -31,7 +31,7 @@ import Toast from "../components/Toast.astro";
   <body>
     <div class="page">
       <nav class="nav">
-        <a href="/" class="logo" title="Go to home page">oklinks</a>
+        <a href="/" class="logo" title="Go to home page">sakla</a>
         <div class="nav-actions">
           <a class="nav-link" href="/admin" title="Go to admin dashboard">Admin</a>
         </div>
@@ -167,11 +167,11 @@ import Toast from "../components/Toast.astro";
             </div>
           </div>
           <p class="bookmarklet-copy">
-            Drag the button below to your bookmarks bar. Whenever you click it on any site, we'll open oklinks and create a short link for the page you're on.
+            Drag the button below to your bookmarks bar. Whenever you click it on any site, we'll open sakla and create a short link for the page you're on.
           </p>
           <a id="bookmarklet-link" class="bookmarklet-button" href="#" draggable="true">
             <span class="material-icons">bolt</span>
-            <span>Shorten with oklinks</span>
+            <span>Shorten with sakla</span>
           </a>
           <p class="bookmarklet-hint">Tip: on mobile, add the button to your favorites to keep it handy.</p>
         </div>
@@ -231,7 +231,9 @@ import Toast from "../components/Toast.astro";
           function initializeBookmarklet(link) {
             try {
               const origin = window.location.origin;
-              const escapedOrigin = origin.replace(/'/g, "\\'");
+              const isLocal = /^https?:\/\/(localhost|127(?:\.\d+){3})(:\d+)?$/.test(origin);
+              const bookmarkletOrigin = isLocal ? origin : "https://sakla.dev";
+              const escapedOrigin = bookmarkletOrigin.replace(/'/g, "\\'");
               const bookmarklet = "javascript:(()=>{const base='" + escapedOrigin
                 + "';const target=encodeURIComponent(location.href);const win=window.open(base + '/bookmarklet?target=' + target,'_blank');if(win){win.opener=null;}})();";
               link.href = bookmarklet;

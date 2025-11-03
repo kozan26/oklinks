@@ -42,7 +42,7 @@ $password = "your-password"; $bytes = [System.Text.Encoding]::UTF8.GetBytes($pas
 **IMPORTANT**: You need to paste the **HASH** (not your password) into Cloudflare Pages!
 
 1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
-2. Navigate to **Pages** → Your project (`oklinks`)
+2. Navigate to **Pages** → Your project (`sakla`)
 3. Click **Settings** → **Environment Variables**
 4. Click **Add variable**
 5. Add:

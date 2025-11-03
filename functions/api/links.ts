@@ -101,7 +101,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Short link found · oklinks</title>
+    <title>Short link found · sakla</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#0B0D0E; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; margin:0; padding:2rem; }
@@ -201,7 +201,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Short link created · oklinks</title>
+    <title>Short link created · sakla</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#0B0D0E; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; margin:0; padding:2rem; }

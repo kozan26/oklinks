@@ -33,7 +33,7 @@ async function generatePlaceholderQrSvg(data: string): Promise<string> {
     }
   }
 
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${dimension} ${dimension}" shape-rendering="crispEdges">\n  <rect width="100%" height="100%" fill="#43D5FF" />\n  <g fill="#0B0D0E">${rects.join("\n")}</g>\n  <text x="50%" y="${dimension - padding / 2}" text-anchor="middle" font-family="monospace" font-size="${cell * 1.6}" fill="#0B0D0E" opacity="0.25">oklinks</text>\n</svg>`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${dimension} ${dimension}" shape-rendering="crispEdges">\n  <rect width="100%" height="100%" fill="#43D5FF" />\n  <g fill="#0B0D0E">${rects.join("\n")}</g>\n  <text x="50%" y="${dimension - padding / 2}" text-anchor="middle" font-family="monospace" font-size="${cell * 1.6}" fill="#0B0D0E" opacity="0.25">sakla</text>\n</svg>`;
 }
 
 export const onRequest: PagesFunction<Env> = async (context) => {

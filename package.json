@@ -1,13 +1,13 @@
 {
-  "name": "oklinks",
+  "name": "sakla",
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@9.0.0",
   "scripts": {
     "dev:pages": "wrangler pages dev .",
-    "dev:web": "pnpm --filter oklinks-web dev",
-    "build": "pnpm --filter oklinks-web build",
-    "db:apply": "wrangler d1 execute oklinks-db --file=db/schema.sql",
+    "dev:web": "pnpm --filter sakla-web dev",
+    "build": "pnpm --filter sakla-web build",
+    "db:apply": "wrangler d1 execute sakla-db --file=db/schema.sql",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run"
