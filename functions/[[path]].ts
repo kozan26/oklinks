@@ -67,6 +67,10 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     return next();
   }
 
+  if (segments[0] === "bookmarklet") {
+    return next();
+  }
+
   if (segments[0] === "qr" && segments.length >= 2) {
     const alias = sanitizeAlias(segments[1]);
     if (!alias) {
