@@ -5,8 +5,8 @@
   "packageManager": "pnpm@9.0.0",
   "scripts": {
     "dev:pages": "wrangler pages dev .",
-    "dev:web": "pnpm --filter sakla-web dev",
-    "build": "pnpm --filter sakla-web build",
+    "dev:web": "pnpm --filter oklinks-web dev",
+    "build": "pnpm --filter ./apps/web build",
     "db:apply": "wrangler d1 execute sakla-db --file=db/schema.sql",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
