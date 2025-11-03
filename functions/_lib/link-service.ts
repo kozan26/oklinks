@@ -165,6 +165,49 @@ export async function listLinks(
   return results ?? [];
 }
 
+export interface LinkStats {
+  total: number;
+  protected: number;
+  live: number;
+  expired: number;
+  inactive: number;
+  expiringSoon: number;
+  totalClicks: number;
+}
+
+export async function getLinkStats(env: Env): Promise<LinkStats> {
+  const { results } = await env.DB.prepare(
+    `SELECT
+       COUNT(*) AS total,
+       SUM(CASE WHEN password_hash IS NOT NULL THEN 1 ELSE 0 END) AS protected_count,
+       SUM(CASE WHEN is_active = 1 AND (expires_at IS NULL OR expires_at > strftime('%s','now')) THEN 1 ELSE 0 END) AS live_count,
+       SUM(CASE WHEN expires_at IS NOT NULL AND expires_at <= strftime('%s','now') THEN 1 ELSE 0 END) AS expired_count,
+       SUM(CASE WHEN is_active = 0 THEN 1 ELSE 0 END) AS inactive_count,
+       SUM(CASE WHEN expires_at IS NOT NULL AND expires_at > strftime('%s','now') AND expires_at <= strftime('%s','now','+7 days') THEN 1 ELSE 0 END) AS expiring_soon_count,
+       SUM(clicks_total) AS total_clicks
+     FROM links`,
+  ).all<{
+    total: number | null;
+    protected_count: number | null;
+    live_count: number | null;
+    expired_count: number | null;
+    inactive_count: number | null;
+    expiring_soon_count: number | null;
+    total_clicks: number | null;
+  }>();
+
+  const row = results?.[0] ?? null;
+  return {
+    total: Number(row?.total) || 0,
+    protected: Number(row?.protected_count) || 0,
+    live: Number(row?.live_count) || 0,
+    expired: Number(row?.expired_count) || 0,
+    inactive: Number(row?.inactive_count) || 0,
+    expiringSoon: Number(row?.expiring_soon_count) || 0,
+    totalClicks: Number(row?.total_clicks) || 0,
+  };
+}
+
 export async function deleteLink(
   env: Env,
   id: string,

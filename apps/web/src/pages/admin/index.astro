@@ -593,6 +593,7 @@ const adminCSS = `:root {
   font-weight: 600;
   background: color-mix(in srgb, var(--admin-accent) 16%, transparent);
   color: var(--admin-accent);
+  text-decoration: none;
 }
 
 .badge::before {
@@ -661,13 +662,19 @@ const adminCSS = `:root {
 
 .link-target {
   max-width: 320px;
+}
+
+.link-target-anchor {
+  display: inline-block;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--admin-primary);
+  text-decoration: none;
 }
 
-.link-target:hover {
+.link-target-anchor:hover {
   color: var(--admin-accent);
 }
 
@@ -1055,23 +1062,28 @@ const adminCSS = `:root {
               const payload = await response.json();
               console.log('API response:', payload);
               const items = Array.isArray(payload?.links) ? payload.links : [];
+              const stats = typeof payload?.stats === 'object' && payload.stats !== null ? payload.stats : null;
               console.log('Links found:', items.length);
 
+              const normalizeNumber = (value, fallback) => {
+                const numberValue = typeof value === 'number' ? value : Number(value);
+                return Number.isFinite(numberValue) ? numberValue : fallback;
+              };
+
               const nowSeconds = Math.floor(Date.now() / 1000);
-              const totalLinks = items.length;
-              const protectedCount = items.filter((link) => Boolean(link?.password_hash)).length;
-              const liveCount = items.filter((link) => {
+              const fallbackProtected = items.filter((link) => Boolean(link?.password_hash)).length;
+              const fallbackLive = items.filter((link) => {
                 const isActive = Number(link?.is_active) === 1;
                 const expires = Number(link?.expires_at);
                 const hasExpired = Number.isFinite(expires) && expires > 0 && expires <= nowSeconds;
                 return isActive && !hasExpired;
               }).length;
-              const expiredCount = items.filter((link) => {
+              const fallbackExpired = items.filter((link) => {
                 const expires = Number(link?.expires_at);
                 return Number.isFinite(expires) && expires > 0 && expires <= nowSeconds;
               }).length;
-              const inactiveCount = items.filter((link) => Number(link?.is_active) === 0).length;
-              const soonExpiringCount = items.filter((link) => {
+              const fallbackInactive = items.filter((link) => Number(link?.is_active) === 0).length;
+              const fallbackSoonExpiring = items.filter((link) => {
                 const expires = Number(link?.expires_at);
                 return (
                   Number.isFinite(expires) &&
@@ -1079,11 +1091,21 @@ const adminCSS = `:root {
                   expires <= nowSeconds + 7 * 24 * 60 * 60
                 );
               }).length;
-              const totalClicks = items.reduce(
+              const fallbackClicks = items.reduce(
                 (sum, link) => sum + (Number(link?.clicks_total) || 0),
                 0,
               );
+
+              const totalLinks = normalizeNumber(stats?.total, items.length);
+              const protectedCount = normalizeNumber(stats?.protected, fallbackProtected);
+              const liveCount = normalizeNumber(stats?.live, fallbackLive);
+              const expiredCount = normalizeNumber(stats?.expired, fallbackExpired);
+              const inactiveCount = normalizeNumber(stats?.inactive, fallbackInactive);
+              const soonExpiringCount = normalizeNumber(stats?.expiringSoon, fallbackSoonExpiring);
+              const totalClicks = normalizeNumber(stats?.totalClicks, fallbackClicks);
               const averageClicks = totalLinks > 0 ? totalClicks / totalLinks : 0;
+              const publicCount = Math.max(totalLinks - protectedCount, 0);
+              const pausedCount = Math.max(totalLinks - liveCount, 0);
               const newestLink = items[0];
 
               if (metrics) {
@@ -1097,14 +1119,14 @@ const adminCSS = `:root {
                     label: 'Toplam bağlantı',
                     value: formatInteger(totalLinks),
                     footnote: totalLinks
-                      ? `<span class="metric-chip">${formatInteger(protectedCount)} korumalı</span><span>${formatInteger(totalLinks - protectedCount)} herkese açık</span>`
+                      ? `<span class="metric-chip">${formatInteger(protectedCount)} korumalı</span><span>${formatInteger(publicCount)} herkese açık</span>`
                       : 'Bu panoyu doldurmak için ilk kısa bağlantınızı oluşturun.',
                   },
                   {
                     label: 'Aktif bağlantılar',
                     value: formatInteger(liveCount),
                     footnote: liveCount
-                      ? `<span class="metric-chip">${formatInteger(soonExpiringCount)} yakında sona erecek</span><span>${formatInteger(totalLinks - liveCount)} durduruldu</span>`
+                      ? `<span class="metric-chip">${formatInteger(soonExpiringCount)} yakında sona erecek</span><span>${formatInteger(pausedCount)} durduruldu</span>`
                       : 'Şu anda aktif bağlantı yok.',
                   },
                   {
@@ -1152,10 +1174,22 @@ const adminCSS = `:root {
                 const safeAlias = escapeHtml(link.alias || '');
                 const safeId = escapeHtml(link.id || '');
                 const safeTarget = escapeHtml(link.target || '');
+                const safeTargetHref = escapeHtml(link.target || '');
                 const clicksDisplay = formatInteger(link.clicks_total ?? 0);
+                const aliasSlug = link.alias || link.id || '';
+                const aliasHref = aliasSlug ? '/' + encodeURIComponent(aliasSlug) : null;
+                const aliasCell = aliasHref
+                  ? `<a href="${aliasHref}" class="badge badge-mono" target="_blank" rel="noopener">${safeAlias || safeId}</a>`
+                  : `<span class="badge badge-mono">${safeAlias || safeId}</span>`;
                 row.innerHTML = `
-                  <td><span class="badge badge-mono">${safeAlias}</span></td>
-                  <td class="link-target" title="${safeTarget}">${safeTarget}</td>
+                  <td>${aliasCell}</td>
+                  <td class="link-target" title="${safeTarget}">
+                    ${
+                      safeTarget
+                        ? `<a href="${safeTargetHref}" target="_blank" rel="noopener" class="link-target-anchor">${safeTarget}</a>`
+                        : '—'
+                    }
+                  </td>
                   <td style="text-align: right;">${clicksDisplay}</td>
                   <td style="text-align: right;">${formatExpiry(link.expires_at)}</td>
                   <td style="text-align: right;">

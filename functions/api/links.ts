@@ -3,6 +3,7 @@ import {
   deleteLink as deleteLinkRecord,
   getActiveLinkByTarget,
   getLinkById,
+  getLinkStats,
   listLinks,
   saveLink,
   upsertAliasCache,
@@ -295,7 +296,13 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   
   // Otherwise, handle as list request for /api/links
   const limitParam = url.searchParams.get("limit");
-  const limit = limitParam ? Number.parseInt(limitParam, 10) : 50;
-  const links = await listLinks(env, { limit: Number.isFinite(limit) ? limit : 50 });
-  return json({ links });
+  const parsedLimit = limitParam ? Number.parseInt(limitParam, 10) : undefined;
+  const limit = Number.isFinite(parsedLimit as number) ? (parsedLimit as number) : 50;
+
+  const [links, stats] = await Promise.all([
+    listLinks(env, { limit }),
+    getLinkStats(env),
+  ]);
+
+  return json({ links, stats });
 };
