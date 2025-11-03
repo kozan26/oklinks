@@ -55,6 +55,14 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     return next();
   }
 
+  // Skip static files - let Astro/Cloudflare Pages serve them
+  const firstSegment = segments[0];
+  const staticExtensions = ['.svg', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.webp', '.css', '.js', '.woff', '.woff2', '.ttf', '.eot'];
+  const isStaticFile = staticExtensions.some(ext => firstSegment.toLowerCase().endsWith(ext));
+  if (isStaticFile) {
+    return next();
+  }
+
   if (segments[0] === "admin") {
     return next();
   }
