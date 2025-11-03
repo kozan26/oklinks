@@ -482,6 +482,14 @@ a:hover {
   height: 1.125rem;
 }
 
+.result-btn:disabled,
+.result-btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .result-details {
   display: flex;
   flex-direction: column;
@@ -528,6 +536,121 @@ a:hover {
   white-space: nowrap;
 }
 
+.bookmarklet-section {
+  margin: 4rem auto 2rem;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 2rem 2rem;
+}
+
+.bookmarklet-card {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.bookmarklet-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.bookmarklet-icon {
+  font-size: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--accent);
+}
+
+.bookmarklet-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.bookmarklet-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0;
+}
+
+.bookmarklet-copy {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.bookmarklet-button {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: grab;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 6px 20px rgba(67, 213, 255, 0.35);
+}
+
+.bookmarklet-button:active {
+  cursor: grabbing;
+}
+
+.bookmarklet-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(67, 213, 255, 0.45);
+}
+
+.bookmarklet-button .material-icons {
+  font-size: 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.bookmarklet-hint {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+}
+
+.bookmarklet-main {
+  flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto 4rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bookmarklet-status {
+  margin-top: 0.35rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.bookmarklet-note {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.bookmarklet-note a {
+  color: var(--accent);
+}
+
 /* Material Icons */
 .material-icons {
   font-family: 'Material Icons';
@@ -554,6 +677,16 @@ a:hover {
   
   .result-card {
     min-height: auto;
+  }
+
+  .bookmarklet-section {
+    margin: 3rem auto 2rem;
+    padding: 0 1.5rem 1.5rem;
+  }
+
+  .bookmarklet-main {
+    max-width: 720px;
+    padding: 1.5rem;
   }
 }
 
@@ -585,6 +718,34 @@ a:hover {
   
   .result-btn {
     width: 100%;
+  }
+
+  .bookmarklet-section {
+    padding: 0 1rem 1rem;
+  }
+
+  .bookmarklet-card {
+    padding: 1.5rem;
+  }
+
+  .bookmarklet-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .bookmarklet-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .bookmarklet-main {
+    padding: 1.5rem 1rem 2.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .bookmarklet-note {
+    text-align: left;
   }
 }
 `;

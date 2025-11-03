@@ -1,0 +1,223 @@
+---
+import { inlineCSS } from "../styles/inline.css.ts";
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>oklinks bookmarklet · Shorten current page</title>
+    <meta
+      name="description"
+      content="Use the oklinks bookmarklet to shorten the page you're currently viewing."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <style set:html={inlineCSS} is:global></style>
+  </head>
+  <body>
+    <div class="page">
+      <nav class="nav">
+        <a href="/" class="logo" title="Return to home page">oklinks</a>
+        <div class="nav-actions">
+          <a class="nav-link" href="/" title="Create another short link">Home</a>
+          <a class="nav-link" href="/admin" title="Go to admin dashboard">Admin</a>
+        </div>
+      </nav>
+
+      <main class="bookmarklet-main">
+        <div class="result-card">
+          <div class="result-header">
+            <span class="material-icons result-icon" aria-hidden="true">bolt</span>
+            <div>
+              <h1 class="result-title">Working on your short link</h1>
+              <p id="bookmarklet-status" class="bookmarklet-status">Preparing…</p>
+            </div>
+          </div>
+
+          <div id="bookmarklet-result" class="bookmarklet-result" style="display:none;">
+            <div class="result-url-wrapper">
+              <a
+                id="bookmarklet-url"
+                href="#"
+                target="_blank"
+                rel="noopener"
+                class="result-url"
+                title="Open the new short link in a fresh tab"
+              ></a>
+            </div>
+
+            <div class="result-buttons">
+              <button id="bookmarklet-copy" type="button" class="result-btn result-btn-primary">
+                <span class="material-icons">content_copy</span>
+                <span>Copy URL</span>
+              </button>
+              <a
+                id="bookmarklet-open"
+                href="#"
+                target="_blank"
+                rel="noopener"
+                class="result-btn result-btn-secondary"
+              >
+                <span class="material-icons">open_in_new</span>
+                <span>Open Link</span>
+              </a>
+            </div>
+
+            <div class="result-details">
+              <div class="detail-item">
+                <span class="detail-label">Alias</span>
+                <code id="bookmarklet-alias" class="detail-value detail-code"></code>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Target</span>
+                <span id="bookmarklet-target" class="detail-value detail-target"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="bookmarklet-note">
+          You can close this tab once you're done. Need to shorten something else? Use the bookmarklet again or head back to the <a href="/">home page</a>.
+        </p>
+      </main>
+    </div>
+
+    <script is:inline>
+      (function() {
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', init);
+        } else {
+          init();
+        }
+
+        function init() {
+          const statusEl = document.getElementById('bookmarklet-status');
+          const resultEl = document.getElementById('bookmarklet-result');
+          const urlEl = document.getElementById('bookmarklet-url');
+          const targetEl = document.getElementById('bookmarklet-target');
+          const aliasEl = document.getElementById('bookmarklet-alias');
+          const copyBtn = document.getElementById('bookmarklet-copy');
+          const openLink = document.getElementById('bookmarklet-open');
+
+          const params = new URLSearchParams(window.location.search);
+          const rawTarget = params.get('target');
+
+          if (!rawTarget) {
+            setStatus('No target URL was provided. Try the bookmarklet again.');
+            return;
+          }
+
+          let targetUrl = rawTarget;
+          try {
+            const parsed = new URL(rawTarget);
+            if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+              throw new Error('Unsupported protocol');
+            }
+            targetUrl = parsed.toString();
+          } catch (error) {
+            console.error('Invalid target URL', error);
+            setStatus('The provided URL is invalid. Make sure it starts with http:// or https://');
+            return;
+          }
+
+          setStatus('Creating your short link…');
+          shorten(targetUrl);
+
+          if (copyBtn && !navigator.clipboard) {
+            copyBtn.disabled = true;
+            copyBtn.classList.add('disabled');
+            const textSpan = copyBtn.querySelector('span:last-child');
+            if (textSpan) {
+              textSpan.textContent = 'Copy not available';
+            }
+          }
+
+          if (copyBtn && navigator.clipboard) {
+            copyBtn.addEventListener('click', async () => {
+              if (!urlEl || !urlEl.textContent) {
+                return;
+              }
+              const originalText = copyBtn.querySelector('span:last-child');
+              try {
+                await navigator.clipboard.writeText(urlEl.textContent);
+                if (originalText) {
+                  const previous = originalText.textContent;
+                  originalText.textContent = 'Copied!';
+                  setTimeout(() => {
+                    originalText.textContent = previous ?? 'Copy URL';
+                  }, 2000);
+                }
+              } catch (error) {
+                console.error('Clipboard write failed', error);
+                alert('Copy failed. Manually copy the URL instead.');
+              }
+            });
+          }
+
+          async function shorten(url) {
+            try {
+              const response = await fetch('/api/links', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ target: url }),
+              });
+
+              const payload = await response.json().catch(() => null);
+              if (!response.ok || !payload) {
+                const message = typeof payload?.error === 'string' ? payload.error.replace(/_/g, ' ') : 'Failed to create link';
+                setStatus(message.charAt(0).toUpperCase() + message.slice(1) + '.');
+                return;
+              }
+
+              if (!payload.alias) {
+                setStatus('Unexpected response from the server.');
+                return;
+              }
+
+              const shortUrl = new URL(payload.alias, window.location.origin).toString();
+              if (urlEl) {
+                urlEl.textContent = shortUrl;
+                urlEl.href = shortUrl;
+              }
+              if (openLink) {
+                openLink.href = shortUrl;
+              }
+              if (aliasEl) {
+                aliasEl.textContent = payload.alias;
+              }
+              if (targetEl) {
+                targetEl.textContent = url;
+              }
+              if (resultEl) {
+                resultEl.style.display = '';
+              }
+              setStatus('Short link ready!');
+            } catch (error) {
+              console.error('Failed to shorten link', error);
+              setStatus('Unexpected error. Try again from the bookmarklet.');
+            }
+          }
+
+          function setStatus(message) {
+            if (statusEl) {
+              statusEl.textContent = message;
+            }
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>

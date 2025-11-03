@@ -156,6 +156,26 @@ import Toast from "../components/Toast.astro";
           </div>
         </div>
       </main>
+
+      <section class="bookmarklet-section">
+        <div class="bookmarklet-card">
+          <div class="bookmarklet-header">
+            <span class="material-icons bookmarklet-icon" aria-hidden="true">auto_awesome</span>
+            <div>
+              <h2 class="bookmarklet-title">Bookmarklet</h2>
+              <p class="bookmarklet-subtitle">Shorten the page you're viewing without leaving it</p>
+            </div>
+          </div>
+          <p class="bookmarklet-copy">
+            Drag the button below to your bookmarks bar. Whenever you click it on any site, we'll open oklinks and create a short link for the page you're on.
+          </p>
+          <a id="bookmarklet-link" class="bookmarklet-button" href="#" draggable="true">
+            <span class="material-icons">bolt</span>
+            <span>Shorten with oklinks</span>
+          </a>
+          <p class="bookmarklet-hint">Tip: on mobile, add the button to your favorites to keep it handy.</p>
+        </div>
+      </section>
     </div>
 
     <Toast />
@@ -188,6 +208,7 @@ import Toast from "../components/Toast.astro";
           const expiresEl = document.getElementById('result-expires');
           const copyButton = document.getElementById('copy-link');
           const qrLink = document.getElementById('qr-link');
+          const bookmarkletLink = document.getElementById('bookmarklet-link');
 
           console.log('All elements found');
 
@@ -201,6 +222,24 @@ import Toast from "../components/Toast.astro";
           
           if (copyButton) {
             copyButton.addEventListener('click', handleCopy);
+          }
+
+          if (bookmarkletLink) {
+            initializeBookmarklet(bookmarkletLink);
+          }
+
+          function initializeBookmarklet(link) {
+            try {
+              const origin = window.location.origin;
+              const escapedOrigin = origin.replace(/'/g, "\\'");
+              const bookmarklet = "javascript:(()=>{const base='" + escapedOrigin
+                + "';const target=encodeURIComponent(location.href);const win=window.open(base + '/bookmarklet?target=' + target,'_blank');if(win){win.opener=null;}})();";
+              link.href = bookmarklet;
+            } catch (error) {
+              console.error('Failed to set bookmarklet:', error);
+              link.removeAttribute('href');
+              link.setAttribute('aria-disabled', 'true');
+            }
           }
 
           async function handleSubmit(event) {
