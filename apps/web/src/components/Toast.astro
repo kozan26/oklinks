@@ -39,7 +39,7 @@
 
 <div id="toast-root" role="status" aria-live="polite">
   <span class="icon">✓</span>
-  <span data-message class="message">Copied.</span>
+  <span data-message class="message">Kopyalandı.</span>
 </div>
 
 <script>
@@ -52,7 +52,7 @@
     };
     window.addEventListener("toast", (event) => {
       const detail = event?.detail ?? {};
-      const message = typeof detail.message === "string" ? detail.message : "Copied.";
+      const message = typeof detail.message === "string" ? detail.message : "Kopyalandı.";
       const target = toast.querySelector<HTMLElement>("[data-message]");
       if (target) target.textContent = message;
       toast.style.opacity = "1";

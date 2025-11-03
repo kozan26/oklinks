@@ -74,11 +74,11 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   if (segments[0] === "qr" && segments.length >= 2) {
     const alias = sanitizeAlias(segments[1]);
     if (!alias) {
-      return new Response("Not found", { status: 404 });
+      return new Response("Bulunamadı", { status: 404 });
     }
     const resolved = await resolveAlias(env, alias);
     if (!resolved) {
-      return new Response("Not found", { status: 404 });
+      return new Response("Bulunamadı", { status: 404 });
     }
     const svg = await generatePlaceholderQrSvg(resolved.target);
     return new Response(svg, {
@@ -97,7 +97,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   const resolved = await resolveAlias(env, alias);
   if (!resolved) {
-    return new Response("Not found", {
+    return new Response("Bulunamadı", {
       status: 404,
       headers: { "cache-control": "no-store" },
     });

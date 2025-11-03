@@ -7,10 +7,10 @@ import Toast from "../components/Toast.astro";
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>sakla — Launch tactical short links in seconds</title>
+    <title>sakla — Taktik kısa bağlantıları saniyeler içinde oluşturun</title>
     <meta
       name="description"
-      content="sakla is a tactical URL shortener for Cloudflare Pages with D1 persistence, KV caching, and queue-backed analytics."
+      content="sakla, Cloudflare Pages için D1 kalıcılığı, KV önbelleği ve kuyruk destekli analizlerle taktik bir URL kısaltıcıdır."
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.svg" />
@@ -31,24 +31,24 @@ import Toast from "../components/Toast.astro";
   <body>
     <div class="page">
       <nav class="nav">
-        <a href="/" class="logo" title="Go to home page">sakla</a>
+        <a href="/" class="logo" title="Ana sayfaya git">sakla</a>
         <div class="nav-actions">
-          <a class="nav-link" href="/admin" title="Go to admin dashboard">Admin</a>
+          <a class="nav-link" href="/admin" title="Yönetim paneline git">Yönetim</a>
         </div>
       </nav>
 
       <main class="main-content">
         <div class="hero-section">
-          <span class="hero-badge">short. smart. yours.</span>
-          <h1 class="hero-title">Create short links instantly</h1>
-          <p class="hero-subtitle">Turn any URL into a clean, shareable link in seconds</p>
+          <span class="hero-badge">kısa. akıllı. senin.</span>
+          <h1 class="hero-title">Kısa bağlantıları anında oluşturun</h1>
+          <p class="hero-subtitle">Her URL'yi saniyeler içinde temiz ve paylaşılabilir bir bağlantıya dönüştürün</p>
         </div>
 
         <div class="content-grid">
           <form id="create-form" class="form-card" method="post" action="/api/links" onsubmit="return false;">
             <div class="form-field">
               <label for="target" class="field-label">
-                Target URL <span class="required">*</span>
+                Hedef URL <span class="required">*</span>
               </label>
               <input 
                 id="target" 
@@ -63,7 +63,7 @@ import Toast from "../components/Toast.astro";
             <div class="form-row">
               <div class="form-field">
                 <label for="alias" class="field-label">
-                  Custom Alias <span class="optional">optional</span>
+                  Özel Kısaltma <span class="optional">isteğe bağlı</span>
                 </label>
                 <input
                   id="alias"
@@ -77,7 +77,7 @@ import Toast from "../components/Toast.astro";
               
               <div class="form-field">
                 <label for="expiresAt" class="field-label">
-                  Expiration <span class="optional">optional</span>
+                  Son Kullanım <span class="optional">isteğe bağlı</span>
                 </label>
                 <input 
                   id="expiresAt" 
@@ -90,7 +90,7 @@ import Toast from "../components/Toast.astro";
 
             <button type="submit" class="submit-button">
               <span class="material-icons button-icon">add_link</span>
-              <span>Create Link</span>
+              <span>Bağlantı oluştur</span>
               <span id="submit-spinner" class="material-icons button-spinner" style="display:none;">hourglass_empty</span>
             </button>
             
@@ -100,13 +100,13 @@ import Toast from "../components/Toast.astro";
           <div id="result-card" class="result-card" data-state="empty">
             <div id="result-placeholder" class="result-placeholder">
               <span class="material-icons placeholder-icon">link</span>
-              <p class="placeholder-text">Your created link will appear here</p>
+              <p class="placeholder-text">Oluşturduğunuz bağlantı burada görünecek</p>
             </div>
             
             <div id="result-detail" class="result-content" style="display:none;">
               <div class="result-header">
                 <span class="material-icons result-icon">check_circle</span>
-                <h3 class="result-title">Link Created</h3>
+                <h3 class="result-title">Bağlantı oluşturuldu</h3>
               </div>
               
               <div class="result-url-wrapper">
@@ -116,14 +116,14 @@ import Toast from "../components/Toast.astro";
                   target="_blank" 
                   rel="noopener" 
                   class="result-url"
-                  title="Open short link in new tab"
+                  title="Kısa bağlantıyı yeni sekmede aç"
                 ></a>
               </div>
               
               <div class="result-buttons">
                 <button id="copy-link" type="button" class="result-btn result-btn-primary">
                   <span class="material-icons">content_copy</span>
-                  Copy URL
+                  Bağlantıyı kopyala
                 </button>
                 <a 
                   id="qr-link" 
@@ -131,24 +131,24 @@ import Toast from "../components/Toast.astro";
                   target="_blank" 
                   rel="noopener"
                   class="result-btn result-btn-secondary"
-                  title="View QR code for this link"
+                  title="Bu bağlantı için QR kodunu görüntüle"
                 >
                   <span class="material-icons">qr_code</span>
-                  View QR
+                  QR kodunu gör
                 </a>
               </div>
-              
+
               <div class="result-details">
                 <div class="detail-item">
-                  <span class="detail-label">Alias</span>
+                  <span class="detail-label">Kısaltma</span>
                   <code id="result-alias" class="detail-value detail-code"></code>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Target</span>
+                  <span class="detail-label">Hedef</span>
                   <span id="result-target" class="detail-value detail-target"></span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Expires</span>
+                  <span class="detail-label">Sona erme</span>
                   <span id="result-expires" class="detail-value"></span>
                 </div>
               </div>
@@ -162,18 +162,18 @@ import Toast from "../components/Toast.astro";
           <div class="bookmarklet-header">
             <span class="material-icons bookmarklet-icon" aria-hidden="true">auto_awesome</span>
             <div>
-              <h2 class="bookmarklet-title">Bookmarklet</h2>
-              <p class="bookmarklet-subtitle">Shorten the page you're viewing without leaving it</p>
+              <h2 class="bookmarklet-title">Yer İmi Aracı</h2>
+              <p class="bookmarklet-subtitle">Bulunduğunuz sayfayı ayrılmadan kısaltın</p>
             </div>
           </div>
           <p class="bookmarklet-copy">
-            Drag the button below to your bookmarks bar. Whenever you click it on any site, we'll open sakla and create a short link for the page you're on.
+            Aşağıdaki düğmeyi yer imi çubuğunuza sürükleyin. Herhangi bir sitede tıkladığınızda sakla açılır ve bulunduğunuz sayfa için kısa bağlantı oluşturur.
           </p>
           <a id="bookmarklet-link" class="bookmarklet-button" href="#" draggable="true">
             <span class="material-icons">bolt</span>
-            <span>Shorten with sakla</span>
+            <span>sakla ile kısalt</span>
           </a>
-          <p class="bookmarklet-hint">Tip: on mobile, add the button to your favorites to keep it handy.</p>
+          <p class="bookmarklet-hint">İpucu: Mobilde butonu favorilerinize ekleyerek elinizin altında tutabilirsiniz.</p>
         </div>
       </section>
     </div>
@@ -264,7 +264,7 @@ import Toast from "../components/Toast.astro";
             
             if (typeof target !== 'string' || target.length === 0) {
               console.log('Target URL is empty');
-              setStatus('Target URL is required.');
+              setStatus('Hedef URL gerekli.');
               return;
             }
             const alias = formData.get('alias');
@@ -298,7 +298,7 @@ import Toast from "../components/Toast.astro";
 
               if (!result || !result.alias) {
                 console.error('Invalid response:', result);
-                setStatus('Invalid response from server.');
+              setStatus('Sunucudan geçersiz yanıt.');
                 return;
               }
 
@@ -324,7 +324,7 @@ import Toast from "../components/Toast.astro";
                   const expiresDate = new Date(payload.expiresAt);
                   expiresEl.textContent = expiresDate.toLocaleString();
                 } else {
-                  expiresEl.textContent = 'Never';
+                  expiresEl.textContent = 'Süresiz';
                 }
               }
               if (qrLink) {
@@ -347,11 +347,11 @@ import Toast from "../components/Toast.astro";
                 console.log('Card state set to ready');
               }
               
-              setStatus('Link created successfully!');
+              setStatus('Bağlantı başarıyla oluşturuldu!');
               if (formEl) formEl.reset();
             } catch (error) {
               console.error('Error:', error);
-              setStatus('Unexpected error. Try again.');
+              setStatus('Beklenmeyen bir hata oluştu. Tekrar deneyin.');
             } finally {
               setSubmitting(false);
             }
@@ -372,11 +372,38 @@ import Toast from "../components/Toast.astro";
 
           function setStatus(message) {
             if (status) {
-              status.textContent = message;
-              status.className = message.includes('error') || message.includes('Error') || message.includes('Failed') 
-                ? 'form-status form-status-error' 
-                : 'form-status';
+              const translated = translateMessage(message);
+              status.textContent = translated;
+              const normalized = translated.toLowerCase();
+              const isError =
+                normalized.includes('error') ||
+                normalized.includes('hata') ||
+                normalized.includes('failed') ||
+                normalized.includes('başarısız');
+              status.className = isError ? 'form-status form-status-error' : 'form-status';
             }
+          }
+
+          function translateMessage(input) {
+            const key = (input || '').toString().trim().toLowerCase();
+            const map = new Map([
+              ['target url is required.', 'Hedef URL gerekli.'],
+              ['invalid response from server.', 'Sunucudan geçersiz yanıt.'],
+              ['link created successfully!', 'Bağlantı başarıyla oluşturuldu!'],
+              ['unexpected error. try again.', 'Beklenmeyen bir hata oluştu. Tekrar deneyin.'],
+              ['failed to create link', 'Bağlantı oluşturulamadı'],
+              ['invalid target', 'Geçersiz hedef'],
+              ['alias taken', 'Kısaltma zaten kullanımda'],
+              ['alias unavailable', 'Kısaltma kullanılamıyor'],
+              ['turnstile verification failed', 'Turnstile doğrulaması başarısız oldu'],
+              ['rate limit exceeded', 'İstek sınırı aşıldı'],
+              ['short link copied', 'Kısa bağlantı kopyalandı'],
+              ['copy failed', 'Kopyalama başarısız'],
+              ['error: form not found', 'Hata: Form bulunamadı'],
+              ['invalid response from server.', 'Sunucudan geçersiz yanıt.'],
+              ['invalid response from server', 'Sunucudan geçersiz yanıt'],
+            ]);
+            return map.get(key) ?? input;
           }
 
           async function handleCopy() {
@@ -386,18 +413,18 @@ import Toast from "../components/Toast.astro";
               await navigator.clipboard.writeText(href);
               if (copyButton) {
                 const originalText = copyButton.innerHTML;
-                copyButton.innerHTML = '<span class="material-icons">check</span> Copied!';
+                copyButton.innerHTML = '<span class="material-icons">check</span> Kopyalandı!';
                 setTimeout(() => {
                   copyButton.innerHTML = originalText;
                 }, 2000);
               }
               window.dispatchEvent(
-                new CustomEvent('toast', { detail: { message: 'Short link copied' } }),
+                new CustomEvent('toast', { detail: { message: 'Kısa bağlantı kopyalandı' } }),
               );
             } catch (error) {
               console.error('Copy failed', error);
               window.dispatchEvent(
-                new CustomEvent('toast', { detail: { message: 'Copy failed' } }),
+                new CustomEvent('toast', { detail: { message: 'Kopyalama başarısız' } }),
               );
             }
           }

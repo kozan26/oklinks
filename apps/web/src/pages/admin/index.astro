@@ -744,36 +744,36 @@ const adminCSS = `:root {
     <div id="login-screen" style="display: none;">
       <div class="login-wrapper">
         <div class="login-card">
-          <div class="login-brand">
-            <span class="login-logo">sa</span>
-            <div>
-              <div class="login-badge">Admin Console</div>
-              <div class="login-brand-name">sakla</div>
-            </div>
-          </div>
-          <div class="login-header">
-            <h1 class="login-title">Welcome back</h1>
-            <p class="login-description">Enter your password to access the admin panel</p>
-          </div>
+              <div class="login-brand">
+                <span class="login-logo">sa</span>
+                <div>
+                  <div class="login-badge">Yönetim Konsolu</div>
+                  <div class="login-brand-name">sakla</div>
+                </div>
+              </div>
+              <div class="login-header">
+                <h1 class="login-title">Tekrar hoş geldiniz</h1>
+                <p class="login-description">Yönetim paneline erişmek için şifrenizi girin</p>
+              </div>
           <form id="login-form">
             <div class="login-form-group">
-              <label for="admin-password" class="login-label">Password</label>
-              <input
-                id="admin-password"
-                type="password"
-                class="login-input"
-                placeholder="Enter admin password"
-                required
-                autocomplete="current-password"
-              />
+                  <label for="admin-password" class="login-label">Şifre</label>
+                  <input
+                    id="admin-password"
+                    type="password"
+                    class="login-input"
+                    placeholder="Yönetici şifresini girin"
+                    required
+                    autocomplete="current-password"
+                  />
+                </div>
+                <button type="submit" class="login-button" id="login-button">
+                  Giriş yap
+                </button>
+                <p class="login-hint">Cloudflare Access ile korunur · Bu sekmeyi kapattığınızda oturum sıfırlanır</p>
+                <div id="login-error" class="login-error" style="display: none;"></div>
+              </form>
             </div>
-            <button type="submit" class="login-button" id="login-button">
-              Sign in
-            </button>
-            <p class="login-hint">Secured with Cloudflare Access · Session resets after closing this tab</p>
-            <div id="login-error" class="login-error" style="display: none;"></div>
-          </form>
-        </div>
       </div>
     </div>
 
@@ -784,32 +784,32 @@ const adminCSS = `:root {
             <div class="admin-hero-content">
               <span class="admin-eyebrow">
                 <span class="material-icons" style="font-size: 1rem;">bolt</span>
-                Link Ops Center
+                Bağlantı Operasyon Merkezi
               </span>
-              <h1 class="admin-title">Link dashboard</h1>
+              <h1 class="admin-title">Bağlantı panosu</h1>
               <p class="admin-description">
-                Monitor performance, clean up stale redirects, and keep your short links feeling sharp.
+                Performansı izleyin, eskimiş yönlendirmeleri temizleyin ve kısa bağlantılarınızı formda tutun.
               </p>
             </div>
             <div class="admin-hero-actions">
               <button id="refresh" type="button" class="button button-secondary">
                 <span class="material-icons" style="font-size: 1rem;">refresh</span>
-                Refresh data
+                Verileri yenile
               </button>
-              <p>Last sync <span id="last-refresh">never</span></p>
+              <p>Son senkronizasyon <span id="last-refresh">hiç</span></p>
             </div>
           </div>
         </header>
 
         <div id="admin-metrics" class="admin-metrics"></div>
 
-        <div class="admin-card">
-          <div class="admin-card-header">
-            <div>
-              <h2 class="admin-card-title">Recent links</h2>
-              <p class="admin-card-subtitle">Showing the latest 50 entries ordered by creation date</p>
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <div>
+                <h2 class="admin-card-title">Son bağlantılar</h2>
+                <p class="admin-card-subtitle">Oluşturulma tarihine göre sıralanan son 50 kaydı gösteriyoruz</p>
+              </div>
             </div>
-          </div>
 
           <div id="admin-status" class="admin-status" style="display: none;"></div>
 
@@ -817,11 +817,11 @@ const adminCSS = `:root {
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th>Alias</th>
-                  <th>Target</th>
-                  <th>Clicks</th>
-                  <th>Expires</th>
-                  <th>Actions</th>
+                  <th>Kısaltma</th>
+                  <th>Hedef</th>
+                  <th>Tıklama</th>
+                  <th>Sona erme</th>
+                  <th>İşlemler</th>
                 </tr>
               </thead>
               <tbody id="links-body"></tbody>
@@ -872,7 +872,7 @@ const adminCSS = `:root {
 
             if (loginButton) {
               loginButton.disabled = true;
-              loginButton.textContent = 'Signing in...';
+              loginButton.textContent = 'Giriş yapılıyor...';
             }
 
             try {
@@ -885,10 +885,10 @@ const adminCSS = `:root {
               const data = await response.json();
 
               if (!response.ok) {
-                showError(data.error === 'invalid_password' ? 'Invalid password. Please try again.' : 'Authentication failed');
+                showError(data.error === 'invalid_password' ? 'Şifre yanlış. Lütfen tekrar deneyin.' : 'Kimlik doğrulaması başarısız oldu');
                 if (loginButton) {
                   loginButton.disabled = false;
-                  loginButton.textContent = 'Sign in';
+                  loginButton.textContent = 'Giriş yap';
                 }
                 return;
               }
@@ -900,10 +900,10 @@ const adminCSS = `:root {
               }
             } catch (error) {
               console.error('Login error:', error);
-              showError('Failed to authenticate. Please try again.');
+              showError('Kimlik doğrulaması başarısız oldu. Lütfen tekrar deneyin.');
               if (loginButton) {
                 loginButton.disabled = false;
-                loginButton.textContent = 'Sign in';
+                loginButton.textContent = 'Giriş yap';
               }
             }
           }
@@ -951,10 +951,48 @@ const adminCSS = `:root {
 
           function setStatus(message, isError = false) {
             if (status) {
-              status.textContent = message;
-              status.style.display = message ? 'block' : 'none';
-              status.className = isError ? 'admin-status error-state' : 'admin-status';
+              const translated = translateStatusMessage(message);
+              status.textContent = translated;
+              status.style.display = translated ? 'block' : 'none';
+              const normalized = translated.toLowerCase();
+              const autoError =
+                normalized.includes('hata') ||
+                normalized.includes('error') ||
+                normalized.includes('başarısız');
+              status.className = isError || autoError ? 'admin-status error-state' : 'admin-status';
             }
+          }
+
+          function translateStatusMessage(input) {
+            const original = (input ?? '').toString();
+            const key = original.trim().toLowerCase();
+            if (!key) return original;
+            const map = new Map([
+              ['loading links...', 'Bağlantılar yükleniyor...'],
+              ['no links found.', 'Bağlantı bulunamadı.'],
+              ['no links found', 'Bağlantı bulunamadı'],
+              ['no links created yet.', 'Henüz bağlantı oluşturulmadı.'],
+              ['link deleted successfully.', 'Bağlantı başarıyla silindi.'],
+              ['failed to load links', 'Bağlantılar yüklenemedi'],
+              ['failed to load metrics', 'Metrikler yüklenemedi'],
+              ['error: link id not found', 'Hata: Bağlantı kimliği bulunamadı'],
+              ['failed to delete link', 'Bağlantı silinemedi'],
+              ['server returned empty response', 'Sunucu boş yanıt döndürdü'],
+              ['server returned non-json response', 'Sunucu JSON olmayan bir yanıt döndürdü'],
+              ['the delete endpoint was not found. the route may not be configured correctly.', 'Silme uç noktası bulunamadı. Rota doğru yapılandırılmamış olabilir.'],
+              ['delete was not successful', 'Silme işlemi başarılı olmadı'],
+              ['unknown error', 'Bilinmeyen hata'],
+            ]);
+            if (map.has(key)) {
+              return map.get(key) ?? original;
+            }
+            if (key.startsWith('request failed')) {
+              return original.replace(/request failed/i, 'İstek başarısız');
+            }
+            if (key.startsWith('server returned non-json response')) {
+              return original.replace(/Server returned non-JSON response/i, 'Sunucu JSON olmayan bir yanıt döndürdü');
+            }
+            return original;
           }
 
           const metrics = document.getElementById('admin-metrics');
@@ -975,14 +1013,14 @@ const adminCSS = `:root {
               return;
             }
 
-            setStatus('Loading links...');
+            setStatus('Bağlantılar yükleniyor...');
             if (body) body.innerHTML = '';
             if (metrics) {
               metrics.innerHTML = `
                 <article class="metric-card">
-                  <div class="metric-label">Dashboard</div>
+                  <div class="metric-label">Pano</div>
                   <div class="metric-value">...</div>
-                  <div class="metric-footnote">Fetching latest stats</div>
+                  <div class="metric-footnote">Son istatistikler alınıyor</div>
                 </article>`;
             }
             if (refresh) {
@@ -990,10 +1028,10 @@ const adminCSS = `:root {
                 refresh.dataset.originalContent = refresh.innerHTML;
               }
               refresh.disabled = true;
-              refresh.innerHTML = '<span class="material-icons" style="font-size: 1rem;">hourglass_top</span> Updating...';
+              refresh.innerHTML = '<span class="material-icons" style="font-size: 1rem;">hourglass_top</span> Güncelleniyor...';
             }
             if (lastRefreshDisplay) {
-              lastRefreshDisplay.textContent = 'updating...';
+              lastRefreshDisplay.textContent = 'güncelleniyor...';
             }
 
             try {
@@ -1051,37 +1089,37 @@ const adminCSS = `:root {
               if (metrics) {
                 const latestSummary = escapeHtml(
                   newestLink && (newestLink.alias || newestLink.id)
-                    ? `Latest: ${newestLink.alias || newestLink.id}`
-                    : 'Latest: n/a',
+                    ? `En yeni: ${newestLink.alias || newestLink.id}`
+                    : 'En yeni: yok',
                 );
                 const metricsCards = [
                   {
-                    label: 'Total Links',
+                    label: 'Toplam bağlantı',
                     value: formatInteger(totalLinks),
                     footnote: totalLinks
-                      ? `<span class="metric-chip">${formatInteger(protectedCount)} protected</span><span>${formatInteger(totalLinks - protectedCount)} public</span>`
-                      : 'Create your first short link to populate this dashboard.',
+                      ? `<span class="metric-chip">${formatInteger(protectedCount)} korumalı</span><span>${formatInteger(totalLinks - protectedCount)} herkese açık</span>`
+                      : 'Bu panoyu doldurmak için ilk kısa bağlantınızı oluşturun.',
                   },
                   {
-                    label: 'Live Links',
+                    label: 'Aktif bağlantılar',
                     value: formatInteger(liveCount),
                     footnote: liveCount
-                      ? `<span class="metric-chip">${formatInteger(soonExpiringCount)} expiring soon</span><span>${formatInteger(totalLinks - liveCount)} paused</span>`
-                      : 'No links are currently live.',
+                      ? `<span class="metric-chip">${formatInteger(soonExpiringCount)} yakında sona erecek</span><span>${formatInteger(totalLinks - liveCount)} durduruldu</span>`
+                      : 'Şu anda aktif bağlantı yok.',
                   },
                   {
-                    label: 'Expired / Inactive',
+                    label: 'Süresi dolmuş / pasif',
                     value: formatInteger(expiredCount + inactiveCount),
                     footnote: expiredCount + inactiveCount
-                      ? `<span class="metric-chip">${formatInteger(expiredCount)} expired</span><span>${formatInteger(inactiveCount)} disabled</span>`
-                      : 'Everything looks good - nothing expired.',
+                      ? `<span class="metric-chip">${formatInteger(expiredCount)} süresi dolmuş</span><span>${formatInteger(inactiveCount)} devre dışı</span>`
+                      : 'Her şey yolunda - süresi dolan yok.',
                   },
                   {
-                    label: 'Lifetime Clicks',
+                    label: 'Toplam tıklama',
                     value: formatInteger(totalClicks),
                     footnote: totalClicks
-                      ? `<span class="metric-chip">${formatAverage(averageClicks)} avg</span><span>per link</span><span>${latestSummary}</span>`
-                      : 'No traffic has been recorded yet.',
+                      ? `<span class="metric-chip">${formatAverage(averageClicks)} ort</span><span>bağlantı başına</span><span>${latestSummary}</span>`
+                      : 'Henüz trafik kaydedilmedi.',
                   },
                 ];
 
@@ -1098,9 +1136,9 @@ const adminCSS = `:root {
               }
               
               if (items.length === 0) {
-                setStatus('No links found.');
+                setStatus('Bağlantı bulunamadı.');
                 if (body) {
-                  body.innerHTML = '<tr><td colspan="5" class="empty-state">No links created yet.</td></tr>';
+                  body.innerHTML = '<tr><td colspan="5" class="empty-state">Henüz bağlantı oluşturulmadı.</td></tr>';
                 }
                 if (lastRefreshDisplay) {
                   lastRefreshDisplay.textContent = timeFormatter.format(new Date());
@@ -1123,7 +1161,7 @@ const adminCSS = `:root {
                   <td style="text-align: right;">
                     <button data-id="${safeId}" class="button button-destructive delete-btn">
                       <span class="material-icons" style="font-size: 1rem;">delete</span>
-                      Delete
+                      Sil
                     </button>
                   </td>`;
                 fragment.appendChild(row);
@@ -1133,32 +1171,32 @@ const adminCSS = `:root {
                 body.appendChild(fragment);
               }
               
-              setStatus(`Loaded ${items.length} link${items.length !== 1 ? 's' : ''}.`);
+              setStatus(`${items.length} bağlantı yüklendi.`);
               if (lastRefreshDisplay) {
                 lastRefreshDisplay.textContent = timeFormatter.format(new Date());
               }
             } catch (error) {
               console.error('Load error:', error);
-              setStatus('Failed to load links: ' + (error.message || 'Unknown error'), true);
+              setStatus('Bağlantılar yüklenemedi: ' + (error.message || 'Bilinmeyen hata'), true);
               if (body) {
-                body.innerHTML = '<tr><td colspan="5" class="error-state">Error loading links. Check console for details.</td></tr>';
+                body.innerHTML = '<tr><td colspan="5" class="error-state">Bağlantılar yüklenirken hata oluştu. Ayrıntılar için konsolu kontrol edin.</td></tr>';
               }
               if (metrics) {
-                const message = escapeHtml(error?.message || 'Failed to load metrics');
+                const message = escapeHtml(error?.message || 'Metrikler yüklenemedi');
                 metrics.innerHTML = `
                   <article class="metric-card">
-                    <div class="metric-label">Error</div>
+                    <div class="metric-label">Hata</div>
                     <div class="metric-value">!</div>
                     <div class="metric-footnote">${message}</div>
                   </article>`;
               }
               if (lastRefreshDisplay) {
-                lastRefreshDisplay.textContent = 'failed';
+                lastRefreshDisplay.textContent = 'başarısız';
               }
             } finally {
               if (refresh) {
                 refresh.disabled = false;
-                refresh.innerHTML = refresh.dataset.originalContent || refreshDefaultHTML || 'Refresh';
+                refresh.innerHTML = refresh.dataset.originalContent || refreshDefaultHTML || 'Yenile';
               }
             }
           }
@@ -1172,25 +1210,25 @@ const adminCSS = `:root {
 
           function formatExpiry(expires) {
             if (!expires) {
-              return '<span class="table-pill never">Never</span>';
+              return '<span class="table-pill never">Süresiz</span>';
             }
             const value = Number(expires);
             if (!Number.isFinite(value) || value <= 0) {
-              return '<span class="table-pill never">Never</span>';
+              return '<span class="table-pill never">Süresiz</span>';
             }
             const date = new Date(value * 1000);
             const now = Date.now();
             const formattedDate = escapeHtml(date.toLocaleString());
             if (date.getTime() < now) {
-              return `${formattedDate} <span class="table-pill expired">Expired</span>`;
+              return `${formattedDate} <span class="table-pill expired">Süresi doldu</span>`;
             }
             const diffMs = date.getTime() - now;
             const diffDays = diffMs / (1000 * 60 * 60 * 24);
             if (diffDays <= 7) {
               const daysRemaining = Math.max(1, Math.ceil(diffDays));
-              return `${formattedDate} <span class="table-pill warning">In ${daysRemaining}d</span>`;
+              return `${formattedDate} <span class="table-pill warning">${daysRemaining} gün içinde</span>`;
             }
-            return `${formattedDate} <span class="table-pill active">Active</span>`;
+            return `${formattedDate} <span class="table-pill active">Aktif</span>`;
           }
 
           async function handleDelete(event) {
@@ -1206,17 +1244,17 @@ const adminCSS = `:root {
             const id = target.getAttribute('data-id');
             if (!id) {
               console.error('Delete failed: no ID found');
-              setStatus('Error: Link ID not found', true);
+              setStatus('Hata: Bağlantı kimliği bulunamadı', true);
               return;
             }
             
-            if (!confirm('Are you sure you want to delete this link? This action cannot be undone.')) {
+            if (!confirm('Bu bağlantıyı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
               return;
             }
 
             target.disabled = true;
             const originalHTML = target.innerHTML;
-            target.innerHTML = '<span class="material-icons" style="font-size: 1rem;">hourglass_empty</span> Deleting...';
+            target.innerHTML = '<span class="material-icons" style="font-size: 1rem;">hourglass_empty</span> Siliniyor...';
             
             try {
               console.log('Deleting link:', id);
@@ -1255,20 +1293,20 @@ const adminCSS = `:root {
                     result = { 
                       error: 'route_not_found', 
                       deleted: false,
-                      message: 'The delete endpoint was not found. The route may not be configured correctly.',
+                      message: 'Silme uç noktası bulunamadı. Rota doğru yapılandırılmamış olabilir.',
                       status: response.status
                     };
                   } else {
                     result = { 
                       error: 'invalid_response', 
                       deleted: false,
-                      message: 'Server returned non-JSON response: ' + responseText.substring(0, 200),
+                      message: 'Sunucu JSON olmayan bir yanıt döndürdü: ' + responseText.substring(0, 200),
                       raw: responseText.substring(0, 200)
                     };
                   }
                 }
               } else {
-                result = { error: 'empty_response', deleted: false, message: 'Server returned empty response' };
+                result = { error: 'empty_response', deleted: false, message: 'Sunucu boş yanıt döndürdü' };
               }
               
               console.log('Parsed result:', result);
@@ -1279,19 +1317,19 @@ const adminCSS = `:root {
                   showLogin();
                   return;
                 }
-                throw new Error(result.error || result.message || `Delete failed (${response.status})`);
+                throw new Error(result.error || result.message || `Silme başarısız (${response.status})`);
               }
               
               if (result.deleted === true) {
-                setStatus('Link deleted successfully.');
+                setStatus('Bağlantı başarıyla silindi.');
                 setTimeout(() => setStatus(''), 3000);
                 await loadLinks();
               } else {
-                throw new Error(result.error || result.message || 'Delete was not successful');
+                throw new Error(result.error || result.message || 'Silme işlemi başarılı olmadı');
               }
             } catch (error) {
               console.error('Delete error:', error);
-              setStatus('Failed to delete link: ' + (error.message || 'Unknown error'), true);
+              setStatus('Bağlantı silinemedi: ' + (error.message || 'Bilinmeyen hata'), true);
               target.innerHTML = originalHTML;
               target.disabled = false;
             }

@@ -98,10 +98,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         const origin = new URL(request.url).origin;
         const shortUrl = `${origin.replace(/\/$/, "")}/${existingLink.alias}`;
         const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
   <head>
     <meta charset="utf-8" />
-    <title>Short link found · sakla</title>
+    <title>Kısa bağlantı bulundu · sakla</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#0B0D0E; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; margin:0; padding:2rem; }
@@ -116,15 +116,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   </head>
   <body>
     <div class="card">
-      <h1>Link already exists</h1>
+      <h1>Bağlantı zaten mevcut</h1>
       <p class="short"><a href="${shortUrl}">${shortUrl}</a></p>
-      <p class="note">This URL was already shortened previously.</p>
+      <p class="note">Bu URL daha önce kısaltılmış.</p>
       <div class="buttons">
-        <button type="button" onclick="navigator.clipboard.writeText('${shortUrl}').then(()=>this.textContent='Copied!').catch(()=>this.textContent='Copy manually')">Copy</button>
-        <a href="${shortUrl}" rel="noopener" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.4rem;border-radius:999px;border:1px solid rgba(67,213,255,0.4);text-decoration:none;">Open link</a>
-        <a href="/" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.4rem;border-radius:999px;border:1px solid rgba(255,255,255,0.12);text-decoration:none;color:#fff;">Create another</a>
+        <button type="button" onclick="navigator.clipboard.writeText('${shortUrl}').then(()=>this.textContent='Kopyalandı!').catch(()=>this.textContent='Elle kopyala')">Kopyala</button>
+        <a href="${shortUrl}" rel="noopener" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.4rem;border-radius:999px;border:1px solid rgba(67,213,255,0.4);text-decoration:none;">Bağlantıyı aç</a>
+        <a href="/" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.4rem;border-radius:999px;border:1px solid rgba(255,255,255,0.12);text-decoration:none;color:#fff;">Yeni bir tane oluştur</a>
       </div>
-      <p style="margin-top:1.5rem;font-size:0.85rem;color:rgba(255,255,255,0.6);">Target: <span style="word-break:break-all;">${body.target}</span></p>
+      <p style="margin-top:1.5rem;font-size:0.85rem;color:rgba(255,255,255,0.6);">Hedef: <span style="word-break:break-all;">${body.target}</span></p>
     </div>
   </body>
 </html>`;
@@ -198,10 +198,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const origin = new URL(request.url).origin;
     const shortUrl = `${origin.replace(/\/$/, "")}/${alias}`;
     const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
   <head>
     <meta charset="utf-8" />
-    <title>Short link created · sakla</title>
+    <title>Kısa bağlantı oluşturuldu · sakla</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#0B0D0E; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; margin:0; padding:2rem; }
@@ -215,14 +215,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   </head>
   <body>
     <div class="card">
-      <h1>Link ready</h1>
+      <h1>Bağlantı hazır</h1>
       <p class="short"><a href="${shortUrl}">${shortUrl}</a></p>
       <div class="buttons">
-        <button type="button" onclick="navigator.clipboard.writeText('${shortUrl}').then(()=>this.textContent='Copied!').catch(()=>this.textContent='Copy manually')">Copy</button>
-        <a href="${shortUrl}" rel="noopener" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.4rem;border-radius:999px;border:1px solid rgba(67,213,255,0.4);text-decoration:none;">Open link</a>
-        <a href="/" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.4rem;border-radius:999px;border:1px solid rgba(255,255,255,0.12);text-decoration:none;color:#fff;">Create another</a>
+        <button type="button" onclick="navigator.clipboard.writeText('${shortUrl}').then(()=>this.textContent='Kopyalandı!').catch(()=>this.textContent='Elle kopyala')">Kopyala</button>
+        <a href="${shortUrl}" rel="noopener" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.4rem;border-radius:999px;border:1px solid rgba(67,213,255,0.4);text-decoration:none;">Bağlantıyı aç</a>
+        <a href="/" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.4rem;border-radius:999px;border:1px solid rgba(255,255,255,0.12);text-decoration:none;color:#fff;">Yeni bir tane oluştur</a>
       </div>
-      <p style="margin-top:1.5rem;font-size:0.85rem;color:rgba(255,255,255,0.6);">Target: <span style="word-break:break-all;">${body.target}</span></p>
+      <p style="margin-top:1.5rem;font-size:0.85rem;color:rgba(255,255,255,0.6);">Hedef: <span style="word-break:break-all;">${body.target}</span></p>
     </div>
   </body>
 </html>`;
