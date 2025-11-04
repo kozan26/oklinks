@@ -161,11 +161,13 @@ a:hover {
 
 /* Content Wrapper */
 .content-wrapper {
-  max-width: 680px;
+  max-width: 900px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  width: 100%;
+  padding: 0 2rem;
 }
 
 /* Form Card */
@@ -635,7 +637,7 @@ a:hover {
 @media (max-width: 968px) {
   .content-wrapper {
     max-width: 100%;
-    padding: 0 1rem;
+    padding: 0 1.5rem;
   }
 
   .bookmarklet-section {
