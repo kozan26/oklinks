@@ -113,7 +113,7 @@ a:hover {
   flex-direction: column;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem 2rem 2rem;
   width: 100%;
   position: relative;
   z-index: 1;
@@ -122,7 +122,7 @@ a:hover {
 /* Hero Section */
 .hero-section {
   text-align: center;
-  padding: 1rem 0 2.5rem;
+  padding: 0.5rem 0 2rem;
   margin-bottom: 0;
 }
 
@@ -504,7 +504,7 @@ a:hover {
 .bookmarklet-section {
   margin: 4rem auto 2rem;
   width: 100%;
-  max-width: 1200px;
+  max-width: 900px;
   padding: 0 2rem 2rem;
 }
 
