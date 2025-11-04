@@ -319,40 +319,14 @@ a:hover {
   color: #ff6b6b;
 }
 
-/* Result Card */
-.result-card {
-  background: var(--surface-elevated);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 2rem;
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-  animation: slideUp 0.4s ease;
-}
-
-.result-card:hover {
-  border-color: var(--border-strong);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.result-content {
+/* Result Section */
+.result-section {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  animation: fadeIn 0.3s ease;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  animation: fadeIn 0.4s ease;
 }
 
 @keyframes fadeIn {
@@ -366,13 +340,17 @@ a:hover {
   }
 }
 
+.result-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.5rem 0;
+}
+
 .result-header {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding-bottom: 1rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.5rem;
 }
 
 .result-icon {
@@ -684,8 +662,7 @@ a:hover {
     padding: 0.5rem 0 2rem;
   }
   
-  .form-card,
-  .result-card {
+  .form-card {
     padding: 1.5rem;
   }
   

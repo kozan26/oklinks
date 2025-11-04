@@ -43,60 +43,62 @@ import Toast from "../components/Toast.astro";
         </div>
 
         <div class="content-wrapper">
-          <form id="create-form" class="form-card" method="post" action="/api/links" onsubmit="return false;">
-            <div class="form-field">
-              <label for="target" class="field-label">
-                Hedef URL <span class="required">*</span>
-              </label>
-              <input 
-                id="target" 
-                name="target" 
-                type="url" 
-                required 
-                placeholder="https://example.com" 
-                class="field-input"
-              />
+          <div class="form-card">
+            <div id="form-section">
+              <form id="create-form" method="post" action="/api/links" onsubmit="return false;">
+                <div class="form-field">
+                  <label for="target" class="field-label">
+                    Hedef URL <span class="required">*</span>
+                  </label>
+                  <input 
+                    id="target" 
+                    name="target" 
+                    type="url" 
+                    required 
+                    placeholder="https://example.com" 
+                    class="field-input"
+                  />
+                </div>
+
+                <div class="form-row">
+                  <div class="form-field">
+                    <label for="alias" class="field-label">
+                      Özel Kısaltma <span class="optional">isteğe bağlı</span>
+                    </label>
+                    <input
+                      id="alias"
+                      name="alias"
+                      type="text"
+                      pattern="[a-zA-Z0-9-_]+"
+                      placeholder="my-link"
+                      class="field-input field-input-mono"
+                    />
+                  </div>
+                  
+                  <div class="form-field">
+                    <label for="expiresAt" class="field-label">
+                      Son Kullanım <span class="optional">isteğe bağlı</span>
+                    </label>
+                    <input 
+                      id="expiresAt" 
+                      name="expiresAt" 
+                      type="datetime-local" 
+                      class="field-input"
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" class="submit-button">
+                  <span class="material-icons button-icon">add_link</span>
+                  <span>Bağlantı oluştur</span>
+                  <span id="submit-spinner" class="material-icons button-spinner" style="display:none;">hourglass_empty</span>
+                </button>
+                
+                <p id="form-status" class="form-status"></p>
+              </form>
             </div>
 
-            <div class="form-row">
-              <div class="form-field">
-                <label for="alias" class="field-label">
-                  Özel Kısaltma <span class="optional">isteğe bağlı</span>
-                </label>
-                <input
-                  id="alias"
-                  name="alias"
-                  type="text"
-                  pattern="[a-zA-Z0-9-_]+"
-                  placeholder="my-link"
-                  class="field-input field-input-mono"
-                />
-              </div>
-              
-              <div class="form-field">
-                <label for="expiresAt" class="field-label">
-                  Son Kullanım <span class="optional">isteğe bağlı</span>
-                </label>
-                <input 
-                  id="expiresAt" 
-                  name="expiresAt" 
-                  type="datetime-local" 
-                  class="field-input"
-                />
-              </div>
-            </div>
-
-            <button type="submit" class="submit-button">
-              <span class="material-icons button-icon">add_link</span>
-              <span>Bağlantı oluştur</span>
-              <span id="submit-spinner" class="material-icons button-spinner" style="display:none;">hourglass_empty</span>
-            </button>
-            
-            <p id="form-status" class="form-status"></p>
-          </form>
-
-          <div id="result-card" class="result-card" data-state="empty" style="display:none;">
-            <div id="result-detail" class="result-content">
+            <div id="result-section" class="result-section" style="display:none;">
               <div class="result-header">
                 <span class="material-icons result-icon">check_circle</span>
                 <h3 class="result-title">Bağlantı oluşturuldu</h3>
@@ -145,6 +147,13 @@ import Toast from "../components/Toast.astro";
                   <span id="result-expires" class="detail-value"></span>
                 </div>
               </div>
+
+              <div class="result-divider"></div>
+
+              <button id="create-another" type="button" class="result-btn result-btn-secondary" style="width: 100%;">
+                <span class="material-icons">add_link</span>
+                Yeni bağlantı oluştur
+              </button>
             </div>
           </div>
         </div>
@@ -193,14 +202,15 @@ import Toast from "../components/Toast.astro";
           
           const status = document.getElementById('form-status');
           const spinner = document.getElementById('submit-spinner');
-          const detail = document.getElementById('result-detail');
-          const card = document.getElementById('result-card');
+          const formSection = document.getElementById('form-section');
+          const resultSection = document.getElementById('result-section');
           const urlAnchor = document.getElementById('result-url');
           const aliasEl = document.getElementById('result-alias');
           const targetEl = document.getElementById('result-target');
           const expiresEl = document.getElementById('result-expires');
           const copyButton = document.getElementById('copy-link');
           const qrLink = document.getElementById('qr-link');
+          const createAnotherBtn = document.getElementById('create-another');
           const bookmarkletLink = document.getElementById('bookmarklet-link');
 
           console.log('All elements found');
@@ -215,6 +225,15 @@ import Toast from "../components/Toast.astro";
           
           if (copyButton) {
             copyButton.addEventListener('click', handleCopy);
+          }
+
+          if (createAnotherBtn) {
+            createAnotherBtn.addEventListener('click', function() {
+              if (formSection) formSection.style.display = '';
+              if (resultSection) resultSection.style.display = 'none';
+              if (form) form.reset();
+              if (status) status.textContent = '';
+            });
           }
 
           if (bookmarkletLink) {
@@ -324,13 +343,17 @@ import Toast from "../components/Toast.astro";
                 qrLink.href = '/qr/' + aliasValue;
               }
               
-              if (card) {
-                card.style.display = '';
-                card.dataset.state = 'ready';
-                console.log('Showing result card');
+              if (formSection) {
+                formSection.style.display = 'none';
+                console.log('Hiding form section');
               }
               
-              setStatus('Bağlantı başarıyla oluşturuldu!');
+              if (resultSection) {
+                resultSection.style.display = '';
+                console.log('Showing result section');
+              }
+              
+              setStatus('');
               if (formEl) formEl.reset();
             } catch (error) {
               console.error('Error:', error);
