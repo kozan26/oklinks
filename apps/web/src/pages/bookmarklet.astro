@@ -37,60 +37,69 @@ import { inlineCSS } from "../styles/inline.css.ts";
         </div>
       </nav>
 
-      <main class="bookmarklet-main">
-        <div class="result-card">
-          <div class="result-header">
-            <span class="material-icons result-icon" aria-hidden="true">bolt</span>
-            <div>
-              <h1 class="result-title">Kısa bağlantınız hazırlanıyor</h1>
-              <p id="bookmarklet-status" class="bookmarklet-status">Hazırlanıyor…</p>
-            </div>
-          </div>
-
-          <div id="bookmarklet-result" class="bookmarklet-result" style="display:none;">
-            <div class="result-url-wrapper">
-              <a
-                id="bookmarklet-url"
-                href="#"
-                target="_blank"
-                rel="noopener"
-                class="result-url"
-                title="Yeni kısa bağlantıyı yeni bir sekmede aç"
-              ></a>
-            </div>
-
-            <div class="result-buttons">
-              <button id="bookmarklet-copy" type="button" class="result-btn result-btn-primary">
-                <span class="material-icons">content_copy</span>
-                <span>Bağlantıyı kopyala</span>
-              </button>
-              <a
-                id="bookmarklet-open"
-                href="#"
-                target="_blank"
-                rel="noopener"
-                class="result-btn result-btn-secondary"
-              >
-                <span class="material-icons">open_in_new</span>
-                <span>Bağlantıyı aç</span>
-              </a>
-            </div>
-
-            <div class="result-details">
-              <div class="detail-item">
-                <span class="detail-label">Kısaltma</span>
-                <code id="bookmarklet-alias" class="detail-value detail-code"></code>
+      <main class="main-content">
+        <div class="content-wrapper">
+          <div class="form-card">
+            <div id="loading-section">
+              <div class="result-header">
+                <span class="material-icons result-icon" aria-hidden="true">bolt</span>
+                <div>
+                  <h3 class="result-title">Kısa bağlantınız hazırlanıyor</h3>
+                  <p id="bookmarklet-status" class="bookmarklet-status">Hazırlanıyor…</p>
+                </div>
               </div>
-              <div class="detail-item">
-                <span class="detail-label">Hedef</span>
-                <span id="bookmarklet-target" class="detail-value detail-target"></span>
+            </div>
+
+            <div id="bookmarklet-result" class="result-section" style="display:none;">
+              <div class="result-header">
+                <span class="material-icons result-icon">check_circle</span>
+                <h3 class="result-title">Bağlantı oluşturuldu</h3>
+              </div>
+              
+              <div class="result-url-wrapper">
+                <a
+                  id="bookmarklet-url"
+                  href="#"
+                  target="_blank"
+                  rel="noopener"
+                  class="result-url"
+                  title="Yeni kısa bağlantıyı yeni bir sekmede aç"
+                ></a>
+              </div>
+
+              <div class="result-buttons">
+                <button id="bookmarklet-copy" type="button" class="result-btn result-btn-primary">
+                  <span class="material-icons">content_copy</span>
+                  Bağlantıyı kopyala
+                </button>
+                <a
+                  id="bookmarklet-open"
+                  href="#"
+                  target="_blank"
+                  rel="noopener"
+                  class="result-btn result-btn-secondary"
+                >
+                  <span class="material-icons">open_in_new</span>
+                  Bağlantıyı aç
+                </a>
+              </div>
+
+              <div class="result-details">
+                <div class="detail-item">
+                  <span class="detail-label">Kısaltma</span>
+                  <code id="bookmarklet-alias" class="detail-value detail-code"></code>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Hedef</span>
+                  <span id="bookmarklet-target" class="detail-value detail-target"></span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <p class="bookmarklet-note">
-          İşiniz bittiğinde bu sekmeyi kapatabilirsiniz. Başka bir şeyi kısaltmanız mı gerekiyor? Yer imini tekrar kullanın veya <a href="/">ana sayfaya</a> dönün.
+        <p style="text-align: center; color: var(--text-tertiary); font-size: 0.875rem; margin-top: 2rem; padding: 0 2rem;">
+          İşiniz bittiğinde bu sekmeyi kapatabilirsiniz. Başka bir şeyi kısaltmanız mı gerekiyor? Yer imini tekrar kullanın veya <a href="/" style="color: var(--accent);">ana sayfaya</a> dönün.
         </p>
       </main>
     </div>
@@ -105,6 +114,7 @@ import { inlineCSS } from "../styles/inline.css.ts";
 
         function init() {
           const statusEl = document.getElementById('bookmarklet-status');
+          const loadingSection = document.getElementById('loading-section');
           const resultEl = document.getElementById('bookmarklet-result');
           const urlEl = document.getElementById('bookmarklet-url');
           const targetEl = document.getElementById('bookmarklet-target');
@@ -201,10 +211,16 @@ import { inlineCSS } from "../styles/inline.css.ts";
               if (targetEl) {
                 targetEl.textContent = url;
               }
+              
+              if (loadingSection) {
+                loadingSection.style.display = 'none';
+              }
+              
               if (resultEl) {
                 resultEl.style.display = '';
               }
-              setStatus('Kısa bağlantı hazır!');
+              
+              setStatus('');
             } catch (error) {
               console.error('Failed to shorten link', error);
               setStatus('Beklenmeyen bir hata oluştu. Yer imini kullanarak tekrar deneyin.');

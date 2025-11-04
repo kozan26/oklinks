@@ -606,6 +606,17 @@ a:hover {
   color: var(--text-secondary);
 }
 
+#loading-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#loading-section .result-header {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
 .bookmarklet-note {
   font-size: 0.85rem;
   color: var(--text-tertiary);
