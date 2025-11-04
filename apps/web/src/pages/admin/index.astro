@@ -23,11 +23,11 @@ const adminCSS = `:root {
 
 .admin-page {
   min-height: 100vh;
-  background: 
-    radial-gradient(circle at 20% 20%, hsl(202 84% 15% / 0.4) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, hsl(230 58% 10% / 0.3) 0%, transparent 50%),
-    linear-gradient(135deg, hsl(230 58% 6%) 0%, hsl(234 60% 7%) 50%, hsl(230 58% 6%) 100%);
-  color: var(--admin-primary);
+  background: #0b0d0e;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(67, 213, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(67, 213, 255, 0.05) 0%, transparent 50%);
+  color: var(--text-primary);
   position: relative;
   overflow-x: hidden;
   cursor: default;
@@ -52,11 +52,10 @@ const adminCSS = `:root {
 
 /* Login Screen */
 .login-wrapper {
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  min-height: 60vh;
   position: relative;
   z-index: 1;
 }
@@ -65,13 +64,14 @@ const adminCSS = `:root {
   position: relative;
   width: 100%;
   max-width: 420px;
-  background: color-mix(in srgb, var(--admin-card) 92%, transparent);
-  border: 1px solid color-mix(in srgb, var(--admin-ring) 18%, transparent);
-  border-radius: 1rem;
+  margin: 0 auto;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
   padding: 2.5rem;
-  box-shadow: 0 18px 45px hsl(230 60% 6% / 0.45);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   overflow: hidden;
 }
 
@@ -220,43 +220,33 @@ const adminCSS = `:root {
 }
 
 /* Admin Content */
-.admin-wrapper {
-  min-height: 100vh;
-  padding: 2.5rem 2rem 4rem;
-  position: relative;
-  z-index: 1;
-}
-
-.admin-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  position: relative;
-}
 
 .admin-header {
   margin-bottom: 2rem;
+  width: 100%;
 }
 
 .admin-hero {
-  background: linear-gradient(135deg, 
-    hsl(235 46% 14%) 0%,
-    hsl(235 46% 12%) 100%);
-  border: 1.5px solid hsl(202 100% 53% / 0.25);
-  border-radius: 1.5rem;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
   padding: clamp(2.25rem, 3vw + 1rem, 2.75rem);
   position: relative;
   overflow: hidden;
-  box-shadow: 
-    0 25px 70px hsl(230 70% 5% / 0.5),
-    0 0 0 1px hsl(202 100% 53% / 0.08) inset,
-    0 1px 0 hsl(202 100% 53% / 0.12) inset;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: 2.5rem;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.3s ease;
+}
+
+.admin-hero:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .admin-hero::after {
@@ -331,29 +321,22 @@ const adminCSS = `:root {
 }
 
 .metric-card {
-  background: linear-gradient(135deg, 
-    hsl(235 46% 14%) 0%,
-    hsl(235 46% 12%) 100%);
-  border: 1px solid hsl(202 100% 53% / 0.2);
-  border-radius: 1.25rem;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
   padding: 2rem;
   position: relative;
   overflow: hidden;
-  box-shadow: 
-    0 10px 30px hsl(230 70% 6% / 0.4),
-    0 0 0 1px hsl(202 100% 53% / 0.06) inset;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
 }
 
 .metric-card:hover {
-  transform: translateY(-4px) scale(1.02);
-  border-color: hsl(202 100% 53% / 0.3);
-  box-shadow: 
-    0 16px 40px hsl(230 70% 6% / 0.5),
-    0 0 0 1px hsl(202 100% 53% / 0.1) inset,
-    0 0 20px hsl(202 100% 53% / 0.1);
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .metric-card::after {
@@ -402,18 +385,19 @@ const adminCSS = `:root {
 }
 
 .admin-card {
-  background: linear-gradient(135deg, 
-    hsl(235 46% 14%) 0%,
-    hsl(235 46% 12%) 100%);
-  border: 1.5px solid hsl(202 100% 53% / 0.22);
-  border-radius: 1.5rem;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
   padding: 2.25rem;
-  box-shadow: 
-    0 20px 55px hsl(230 70% 5% / 0.45),
-    0 0 0 1px hsl(202 100% 53% / 0.08) inset,
-    0 1px 0 hsl(202 100% 53% / 0.1) inset;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.3s ease;
+}
+
+.admin-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .admin-card-header {
@@ -745,14 +729,23 @@ const adminCSS = `:root {
     <style set:html={adminCSS} is:global></style>
   </head>
   <body class="admin-page" style="cursor: default;">
-    <div id="login-screen" style="display: none;">
-      <div class="login-wrapper">
-        <div class="login-card">
+    <div class="page">
+      <nav class="nav">
+        <a href="/" class="logo" title="Ana sayfaya git">sakla.dev</a>
+        <div class="nav-actions">
+          <a class="nav-link" href="/" title="Ana sayfaya git">Ana sayfa</a>
+        </div>
+      </nav>
+
+      <div id="login-screen" style="display: none;">
+        <main class="main-content">
+          <div class="content-wrapper">
+            <div class="form-card">
               <div class="login-brand">
                 <span class="login-logo">sa</span>
                 <div>
                   <div class="login-badge">Yönetim Konsolu</div>
-                  <div class="login-brand-name">sakla</div>
+                  <div class="login-brand-name">sakla.dev</div>
                 </div>
               </div>
               <div class="login-header">
@@ -778,11 +771,13 @@ const adminCSS = `:root {
                 <div id="login-error" class="login-error" style="display: none;"></div>
               </form>
             </div>
+          </div>
+        </main>
       </div>
-    </div>
 
-    <div id="admin-content" class="admin-wrapper" style="display: none;">
-      <div class="admin-container">
+      <div id="admin-content" style="display: none;">
+        <main class="main-content">
+          <div class="content-wrapper">
         <header class="admin-header">
           <div class="admin-hero">
             <div class="admin-hero-content">
@@ -832,6 +827,7 @@ const adminCSS = `:root {
             </table>
           </div>
         </div>
+        </main>
       </div>
     </div>
 
