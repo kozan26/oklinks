@@ -113,7 +113,7 @@ a:hover {
   flex-direction: column;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem 2rem 2rem;
+  padding: 0.75rem 2rem 2rem;
   width: 100%;
   position: relative;
   z-index: 1;
@@ -122,7 +122,7 @@ a:hover {
 /* Hero Section */
 .hero-section {
   text-align: center;
-  padding: 0.5rem 0 2rem;
+  padding: 0.5rem 0 1.5rem;
   margin-bottom: 0;
 }
 
@@ -137,14 +137,14 @@ a:hover {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .hero-title {
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-size: clamp(2.25rem, 5vw, 3.25rem);
   font-weight: 700;
   line-height: 1.1;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   background: linear-gradient(135deg, #ffffff 0%, var(--accent) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -152,11 +152,12 @@ a:hover {
 }
 
 .hero-subtitle {
-  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
   color: var(--text-secondary);
   font-weight: 400;
   max-width: 600px;
   margin: 0 auto;
+  line-height: 1.5;
 }
 
 /* Content Wrapper */
@@ -165,7 +166,7 @@ a:hover {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   width: 100%;
   padding: 0 2rem;
 }
@@ -661,7 +662,7 @@ a:hover {
   }
   
   .hero-section {
-    padding: 0.5rem 0 2rem;
+    padding: 0.5rem 0 1.5rem;
   }
   
   .form-card {
