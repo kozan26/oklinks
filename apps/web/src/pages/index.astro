@@ -42,7 +42,7 @@ import Toast from "../components/Toast.astro";
           <p class="hero-subtitle">Her URL'yi saniyeler içinde temiz ve paylaşılabilir bir bağlantıya dönüştürün</p>
         </div>
 
-        <div class="content-grid">
+        <div class="content-wrapper">
           <form id="create-form" class="form-card" method="post" action="/api/links" onsubmit="return false;">
             <div class="form-field">
               <label for="target" class="field-label">
@@ -95,13 +95,8 @@ import Toast from "../components/Toast.astro";
             <p id="form-status" class="form-status"></p>
           </form>
 
-          <div id="result-card" class="result-card" data-state="empty">
-            <div id="result-placeholder" class="result-placeholder">
-              <span class="material-icons placeholder-icon">link</span>
-              <p class="placeholder-text">Oluşturduğunuz bağlantı burada görünecek</p>
-            </div>
-            
-            <div id="result-detail" class="result-content" style="display:none;">
+          <div id="result-card" class="result-card" data-state="empty" style="display:none;">
+            <div id="result-detail" class="result-content">
               <div class="result-header">
                 <span class="material-icons result-icon">check_circle</span>
                 <h3 class="result-title">Bağlantı oluşturuldu</h3>
@@ -329,20 +324,10 @@ import Toast from "../components/Toast.astro";
                 qrLink.href = '/qr/' + aliasValue;
               }
               
-              const placeholder = document.getElementById('result-placeholder');
-              if (placeholder) {
-                placeholder.style.display = 'none';
-                console.log('Hiding placeholder');
-              }
-              
-              if (detail) {
-                detail.style.display = '';
-                detail.removeAttribute('style');
-                console.log('Showing result detail');
-              }
               if (card) {
+                card.style.display = '';
                 card.dataset.state = 'ready';
-                console.log('Card state set to ready');
+                console.log('Showing result card');
               }
               
               setStatus('Bağlantı başarıyla oluşturuldu!');

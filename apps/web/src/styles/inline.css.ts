@@ -159,12 +159,13 @@ a:hover {
   margin: 0 auto;
 }
 
-/* Content Grid */
-.content-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+/* Content Wrapper */
+.content-wrapper {
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
-  align-items: start;
 }
 
 /* Form Card */
@@ -328,9 +329,7 @@ a:hover {
   backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
-  min-height: 300px;
-  display: flex;
-  flex-direction: column;
+  animation: slideUp 0.4s ease;
 }
 
 .result-card:hover {
@@ -338,29 +337,15 @@ a:hover {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
-.result-placeholder {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 2rem;
-  color: var(--text-tertiary);
-}
-
-.placeholder-icon {
-  font-size: 3rem;
-  width: 3rem;
-  height: 3rem;
-  margin-bottom: 1rem;
-  opacity: 0.4;
-  color: var(--text-tertiary);
-}
-
-.placeholder-text {
-  font-size: 0.9375rem;
-  color: var(--text-tertiary);
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .result-content {
@@ -670,13 +655,9 @@ a:hover {
 
 /* Responsive */
 @media (max-width: 968px) {
-  .content-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  
-  .result-card {
-    min-height: auto;
+  .content-wrapper {
+    max-width: 100%;
+    padding: 0 1rem;
   }
 
   .bookmarklet-section {
